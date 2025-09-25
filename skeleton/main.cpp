@@ -10,6 +10,10 @@
 
 #include <iostream>
 
+#include "CoordAxis.h"
+#include "Vector3D.h"
+
+
 std::string display_text = "This is a test";
 
 
@@ -29,6 +33,10 @@ PxPvd*                  gPvd        = NULL;
 PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
+
+//RenderItem* sphere = nullptr;
+CoordAxis* axis = nullptr;
+
 
 
 // Initialize physics engine
@@ -54,6 +62,14 @@ void initPhysics(bool interactive)
 	sceneDesc.filterShader = contactReportFilterShader;
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
+
+	CoordAxis* axis = new CoordAxis();
+	
+	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
+	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));
+	//sphere = new RenderItem(shape, Vector4(255, 0, 0, 255));
+	//RegisterRenderItem(sphere);
+
 	}
 
 
@@ -84,7 +100,10 @@ void cleanupPhysics(bool interactive)
 	transport->release();
 	
 	gFoundation->release();
-	}
+	
+	//DeregisterRenderItem(sphere);
+	delete axis;
+}
 
 // Function called when a key is pressed
 void keyPress(unsigned char key, const PxTransform& camera)
