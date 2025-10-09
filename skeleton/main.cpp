@@ -11,7 +11,7 @@
 #include <iostream>
 
 #include "CoordAxis.h"
-#include "Vector3D.h"
+#include "Particle.h"
 
 
 std::string display_text = "This is a test";
@@ -36,8 +36,42 @@ ContactReportCallback gContactReportCallback;
 
 //RenderItem* sphere = nullptr;
 CoordAxis* axis = nullptr;
+std::vector<Particle*> particles;
 
+void createParticles(Constants::ParticleType particleType)
+{
+	switch (particleType) {
+		case Constants::DEFAULT: {
 
+			const physx::PxTransform pose = physx::PxTransform(0, 30, 0);
+			const physx::PxVec3 velocity = physx::PxVec3(0, 5, 0);
+			const physx::PxVec3 gravity = physx::PxVec3(0, -1, 0);
+			const double damping = 0.98;
+			Particle* particle = new Particle(pose, velocity, gravity, damping, Constants::Integration_Method::EULER_SEMI_IMPLICIT);
+
+			particles.push_back(particle);
+			break;
+		}
+		case Constants::BULLET: {
+
+			break;
+		}
+		case Constants::CANNON_BALL: {
+
+			const physx::PxTransform pose = physx::PxTransform(0, 30, 0);
+			const physx::PxVec3 velocity = physx::PxVec3(0, 5, 0);
+			const physx::PxVec3 gravity = physx::PxVec3(0, -1, 0);
+			const physx::PxVec3 acceleration = physx::PxVec3(0, 0.5, 0);
+			const double mass = 100; // kg
+			const double damping = 0.98;
+			Particle* particle = new Particle(pose, velocity, acceleration, gravity, mass, damping, Constants::Integration_Method::EULER_SEMI_IMPLICIT);
+
+			particles.push_back(particle);
+			break;
+		}
+	}
+
+}
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -64,6 +98,8 @@ void initPhysics(bool interactive)
 	gScene = gPhysics->createScene(sceneDesc);
 
 	CoordAxis* axis = new CoordAxis();
+
+	createParticles(Constants::DEFAULT);
 	
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
 	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));
@@ -79,6 +115,10 @@ void initPhysics(bool interactive)
 void stepPhysics(bool interactive, double t)
 {
 	PX_UNUSED(interactive);
+
+	for (auto p : particles) {
+		p->integrate(t);
+	}
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
@@ -103,6 +143,10 @@ void cleanupPhysics(bool interactive)
 	
 	//DeregisterRenderItem(sphere);
 	delete axis;
+
+	for (auto p : particles) {
+		delete p;
+	}
 }
 
 // Function called when a key is pressed
@@ -129,7 +173,6 @@ void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
 	PX_UNUSED(actor2);
 }
 
-
 int main(int, const char*const*)
 {
 #ifndef OFFLINE_EXECUTION 
@@ -145,3 +188,4 @@ int main(int, const char*const*)
 
 	return 0;
 }
+
