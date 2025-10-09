@@ -2,16 +2,14 @@
 
 #include "RenderUtils.hpp"
 
-#include "Vector3D.h"
-
 
 CoordAxis::CoordAxis()
 {
 	// Create all axis and origin
-	createRenderItem(Vector3D::Zero()    * _scale, _o, physx::PxVec4(255, 255, 255, 255));
-	createRenderItem(Vector3D::Right()   * _scale, _x, physx::PxVec4(0, 0, 255, 255));
-	createRenderItem(Vector3D::Up()      * _scale, _y, physx::PxVec4(255, 0, 0, 255));
-	createRenderItem(Vector3D::Forward() * _scale, _z, physx::PxVec4(0, 255, 0, 255));
+	createRenderItem(physx::PxVec3(0, 0, 0) * _scale, _o, physx::PxVec4(255, 255, 255, 255));
+	createRenderItem(physx::PxVec3(1, 0, 0) * _scale, _x, physx::PxVec4(255, 0, 0, 255));
+	createRenderItem(physx::PxVec3(0, 1, 0) * _scale, _y, physx::PxVec4(0, 255, 0, 255));
+	createRenderItem(physx::PxVec3(0, 0, 1) * _scale, _z, physx::PxVec4(0, 0, 255, 255));
 }
 
 CoordAxis::~CoordAxis()
@@ -19,10 +17,10 @@ CoordAxis::~CoordAxis()
 	deregisterAll();
 }
 
-void CoordAxis::createRenderItem(Vector3D& v, RenderItem* ri, const physx::PxVec4&color)
+void CoordAxis::createRenderItem(const physx::PxVec3 &pos, RenderItem* ri, const physx::PxVec4 &color)
 {
 	physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(_size));
-	physx::PxTransform* transform = new physx::PxTransform(v.getPxVec3());
+	physx::PxTransform* transform = new physx::PxTransform(pos);
 	ri = new RenderItem(shape, transform, color);
 	RegisterRenderItem(ri);
 }

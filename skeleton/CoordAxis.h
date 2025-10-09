@@ -1,10 +1,7 @@
 #pragma once
-
 #include <PxPhysicsAPI.h>
 
-
 class RenderItem;
-class Vector3D;
 
 class CoordAxis
 {
@@ -22,7 +19,7 @@ public:
 
 	~CoordAxis();
 
-	void createRenderItem(Vector3D& v, RenderItem* ri, const physx::PxVec4& color);
+	void createRenderItem(const physx::PxVec3 &pos, RenderItem* ri, const physx::PxVec4 &color);
 
 	void deregisterAll();
 };
