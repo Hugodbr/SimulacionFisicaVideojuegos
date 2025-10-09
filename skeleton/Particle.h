@@ -4,17 +4,14 @@
 #include "Constants.h"
 
 
-
 class RenderItem;
 
 class Particle
 {
 public:
-	Particle(const physx::PxTransform &pose, const  physx::PxVec3 &velocity, const physx::PxVec3 &acceleration, double damping, Constants::Integration_Method integrateMethod);
-	// Constructor with mass
-	Particle(const physx::PxTransform &pose, const  physx::PxVec3 &velocity, const physx::PxVec3 &acceleration, double mass, double damping, Constants::Integration_Method integrateMethod);
-	// Constructor with mass and gravity
-	Particle(const physx::PxTransform &pose, const  physx::PxVec3 &velocity, const physx::PxVec3 &acceleration, const physx::PxVec3 &gravity, double mass, double damping, Constants::Integration_Method integrateMethod);
+
+	Particle(const physx::PxTransform &initTransform, const physx::PxVec3 &initVelocity, const physx::PxVec3 &initAcceleration, double damping, Constants::Integration_Method integrationMethod, float size = Constants::Particle::Size);
+	Particle(const physx::PxTransform &initTransform, const physx::PxVec3 &initVelocity, const physx::PxVec3 &initAcceleration, Constants::Integration_Method integrationMethod);
 
 	virtual ~Particle();
 
@@ -25,31 +22,24 @@ public:
 	virtual void integrate(double dt);
 
 protected:
+
 	virtual void eulerIntegration(double dt);
 	virtual void eulerSemiImplicitIntegration(double dt);
 	virtual void verletIntegration(double dt);
 
-	virtual void setSimulatedMass();
-	virtual void setSimulatedVelocity();
-	virtual void setSimulatedGravity();
-	virtual void setSimulatedAcceleration();
-
 protected:
+
 	RenderItem* _renderItem;
 
-	physx::PxVec3 _acc;
+	physx::PxVec3 _acceleration;
 
-	physx::PxVec3 _gravity;
-	physx::PxVec3 _gravityReal;
-
-	physx::PxVec3 _vel;
-	physx::PxVec3 _velPrevious;
-	physx::PxVec3 _velReal;
+	physx::PxVec3 _velocity;
+	physx::PxVec3 _velocityPrevious;
 
 	double _damping = 0.989;
 
-	physx::PxTransform _pose; // position and direction
-	physx::PxTransform _posePrevious; // position and direction
+	physx::PxTransform _transform; // position and direction
+	physx::PxTransform _transformPrevious; // position and direction
 
 
 	Constants::Integration_Method _integrationMethod;
@@ -59,11 +49,9 @@ protected:
 
 	double _size;
 
-	double _mass;
-	double _massReal;
-
 	double _lifeTime;
 
 private:
+
 	bool _firstIntegration;
 };

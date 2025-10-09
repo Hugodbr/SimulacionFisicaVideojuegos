@@ -1,21 +1,16 @@
 #pragma once
-#include "Particle.h"
+#include "ParticleWithMass.h"
 
-class CannonBall : public Particle
+
+class CannonBall : public ParticleWithMass
 {
 public:
-	CannonBall(const physx::PxTransform& pose, const  physx::PxVec3& realVelocity, const physx::PxVec3& acceleration, const physx::PxVec3& realGravity, double realMass, double damping, Constants::Integration_Method integrateMethod);
+	CannonBall(
+		const physx::PxTransform& initTransform,
+		const physx::PxVec3& initDirection,
+		Constants::Integration_Method integrationMethod = Constants::Integration_Method::VERLET
+	);
 
 	~CannonBall();
-
-protected:
-
-	void setSimulatedMass() override;
-	void setSimulatedVelocity() override;
-	void setSimulatedGravity() override;
-	void setSimulatedAcceleration() override;
-
-	double _gFactor = 0.5;
-	double _vFactor = 0.5;
 };
 

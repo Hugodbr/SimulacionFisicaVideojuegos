@@ -12,6 +12,8 @@
 
 #include "CoordAxis.h"
 #include "Particle.h"
+#include "Bullet.h"
+#include "CannonBall.h"
 
 
 std::string display_text = "This is a test";
@@ -37,19 +39,37 @@ ContactReportCallback gContactReportCallback;
 //RenderItem* sphere = nullptr;
 CoordAxis* axis = nullptr;
 std::vector<Particle*> particles;
+Camera* cam = nullptr;
+
+void shootParticle() {
+
+	physx::PxTransform pose = physx::PxTransform(cam->getDir().x, cam->getDir().y, cam->getDir().z);
+	float speed = 25.0f;
+	physx::PxVec3 velocity = physx::PxVec3(cam->getDir().x, cam->getDir().y, cam->getDir().z).getNormalized() * speed;
+	physx::PxVec3 gravity = physx::PxVec3(0, 0, 0);
+	double damping = 0.98;
+	Particle* particle = new Particle(pose, velocity, gravity, damping, Constants::Integration_Method::EULER_SEMI_IMPLICIT);
+
+	particles.push_back(particle);
+}
+
+void shootBullet() {
+
+	// ????
+	// La bala no sale de donde esta la camara
+
+	physx::PxTransform initTransform = physx::PxTransform(cam->getDir().x, cam->getDir().y, cam->getDir().z);
+	physx::PxVec3      initDirection = physx::PxVec3(cam->getDir().x, cam->getDir().y, cam->getDir().z).getNormalized();
+	//std::cout << initDirection.x << " " << initDirection.y << " " << initDirection.z;
+
+	particles.push_back(new CannonBall(initTransform, initDirection, Constants::Integration_Method::VERLET));
+}
 
 void createParticles(Constants::ParticleType particleType)
 {
 	switch (particleType) {
 		case Constants::DEFAULT: {
 
-			const physx::PxTransform pose = physx::PxTransform(0, 30, 0);
-			const physx::PxVec3 velocity = physx::PxVec3(0, 5, 0);
-			const physx::PxVec3 gravity = physx::PxVec3(0, -1, 0);
-			const double damping = 0.98;
-			Particle* particle = new Particle(pose, velocity, gravity, damping, Constants::Integration_Method::EULER_SEMI_IMPLICIT);
-
-			particles.push_back(particle);
 			break;
 		}
 		case Constants::BULLET: {
@@ -58,15 +78,6 @@ void createParticles(Constants::ParticleType particleType)
 		}
 		case Constants::CANNON_BALL: {
 
-			const physx::PxTransform pose = physx::PxTransform(0, 30, 0);
-			const physx::PxVec3 velocity = physx::PxVec3(0, 5, 0);
-			const physx::PxVec3 gravity = physx::PxVec3(0, -1, 0);
-			const physx::PxVec3 acceleration = physx::PxVec3(0, 0.5, 0);
-			const double mass = 100; // kg
-			const double damping = 0.98;
-			Particle* particle = new Particle(pose, velocity, acceleration, gravity, mass, damping, Constants::Integration_Method::EULER_SEMI_IMPLICIT);
-
-			particles.push_back(particle);
 			break;
 		}
 	}
@@ -97,9 +108,13 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	CoordAxis* axis = new CoordAxis();
+	//CoordAxis* axis = new CoordAxis();
 
-	createParticles(Constants::DEFAULT);
+	//createParticles(Constants::DEFAULT);
+	cam = GetCamera();
+	//shootParticle();
+
+
 	
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
 	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));
@@ -116,7 +131,7 @@ void stepPhysics(bool interactive, double t)
 {
 	PX_UNUSED(interactive);
 
-	for (auto p : particles) {
+	for (auto& p : particles) {
 		p->integrate(t);
 	}
 
@@ -156,7 +171,13 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch(toupper(key))
 	{
-	//case 'B': break;
+	case 'B': 
+		std::cout << "shootBullet" << std::endl;
+		std::cout << cam->getDir().x << std::endl;
+		std::cout << cam->getDir().y << std::endl;
+		std::cout << cam->getDir().z << std::endl;
+		shootBullet();
+		break;
 	//case ' ':	break;
 	case ' ':
 	{

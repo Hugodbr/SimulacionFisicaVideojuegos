@@ -2,49 +2,50 @@
 
 #include <iostream>
 
-Particle::Particle(const physx::PxTransform& pose, const  physx::PxVec3& velocity, const physx::PxVec3& acceleration, double damping, Constants::Integration_Method integrationMethod)
+#include "Constants.h"
+
+
+Particle::Particle(
+	const physx::PxTransform& initTransform, 
+	const physx::PxVec3& initVelocity, 
+	const physx::PxVec3& initAcceleration, 
+	double damping, 
+	Constants::Integration_Method integrationMethod,
+	float size
+)
 	:
-	_pose(pose),
-	_vel(velocity),
-	_acc(acceleration),
+	_transform(initTransform),
+	_velocity(initVelocity),
+	_acceleration(initAcceleration),
 	_damping(damping),
 	_integrationMethod(integrationMethod),
 	_renderItem(nullptr),
 	_shape(nullptr),
-	_color(physx::PxVec4(255, 255, 255, 255)),
-	_posePrevious(pose),
-	_velPrevious(velocity),
-	_gravity(0.0),
-	_mass(0.0),
-	_size(0.5),
+	_color(Constants::Color::White),
+	_transformPrevious(initTransform),
+	_velocityPrevious(initVelocity),
+	_size(size),
 	_lifeTime(0.0),
 	_firstIntegration(true)
 {
 	createRenderItem();
 
-	switch (_integrationMethod) {
-	case Constants::Integration_Method::EULER:
-			break;
-	case Constants::Integration_Method::EULER_SEMI_IMPLICIT:
-			break;
-	case Constants::Integration_Method::VERLET:
-			_velPrevious = _vel;
-			_posePrevious = _pose;
-			break;
+	switch (_integrationMethod) 
+	{
+		case Constants::Integration_Method::EULER:
+				break;
+		case Constants::Integration_Method::EULER_SEMI_IMPLICIT:
+				break;
+		case Constants::Integration_Method::VERLET:
+				_velocityPrevious = _velocity;
+				_transformPrevious = _transform;
+				break;
 	}
 }
 
-Particle::Particle(const physx::PxTransform& pose, const physx::PxVec3& velocity, const physx::PxVec3& acceleration, double mass, double damping, Constants::Integration_Method integrationMethod)
-	: Particle(pose, velocity, acceleration, damping, integrationMethod)
+Particle::Particle(const physx::PxTransform& initTransform, const physx::PxVec3& initVelocity, const physx::PxVec3& initAcceleration, Constants::Integration_Method integrationMethod)
+	:Particle(initTransform, initVelocity, initAcceleration, Constants::Physics::Damping, integrationMethod)
 {
-	_massReal = mass;
-}
-
-Particle::Particle(const physx::PxTransform& pose, const physx::PxVec3& velocity, const physx::PxVec3& acceleration, const physx::PxVec3 &gravity, double mass, double damping, Constants::Integration_Method integrationMethod)
-	: Particle(pose, velocity, acceleration, damping, integrationMethod)
-{
-	_massReal = mass;
-	_gravityReal = gravity;
 }
 
 Particle::~Particle()
@@ -55,20 +56,21 @@ Particle::~Particle()
 void Particle::createRenderItem()
 {
 	_shape = CreateShape(physx::PxSphereGeometry(_size));
-	_renderItem = new RenderItem(_shape, &_pose, _color);
+	_renderItem = new RenderItem(_shape, &_transform, _color);
 	RegisterRenderItem(_renderItem);
 }
 
 const physx::PxVec3& Particle::getVelocity() const
 {
-	return _vel;
+	return _velocity;
 }
 
 void Particle::integrate(double dt)
 {
-	std::cout << "integrate: " << _vel.y << '\n';
+	std::cout << "Integrating: velX: " << _velocity.x << " velY: " << _velocity.y << " velZ: " << _velocity.z << '\n';
 
-	switch (_integrationMethod) {
+	switch (_integrationMethod) 
+	{
 		case Constants::Integration_Method::EULER:
 			eulerIntegration(dt);
 			break;
@@ -84,13 +86,13 @@ void Particle::integrate(double dt)
 void Particle::eulerIntegration(double dt)
 {
 	// P(i+1) = P(i) + v(i)dt
-	_pose.p += _vel * dt;
+	_transform.p += _velocity * dt;
 
 	// v(i+1) = v(i) + a(i)dt
-	_vel += _acc * dt;
+	_velocity += _acceleration * dt;
 
 	// damping: v(i+1) = v(i+1) * d^(dt)
-	_vel *= pow(_damping, dt);
+	_velocity *= pow(_damping, dt);
 }
 
 void Particle::eulerSemiImplicitIntegration(double dt)
@@ -102,13 +104,13 @@ void Particle::eulerSemiImplicitIntegration(double dt)
 	}
 
 	// v(i+1) = v(i) + a(i)dt
-	_vel += _acc * dt;
+	_velocity += _acceleration * dt;
 
 	// damping: v(i+1) = v(i+1) * d^(dt)
-	_vel *= pow(_damping, dt);
+	_velocity *= pow(_damping, dt);
 
 	// P(i+1) = P(i) + v(i+1)dt
-	_pose.p += _vel * dt;
+	_transform.p += _velocity * dt;
 }
 
 void Particle::verletIntegration(double dt)
@@ -119,34 +121,18 @@ void Particle::verletIntegration(double dt)
 	// Si no se usa, cómo hacer el damping?
 	// no, se usa la formula para la velocidad
 	//
-	// Está bien inicializar la pose(t-1) como pose inicial?
+	// Está bien inicializar la transform(t-1) como transform inicial?
 	// si
 	// 
 
-	const physx::PxTransform a_posPrevious = _pose;
+	physx::PxTransform a_posPrevious = _transform;
 
-	_pose.p = 2 * _pose.p - _posePrevious.p + _acc * pow(dt, 2);
+	_transform.p = 2 * _transform.p - _transformPrevious.p + _acceleration * pow(dt, 2);
 
-	_posePrevious = a_posPrevious;
+	_transformPrevious = a_posPrevious;
 
 	// The velocity is not calculated like other integrations do nor used in the position update
 	// To get the velocity use getter.
 	// For Verlet, the formula is:
-	_vel = (_pose.p - _posePrevious.p) / 2 * dt;
-}
-
-void Particle::setSimulatedMass()
-{
-}
-
-void Particle::setSimulatedVelocity()
-{
-}
-
-void Particle::setSimulatedGravity()
-{
-}
-
-void Particle::setSimulatedAcceleration()
-{
+	_velocity = (_transform.p - _transformPrevious.p) / (2 * dt);
 }
