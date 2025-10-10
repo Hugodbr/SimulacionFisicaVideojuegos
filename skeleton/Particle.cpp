@@ -115,6 +115,12 @@ void Particle::eulerSemiImplicitIntegration(double dt)
 
 void Particle::verletIntegration(double dt)
 {
+	// First time use Euler:
+	if (_firstIntegration) {
+		eulerIntegration(dt);
+		_firstIntegration = false;
+	}
+
 	// Se usa la velocidad en este método?
 	// no
 	// 
