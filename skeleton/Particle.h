@@ -17,7 +17,7 @@ public:
 
 	virtual void createRenderItem();
 
-	virtual const physx::PxVec3& getVelocity() const;
+	virtual physx::PxVec3& getVelocity() const;
 
 	virtual void integrate(double dt);
 

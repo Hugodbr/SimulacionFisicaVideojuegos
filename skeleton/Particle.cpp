@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "Constants.h"
+#include "ParticleGenerator.h"
 
 
 Particle::Particle(
@@ -60,7 +61,7 @@ void Particle::createRenderItem()
 	RegisterRenderItem(_renderItem);
 }
 
-const physx::PxVec3& Particle::getVelocity() const
+physx::PxVec3& Particle::getVelocity() const
 {
 	return _velocity;
 }

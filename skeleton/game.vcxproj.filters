@@ -23,6 +23,19 @@
     <ClCompile Include="Bullet.cpp">
       <Filter>Particles</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleGenerator.cpp">
+      <Filter>ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="UniformParticleGenerator.cpp">
+      <Filter>ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GuassianParticleGenerator.cpp">
+      <Filter>ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="RainSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -48,6 +61,19 @@
     <ClInclude Include="Bullet.h">
       <Filter>Particles</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleGenerator.h">
+      <Filter>ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="UniformParticleGenerator.h">
+      <Filter>ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GuassianParticleGenerator.h">
+      <Filter>ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="RainSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">
@@ -55,6 +81,9 @@
     </Filter>
     <Filter Include="Particles">
       <UniqueIdentifier>{4ecb3e5a-440a-4484-8f71-e2ef0159e117}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ParticleSystem">
+      <UniqueIdentifier>{27d6660e-aaa8-4f56-8bb8-5c9aa30c3bb7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
