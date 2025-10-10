@@ -11,8 +11,18 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="callbacks.cpp" />
     <ClCompile Include="CoordAxis.cpp" />
-    <ClCompile Include="Particle.cpp" />
-    <ClCompile Include="CannonBall.cpp" />
+    <ClCompile Include="ParticleWithMass.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="CannonBall.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -25,13 +35,26 @@
     <ClInclude Include="RenderUtils.hpp" />
     <ClInclude Include="callbacks.hpp" />
     <ClInclude Include="CoordAxis.h" />
-    <ClInclude Include="Particle.h" />
-    <ClInclude Include="CannonBall.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="ParticleWithMass.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="CannonBall.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">
       <UniqueIdentifier>{d04b4f9f-5a69-465e-8070-25c6d0bcd3c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Particles">
+      <UniqueIdentifier>{4ecb3e5a-440a-4484-8f71-e2ef0159e117}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

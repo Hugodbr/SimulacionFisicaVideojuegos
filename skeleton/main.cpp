@@ -1,4 +1,6 @@
 #include <ctype.h>
+#include <chrono>
+#include <thread>
 
 #include <PxPhysicsAPI.h>
 
@@ -43,7 +45,7 @@ Camera* cam = nullptr;
 
 void shootParticle() {
 
-	physx::PxTransform pose = physx::PxTransform(cam->getDir().x, cam->getDir().y, cam->getDir().z);
+	physx::PxTransform pose = physx::PxTransform(cam->getEye().x, cam->getEye().y, cam->getEye().z);
 	float speed = 25.0f;
 	physx::PxVec3 velocity = physx::PxVec3(cam->getDir().x, cam->getDir().y, cam->getDir().z).getNormalized() * speed;
 	physx::PxVec3 gravity = physx::PxVec3(0, 0, 0);
@@ -137,6 +139,7 @@ void stepPhysics(bool interactive, double t)
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
+	std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
 
 // Function to clean data
