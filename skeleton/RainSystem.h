@@ -1,7 +1,6 @@
 #pragma once
 #include "ParticleSystem.h"
 
-#include <PxPhysicsAPI.h>
 
 
 class RainSystem : public ParticleSystem
@@ -16,10 +15,5 @@ public:
 	void update(double dt) override;
 
 protected:
-
-	physx::PxVec3 _origin;
-	double _radius;
-
-	Particle* _modelParticle;
 };
 

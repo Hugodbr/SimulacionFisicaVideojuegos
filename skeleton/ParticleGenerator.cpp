@@ -9,27 +9,38 @@ ParticleGenerator::~ParticleGenerator()
 {
 }
 
-physx::PxVec3 ParticleGenerator::getOrigin() const
-{
-	return _origin;
+physx::PxVec3 ParticleGenerator::getMeanPosition() const {
+    return _meanPosition;
 }
 
-physx::PxVec3 ParticleGenerator::getVelocity() const
-{
-	return _velocity;
+physx::PxVec3 ParticleGenerator::getMeanVelocity() const {
+    return _meanVelocity;
 }
 
-double ParticleGenerator::getDuration() const 
-{
-	return _duration;
+double ParticleGenerator::getMeanLifetime() const {
+    return _meanLifetime;
 }
 
-double ParticleGenerator::getGenerationProbability() const
-{
-	return _probability;
+physx::PxVec3 ParticleGenerator::getPositionDeviation() const {
+    return _positionDeviation;
 }
 
-const Particle& ParticleGenerator::getModelParticle() const
-{
-	return *_modelParticle;
+physx::PxVec3 ParticleGenerator::getVelocityDeviation() const {
+    return _velocityDeviation;
+}
+
+double ParticleGenerator::getLifetimeDeviation() const {
+    return _lifetimeDeviation;
+}
+
+double ParticleGenerator::getSpawnProbability() const {
+    return _spawnProbability;
+}
+
+int ParticleGenerator::getSpawnCount() const {
+    return _spawnCount;
+}
+
+const Particle& ParticleGenerator::getModelParticle() const {
+    return *_modelParticle;
 }

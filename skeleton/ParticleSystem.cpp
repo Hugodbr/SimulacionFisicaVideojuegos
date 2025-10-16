@@ -7,6 +7,9 @@ ParticleSystem::ParticleSystem()
 
 ParticleSystem::~ParticleSystem()
 {
+	delete _modelParticle;
+	_modelParticle = nullptr;
+
 	for (auto& g : _generatorList) {
 		if (g) {
 			delete g;

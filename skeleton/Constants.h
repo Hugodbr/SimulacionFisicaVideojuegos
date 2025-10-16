@@ -1,5 +1,7 @@
 #pragma once
 
+#include <PxPhysicsAPI.h>
+
 // Sistema internacional
 
 namespace Constants
@@ -13,6 +15,7 @@ namespace Constants
 		DEFAULT,
 		CANNON_BALL,
 		BULLET,
+		RAIN
 	};
 
 	enum Integration_Method {
@@ -40,7 +43,7 @@ namespace Constants
 			namespace CannonBall {
 				static const ParticleType type = CANNON_BALL;
 				static constexpr float Size = 5.0f;
-				static const float Speed = 500.0f;
+				static constexpr float Speed = 500.0f;
 				static constexpr float Mass = 5.0f;
 				static constexpr double gFactor = 0.5;
 				static constexpr double vFactor = 0.1;
@@ -50,9 +53,18 @@ namespace Constants
 			namespace Bullet {
 				static const ParticleType type = BULLET;
 				static constexpr float Size = 0.5f;
-				static const float Speed = 1000.0f;
+				static constexpr float Speed = 1000.0f;
 				static constexpr float Mass = 0.001f;
 				static constexpr double gFactor = 0.1;
+				static constexpr double vFactor = 1;
+			};
+
+			namespace Rain {
+				static const ParticleType type = RAIN;
+				static constexpr float Size = 0.1f;
+				static constexpr float Speed = 0.0f;
+				static constexpr float Mass = 0.001f;
+				static constexpr double gFactor = 1;
 				static constexpr double vFactor = 1;
 			};
 		};

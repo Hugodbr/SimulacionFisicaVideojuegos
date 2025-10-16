@@ -17,6 +17,8 @@
 #include "Bullet.h"
 #include "CannonBall.h"
 
+#include "RainSystem.h"
+
 
 std::string display_text = "This is a test";
 
@@ -40,50 +42,52 @@ ContactReportCallback gContactReportCallback;
 
 //RenderItem* sphere = nullptr;
 CoordAxis* axis = nullptr;
-std::vector<Particle*> particles;
+//std::vector<Particle*> particles;
 Camera* cam = nullptr;
+std::vector<ParticleSystem*> particleSystems;
+
+// Systems
+RainSystem* rs = nullptr;
 
 void shootParticle() {
 
-	physx::PxTransform pose = physx::PxTransform(cam->getEye().x, cam->getEye().y, cam->getEye().z);
-	float speed = 25.0f;
-	physx::PxVec3 velocity = physx::PxVec3(cam->getDir().x, cam->getDir().y, cam->getDir().z).getNormalized() * speed;
-	physx::PxVec3 gravity = physx::PxVec3(0, 0, 0);
-	double damping = 0.98;
-	Particle* particle = new Particle(pose, velocity, gravity, damping, Constants::Integration_Method::EULER_SEMI_IMPLICIT);
+	//physx::PxTransform pose = physx::PxTransform(cam->getEye().x, cam->getEye().y, cam->getEye().z);
+	//float speed = 25.0f;
+	//physx::PxVec3 velocity = physx::PxVec3(cam->getDir().x, cam->getDir().y, cam->getDir().z).getNormalized() * speed;
+	//physx::PxVec3 gravity = physx::PxVec3(0, 0, 0);
+	//double damping = 0.98;
+	//Particle* particle = new Particle(pose, velocity, gravity, damping, Constants::Integration_Method::EULER_SEMI_IMPLICIT);
 
-	particles.push_back(particle);
+	//particles.push_back(particle);
 }
 
 void shootBullet() {
+	//// ????
+	//// La bala no sale de donde esta la camara
 
-	// ????
-	// La bala no sale de donde esta la camara
+	//physx::PxTransform initTransform = physx::PxTransform(cam->getDir().x, cam->getDir().y, cam->getDir().z);
+	//physx::PxVec3      initDirection = physx::PxVec3(cam->getDir().x, cam->getDir().y, cam->getDir().z).getNormalized();
+	////std::cout << initDirection.x << " " << initDirection.y << " " << initDirection.z;
 
-	physx::PxTransform initTransform = physx::PxTransform(cam->getDir().x, cam->getDir().y, cam->getDir().z);
-	physx::PxVec3      initDirection = physx::PxVec3(cam->getDir().x, cam->getDir().y, cam->getDir().z).getNormalized();
-	//std::cout << initDirection.x << " " << initDirection.y << " " << initDirection.z;
-
-	particles.push_back(new CannonBall(initTransform, initDirection, Constants::Integration_Method::VERLET));
+	//particles.push_back(new CannonBall(initTransform, initDirection, Constants::Integration_Method::VERLET));
 }
 
 void createParticles(Constants::ParticleType particleType)
 {
-	switch (particleType) {
-		case Constants::DEFAULT: {
+	//switch (particleType) {
+	//	case Constants::DEFAULT: {
 
-			break;
-		}
-		case Constants::BULLET: {
+	//		break;
+	//	}
+	//	case Constants::BULLET: {
 
-			break;
-		}
-		case Constants::CANNON_BALL: {
+	//		break;
+	//	}
+	//	case Constants::CANNON_BALL: {
 
-			break;
-		}
-	}
-
+	//		break;
+	//	}
+	//}
 }
 
 // Initialize physics engine
@@ -116,7 +120,8 @@ void initPhysics(bool interactive)
 	cam = GetCamera();
 	//shootParticle();
 
-
+	rs = new RainSystem(physx::PxVec3(0, 0, 0), 50.0);
+	particleSystems.push_back(rs);
 	
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
 	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));
@@ -129,15 +134,15 @@ void initPhysics(bool interactive)
 // Function to configure what happens in each step of physics
 // interactive: true if the game is rendering, false if it offline
 // t: time passed since last call in milliseconds
-void stepPhysics(bool interactive, double t)
+void stepPhysics(bool interactive, double dt)
 {
 	PX_UNUSED(interactive);
 
-	for (auto& p : particles) {
-		p->integrate(t);
+	for (auto& ps : particleSystems) {
+		ps->update(dt);
 	}
 
-	gScene->simulate(t);
+	gScene->simulate(dt);
 	gScene->fetchResults(true);
 	std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
@@ -162,8 +167,9 @@ void cleanupPhysics(bool interactive)
 	//DeregisterRenderItem(sphere);
 	delete axis;
 
-	for (auto p : particles) {
-		delete p;
+	for (auto* sys : particleSystems) {
+		delete sys;
+		sys = nullptr;
 	}
 }
 

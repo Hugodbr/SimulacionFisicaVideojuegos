@@ -83,6 +83,7 @@
       </PrecompiledHeaderFile>
       <ProgramDataBaseFileName>$(TargetDir)\$(TargetName).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalOptions>
@@ -263,6 +264,7 @@
     <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ParticleWithMass.cpp" />
+    <ClCompile Include="RainParticle.cpp" />
     <ClCompile Include="RainSystem.cpp" />
     <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
@@ -281,6 +283,7 @@
     <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ParticleWithMass.h" />
+    <ClInclude Include="RainParticle.h" />
     <ClInclude Include="RainSystem.h" />
     <ClInclude Include="RenderUtils.hpp" />
     <ClInclude Include="Render\Camera.h" />

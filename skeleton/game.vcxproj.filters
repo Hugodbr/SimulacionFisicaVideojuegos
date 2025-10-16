@@ -35,7 +35,12 @@
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>ParticleSystem</Filter>
     </ClCompile>
-    <ClCompile Include="RainSystem.cpp" />
+    <ClCompile Include="RainSystem.cpp">
+      <Filter>ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="RainParticle.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -73,7 +78,12 @@
     <ClInclude Include="ParticleSystem.h">
       <Filter>ParticleSystem</Filter>
     </ClInclude>
-    <ClInclude Include="RainSystem.h" />
+    <ClInclude Include="RainSystem.h">
+      <Filter>ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="RainParticle.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">
@@ -84,6 +94,9 @@
     </Filter>
     <Filter Include="ParticleSystem">
       <UniqueIdentifier>{27d6660e-aaa8-4f56-8bb8-5c9aa30c3bb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ParticleSystem\Policies">
+      <UniqueIdentifier>{b7a4b828-0284-4c51-ae5b-dffeae5df154}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

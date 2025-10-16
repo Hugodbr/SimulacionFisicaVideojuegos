@@ -27,6 +27,7 @@ Particle::Particle(
 	_velocityPrevious(initVelocity),
 	_size(size),
 	_lifeTime(0.0),
+	_alive(true),
 	_firstIntegration(true)
 {
 	createRenderItem();
@@ -54,6 +55,21 @@ Particle::~Particle()
 	DeregisterRenderItem(_renderItem);
 }
 
+Particle* Particle::clone() const
+{
+	return nullptr;
+}
+
+void Particle::setOrigin(const physx::PxTransform& origin)
+{
+	_transform = _transformPrevious = origin;	
+}
+
+void Particle::setVelocity(const physx::PxVec3& velocity)
+{
+	_velocity = _velocityPrevious = velocity;
+}
+
 void Particle::createRenderItem()
 {
 	_shape = CreateShape(physx::PxSphereGeometry(_size));
@@ -61,9 +77,20 @@ void Particle::createRenderItem()
 	RegisterRenderItem(_renderItem);
 }
 
-physx::PxVec3& Particle::getVelocity() const
+physx::PxVec3 Particle::getVelocity() const
 {
 	return _velocity;
+}
+
+void Particle::update(double dt) 
+{
+	integrate(dt);
+	updateLife(dt);
+}
+
+void Particle::setLifeTime(double time)
+{
+	_lifeTime = time;
 }
 
 void Particle::integrate(double dt)
@@ -82,6 +109,20 @@ void Particle::integrate(double dt)
 			verletIntegration(dt);
 			break;
 	}
+}
+
+void Particle::updateLife(double dt)
+{
+	_lifeTime -= dt;
+
+	if (_lifeTime < 0.0) {
+		_alive = false;
+	}
+}
+
+bool Particle::isAlive() const
+{
+	return _alive;
 }
 
 void Particle::eulerIntegration(double dt)

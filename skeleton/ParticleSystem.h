@@ -1,9 +1,16 @@
 #pragma once
 #include <list>
 
+#include "PxPhysicsAPI.h"
+
+
+struct ParticleLifetimePolicy;
+
 class Particle;
 class ParticleGenerator;
 
+// Abstract class
+// The System applies the generation rules during the update
 class ParticleSystem
 {
 public:
@@ -19,7 +26,21 @@ public:
 
 protected:
 
+	virtual bool shouldDelete(const Particle& p, const ParticleLifetimePolicy& policy);
+
+
+protected:
+
 	std::list<Particle*> _particleList;
 	std::list<ParticleGenerator*> _generatorList;
+
+	physx::PxVec3 _origin;
+	double _radius;
+
+	physx::PxVec3 _averagePosition;
+	physx::PxVec3 _averageVelocity;
+	double _averageDuration;
+	double _generationProbability;
+	Particle* _modelParticle;
 };
 

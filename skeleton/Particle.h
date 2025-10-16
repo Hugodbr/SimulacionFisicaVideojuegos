@@ -15,17 +15,30 @@ public:
 
 	virtual ~Particle();
 
-	virtual void createRenderItem();
+	virtual Particle* clone() const;
 
-	virtual physx::PxVec3& getVelocity() const;
+	virtual void setOrigin(const physx::PxTransform &origin);
+	virtual void setVelocity(const physx::PxVec3 &velocity);
 
-	virtual void integrate(double dt);
+	virtual void setLifeTime(double time);
+
+	virtual physx::PxVec3 getVelocity() const;
+	virtual bool isAlive() const;
+
+	virtual void update(double dt);
+
 
 protected:
+
+	virtual void createRenderItem();
+
+	virtual void integrate(double dt);
+	virtual void updateLife(double dt);
 
 	virtual void eulerIntegration(double dt);
 	virtual void eulerSemiImplicitIntegration(double dt);
 	virtual void verletIntegration(double dt);
+
 
 protected:
 
@@ -36,7 +49,7 @@ protected:
 	physx::PxVec3 _velocity;
 	physx::PxVec3 _velocityPrevious;
 
-	double _damping = 0.989;
+	double _damping;
 
 	physx::PxTransform _transform; // position and direction
 	physx::PxTransform _transformPrevious; // position and direction
@@ -50,6 +63,7 @@ protected:
 	double _size;
 
 	double _lifeTime;
+	bool _alive;
 
 private:
 
