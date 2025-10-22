@@ -29,9 +29,6 @@
     <ClCompile Include="UniformParticleGenerator.cpp">
       <Filter>ParticleSystem</Filter>
     </ClCompile>
-    <ClCompile Include="GuassianParticleGenerator.cpp">
-      <Filter>ParticleSystem</Filter>
-    </ClCompile>
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>ParticleSystem</Filter>
     </ClCompile>
@@ -40,6 +37,12 @@
     </ClCompile>
     <ClCompile Include="RainParticle.cpp">
       <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Policies.cpp">
+      <Filter>ParticleSystem\Policies</Filter>
+    </ClCompile>
+    <ClCompile Include="GaussianParticleGenerator.cpp">
+      <Filter>ParticleSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -72,9 +75,6 @@
     <ClInclude Include="UniformParticleGenerator.h">
       <Filter>ParticleSystem</Filter>
     </ClInclude>
-    <ClInclude Include="GuassianParticleGenerator.h">
-      <Filter>ParticleSystem</Filter>
-    </ClInclude>
     <ClInclude Include="ParticleSystem.h">
       <Filter>ParticleSystem</Filter>
     </ClInclude>
@@ -83,6 +83,12 @@
     </ClInclude>
     <ClInclude Include="RainParticle.h">
       <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Policies.h">
+      <Filter>ParticleSystem\Policies</Filter>
+    </ClInclude>
+    <ClInclude Include="GaussianParticleGenerator.h">
+      <Filter>ParticleSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

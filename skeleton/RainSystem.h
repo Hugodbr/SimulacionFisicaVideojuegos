@@ -12,7 +12,7 @@ public:
 	~RainSystem();
 
 	void init() override;
-	void update(double dt) override;
+	void update(double deltaTime) override;
 
 protected:
 };

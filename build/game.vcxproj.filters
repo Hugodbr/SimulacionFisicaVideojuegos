@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\callbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\RenderUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\Render\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\Render\Render.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{04E9FEA6-0638-3240-8FCE-58A3ADA4AFC7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

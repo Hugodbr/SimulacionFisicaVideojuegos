@@ -8,7 +8,7 @@
 RainSystem::RainSystem(const physx::PxVec3& origin, const double radius)
 	: ParticleSystem()
 {
-	_origin = origin;
+	_emitterOrigin = origin;
 	_radius = radius;
 
 	//_modelParticle = new RainParticle()
@@ -25,11 +25,6 @@ void RainSystem::init()
 	// Create generator and push bakc to _generators
 	UniformParticleGenerator* ug = new UniformParticleGenerator();
 
-	ug->setOrigin(_origin);
-	ug->setVelocity(_averageVelocity);
-	ug->setDuration(10000.0);
-	ug->setGenerationProbability(10.0);
-	ug->setGenerationVolume(10);
 	ug->setModelParticle(_modelParticle);
 
 	_generatorList.push_back(ug);
@@ -38,7 +33,7 @@ void RainSystem::init()
 void RainSystem::update(double dt)
 {
 	for (auto& generator : _generatorList) {
-		for (auto& newParticle : generator->generateParticles()) {
+		for (auto& newParticle : generator->generateParticles(dt)) {
 			_particleList.push_back(newParticle);
 		}
 	}

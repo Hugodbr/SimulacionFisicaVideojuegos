@@ -19,11 +19,14 @@ public:
 
 	virtual void setOrigin(const physx::PxTransform &origin);
 	virtual void setVelocity(const physx::PxVec3 &velocity);
+	virtual void setAge(double age);
 
-	virtual void setLifeTime(double time);
-
+	virtual double getAge() const;
+	virtual physx::PxVec3 getPosition() const;
 	virtual physx::PxVec3 getVelocity() const;
 	virtual bool isAlive() const;
+
+	virtual void kill();
 
 	virtual void update(double dt);
 
@@ -33,7 +36,7 @@ protected:
 	virtual void createRenderItem();
 
 	virtual void integrate(double dt);
-	virtual void updateLife(double dt);
+	virtual void updateAge(double dt);
 
 	virtual void eulerIntegration(double dt);
 	virtual void eulerSemiImplicitIntegration(double dt);
@@ -62,7 +65,7 @@ protected:
 
 	double _size;
 
-	double _lifeTime;
+	double _age;
 	bool _alive;
 
 private:

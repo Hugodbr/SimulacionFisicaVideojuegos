@@ -26,7 +26,7 @@ Particle::Particle(
 	_transformPrevious(initTransform),
 	_velocityPrevious(initVelocity),
 	_size(size),
-	_lifeTime(0.0),
+	_age(0.0),
 	_alive(true),
 	_firstIntegration(true)
 {
@@ -57,6 +57,7 @@ Particle::~Particle()
 
 Particle* Particle::clone() const
 {
+	// TODO
 	return nullptr;
 }
 
@@ -77,20 +78,26 @@ void Particle::createRenderItem()
 	RegisterRenderItem(_renderItem);
 }
 
-physx::PxVec3 Particle::getVelocity() const
-{
+double Particle::getAge() const {
+	return _age;
+}
+
+physx::PxVec3 Particle::getPosition() const {
+	return _transform.p;
+}
+
+physx::PxVec3 Particle::getVelocity() const {
 	return _velocity;
 }
 
 void Particle::update(double dt) 
 {
 	integrate(dt);
-	updateLife(dt);
+	updateAge(dt);
 }
 
-void Particle::setLifeTime(double time)
-{
-	_lifeTime = time;
+void Particle::setAge(double age) {
+	_age = age;
 }
 
 void Particle::integrate(double dt)
@@ -111,18 +118,19 @@ void Particle::integrate(double dt)
 	}
 }
 
-void Particle::updateLife(double dt)
+void Particle::updateAge(double dt)
 {
-	_lifeTime -= dt;
-
-	if (_lifeTime < 0.0) {
-		_alive = false;
-	}
+	_age += dt;
 }
 
 bool Particle::isAlive() const
 {
 	return _alive;
+}
+
+void Particle::kill()
+{
+	_alive = false;
 }
 
 void Particle::eulerIntegration(double dt)
