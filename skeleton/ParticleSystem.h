@@ -9,11 +9,14 @@
 class Particle;
 class ParticleGenerator;
 
+using GeneratorAndChildParticles = std::pair< std::unique_ptr<ParticleGenerator>, std::list<std::unique_ptr<Particle>> >;
+
 // Abstract class
 // The System applies the generation rules during the update
 class ParticleSystem
 {
 public:
+
 	ParticleSystem();
 	virtual ~ParticleSystem() = default; // smart pointers will auto-clean
 
@@ -27,11 +30,14 @@ public:
 
 protected:
 
-	std::list<std::unique_ptr<Particle>> _particleList;
-	std::list<std::unique_ptr<ParticleGenerator>> _generatorList;
+	virtual bool mustDelete(const Particle& p, const ParticleGenerator& gen) const;
+
+
+protected:
+
+	std::list<GeneratorAndChildParticles> _generatorAndChildParticlesList;
 
 	std::unique_ptr<Particle> _modelParticle;
 
 	physx::PxVec3 _emitterOrigin;
 };
-

@@ -11,9 +11,14 @@ UniformParticleGenerator::~UniformParticleGenerator()
 {
 }
 
-std::list<Particle*> UniformParticleGenerator::generateParticles(double deltaTime)
+double UniformParticleGenerator::getDistribution() const
 {
-    std::list<Particle*> generatedParticles;
+	return _u(_mt);
+}
+
+std::list<std::unique_ptr<Particle>> UniformParticleGenerator::generateParticles(double deltaTime)
+{
+	std::list<std::unique_ptr<Particle>> generatedParticles;
 
 	return generatedParticles;
 }

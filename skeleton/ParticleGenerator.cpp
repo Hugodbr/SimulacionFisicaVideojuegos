@@ -11,12 +11,12 @@ ParticleGenerator::~ParticleGenerator()
     delete _lifetimePolicy;
 }
 
-void ParticleGenerator::init(const physx::PxVec3& emitterOrigin, const Vector3Stats& velocity, const Particle* modelParticle)
+void ParticleGenerator::init(const physx::PxVec3& emitterOrigin, const Vector3Stats& velocity, const Particle& modelParticle)
 {
     _emitterOrigin = emitterOrigin;
     _meanVelocity = velocity.mean;
     _velocityDeviation = velocity.deviation;
-    _modelParticle = modelParticle;
+    _modelParticle = &modelParticle;
 }
 
 void ParticleGenerator::setEmitterOrigin(const physx::PxVec3& emitterOrigin) {
@@ -31,8 +31,8 @@ void ParticleGenerator::setVelocityDeviation(const physx::PxVec3& velDeviation) 
     _velocityDeviation = velDeviation;
 }
 
-void ParticleGenerator::setModelParticle(const Particle* model) {
-    _modelParticle = model;
+void ParticleGenerator::setModelParticle(const Particle& model) { // TODO VER ISSO DAS REFERENCIAS
+    _modelParticle = &model;
 }
 
 void ParticleGenerator::setGenerationPolicy(const ParticleGenerationPolicy& genPolicy) {

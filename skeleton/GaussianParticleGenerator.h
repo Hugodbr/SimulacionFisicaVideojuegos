@@ -9,7 +9,9 @@ public:
 	GaussianParticleGenerator();
 	~GaussianParticleGenerator();
 
-	std::list<Particle*> generateParticles(double deltaTime) override;
+	std::list<std::unique_ptr<Particle>> generateParticles(double deltaTime) override;
+
+	double getDistribution() const override;
 
 	// Setters
 	//void setEmitterOrigin(const physx::PxVec3& pos) override;
@@ -25,6 +27,6 @@ public:
 
 protected:
 
-	std::normal_distribution<double> _n{ 0.0, 1.0 };
+	mutable std::normal_distribution<double> _n{ 0.0, 1.0 };
 };
 

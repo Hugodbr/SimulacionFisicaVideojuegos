@@ -1,15 +1,17 @@
 #pragma once
 #include "ParticleGenerator.h"
 
-
-class UniformParticleGenerator : public ParticleGenerator
+template<typename T>
+class UniformParticleGenerator : public ParticleGenerator<T>
 {
 public:
 
 	UniformParticleGenerator();
 	~UniformParticleGenerator();
 
-	std::list<Particle*> generateParticles(double deltaTime) override;
+	std::list<std::unique_ptr<Particle>> generateParticles(double deltaTime) override;
+
+	double getDistribution() const override;
 
 	// Setters
 	//void setEmitterOrigin(const physx::PxVec3& pos) override;
@@ -25,5 +27,5 @@ public:
 
 protected:
 
-	std::uniform_real_distribution<double> _u{ -1.0, 1.0 }; // defines the range of random values
+	mutable std::uniform_real_distribution<double> _u{ -1.0, 1.0 }; // defines the range of random values
 };
