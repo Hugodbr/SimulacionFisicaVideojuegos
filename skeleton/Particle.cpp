@@ -155,7 +155,7 @@ void Particle::setAge(double age) {
 
 void Particle::integrate(double dt)
 {
-	std::cout << "Integrating: velX: " << _velocity.x << " velY: " << _velocity.y << " velZ: " << _velocity.z << '\n';
+	//std::cout << "Integrating: velX: " << _velocity.x << " velY: " << _velocity.y << " velZ: " << _velocity.z << '\n';
 
 	switch (_integrationMethod) 
 	{
@@ -223,6 +223,8 @@ void Particle::verletIntegration(double dt)
 	// Está bien inicializar la transform(t-1) como transform inicial?
 	// si
 	// 
+
+	std::cout << "Particle -> verletIntegration -> position: (" << _transform.p.x << "," << _transform.p.y << "," << _transform.p.z << ")" << std::endl;
 
 	physx::PxTransform a_posPrevious = _transform;
 

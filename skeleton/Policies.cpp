@@ -142,12 +142,15 @@ physx::PxVec3 ParticleGenerationPolicy::generatePosition(double distr)
 
 bool ParticleGenerationPolicy::shouldSpawn(double distr, double deltaTime)
 {
+    //std::cout << "ParticleGenerationPolicy -> shouldSpawn." << std::endl;
+
     if (useSpawnInterval) {
+        //std::cout << "ParticleGenerationPolicy -> useSpawnInterval -> accumulator: " << accumulator << std::endl;
+        currentSpawnInterval = spawnInterval.mean + spawnInterval.deviation * distr;
         accumulator += deltaTime;
         if (accumulator < currentSpawnInterval) {
             return false;
         }
-        currentSpawnInterval = spawnInterval.mean + spawnInterval.deviation * distr;
         accumulator = 0.0;
         return true;
     }
@@ -157,6 +160,8 @@ bool ParticleGenerationPolicy::shouldSpawn(double distr, double deltaTime)
 
 int ParticleGenerationPolicy::spawnNumber(double distr) const
 {
+    //std::cout << "ParticleGenerationPolicy -> spawnNumber -> distr: " << distr << std::endl;
+
     if (useSpawnCount) {
         return static_cast<int>(spawnCount.mean + spawnCount.deviation * distr);
     }

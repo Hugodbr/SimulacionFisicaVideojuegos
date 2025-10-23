@@ -1,11 +1,10 @@
 #include "ParticleGenerator.h"
 
-#include "Particle.h"
+
 
 // Must initialize
 ParticleGenerator::ParticleGenerator()
-    : _modelParticle(Particle()) // Must initialize
-    , _mt(std::random_device{}())
+    : _mt(std::random_device{}())
     , _generationPolicy(std::make_unique<ParticleGenerationPolicy>()) // Must initialize
     , _lifetimePolicy(std::make_unique<ParticleLifetimePolicy>()) // Must initialize
 { }
@@ -15,7 +14,9 @@ void ParticleGenerator::init(const physx::PxVec3& emitterOrigin, const Vector3St
     _emitterOrigin = emitterOrigin;
     _meanVelocity = velocity.mean;
     _velocityDeviation = velocity.deviation;
-    _modelParticle = modelParticle;
+    _modelParticle = modelParticle.clone();
+
+    std::cout << "ParticleGenerator -> init -> modelParticle: " << &_modelParticle << std::endl;
 }
 
 void ParticleGenerator::setEmitterOrigin(const physx::PxVec3& emitterOrigin) {
@@ -31,7 +32,7 @@ void ParticleGenerator::setVelocityDeviation(const physx::PxVec3& velDeviation) 
 }
 
 void ParticleGenerator::setModelParticle(const Particle& model) {
-    _modelParticle = model;
+    _modelParticle = model.clone();
 }
 
 void ParticleGenerator::setGenerationPolicy(const ParticleGenerationPolicy& genPolicy) {
@@ -55,7 +56,7 @@ physx::PxVec3 ParticleGenerator::getVelocityDeviation() const {
 }
 
 const Particle& ParticleGenerator::getModelParticle() const {
-    return _modelParticle;
+    return *_modelParticle;
 }
 
 ParticleGenerationPolicy& ParticleGenerator::getGenerationPolicy() const {
@@ -68,19 +69,24 @@ ParticleLifetimePolicy& ParticleGenerator::getLifetimePolicy() const {
 
 std::list<std::unique_ptr<Particle>> ParticleGenerator::generateParticles(double deltaTime) 
 {
+    //std::cout << "ParticleGenerator -> generate particles." << std::endl; OK
+
     if (_generationPolicy->useSpawnInterval) {
         if (!_generationPolicy->shouldSpawn(getDistribution(), deltaTime)) { // if NOT should spawn return an empty list
             return std::list<std::unique_ptr<Particle>>();
         }
     }
 
+    std::cout << "ParticleGenerator -> generate particles -> before creating particles." << std::endl;
     // Create particles
     std::list<std::unique_ptr<Particle>> generatedParticles;
     const int numOfGenerations = _generationPolicy->spawnNumber(getDistribution());
 
     for (int i = 0; i < numOfGenerations; ++i)
     {
-        std::unique_ptr<Particle> newParticle = std::move(_modelParticle.clone());
+        std::cout << "ParticleGenerator -> generate particles -> generating particles." << std::endl;
+
+        std::unique_ptr<Particle> newParticle = _modelParticle->clone();
         // Setup particle
         physx::PxTransform t = physx::PxTransform();
         t.p = _generationPolicy->generatePosition(getDistribution());

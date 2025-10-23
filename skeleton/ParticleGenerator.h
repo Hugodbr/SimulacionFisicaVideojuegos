@@ -61,7 +61,7 @@ protected:
 	physx::PxVec3 _meanVelocity;
 	physx::PxVec3 _velocityDeviation;
 
-	Particle& _modelParticle; // Can be change by another in run time with this implementation
+	std::unique_ptr<Particle> _modelParticle; // Can be change by another in run time with this implementation
 
 	std::unique_ptr<ParticleGenerationPolicy>  _generationPolicy;
 	std::unique_ptr<ParticleLifetimePolicy> _lifetimePolicy;
