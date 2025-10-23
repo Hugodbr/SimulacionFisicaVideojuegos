@@ -1,5 +1,7 @@
 #include "ParticleGenerator.h"
 
+#include "Particle.h"
+
 
 ParticleGenerator::ParticleGenerator()
 {
@@ -65,4 +67,30 @@ ParticleGenerationPolicy& ParticleGenerator::getGenerationPolicy() const {
 
 ParticleLifetimePolicy& ParticleGenerator::getLifetimePolicy() const {
     return *_lifetimePolicy;
+}
+
+std::list<std::unique_ptr<Particle>> ParticleGenerator::generateParticles(double deltaTime) 
+{
+    if (_generationPolicy->useSpawnInterval) {
+        if (!_generationPolicy->shouldSpawn(getDistribution(), deltaTime)) { // if NOT should spawn return an empty list
+            return std::list<std::unique_ptr<Particle>>();
+        }
+    }
+
+    // Create particles
+    std::list<std::unique_ptr<Particle>> generatedParticles;
+    int numOfGenerations = _generationPolicy->spawnNumber(getDistribution());
+
+    for (int i = 0; i < numOfGenerations; ++i)
+    {
+        std::unique_ptr<Particle> newParticle = std::move(_modelParticle.clone());
+        // Setup particle
+        physx::PxTransform t = physx::PxTransform();
+        t.p = _generationPolicy->generatePosition(getDistribution());
+        newParticle->setOrigin(t);
+
+        generatedParticles.push_back(std::move(newParticle));
+    }
+
+    return generatedParticles;
 }

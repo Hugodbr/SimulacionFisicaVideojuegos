@@ -37,7 +37,7 @@ protected:
 
 	std::list<GeneratorAndChildParticles> _generatorAndChildParticlesList;
 
-	std::unique_ptr<Particle> _modelParticle;
+	std::shared_ptr<Particle> _modelParticle;
 
 	physx::PxVec3 _emitterOrigin;
 };

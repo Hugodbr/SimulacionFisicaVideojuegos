@@ -9,8 +9,6 @@ public:
 	GaussianParticleGenerator();
 	~GaussianParticleGenerator();
 
-	std::list<std::unique_ptr<Particle>> generateParticles(double deltaTime) override;
-
 	double getDistribution() const override;
 
 	// Setters

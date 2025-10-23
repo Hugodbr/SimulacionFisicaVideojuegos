@@ -12,7 +12,6 @@ class Particle;
 
 // Abstract class
 // The Generator handles spawn and death rules of particles
-template<typename T>
 class ParticleGenerator
 {
 public:
@@ -26,7 +25,7 @@ public:
 		const Particle& modelParticle
 	);
 
-	virtual std::list<std::unique_ptr<Particle>> generateParticles(double deltaTime) = 0;
+	virtual std::list<std::unique_ptr<Particle>> generateParticles(double deltaTime);
 
 	// Setters
 	virtual void setEmitterOrigin(const physx::PxVec3& emitterOrigin);
@@ -62,7 +61,7 @@ protected:
 	physx::PxVec3 _meanVelocity;
 	physx::PxVec3 _velocityDeviation;
 
-	const T* _modelParticle;
+	std::shared_ptr<Particle> _modelParticle;
 
 	ParticleGenerationPolicy* _generationPolicy;
 	ParticleLifetimePolicy* _lifetimePolicy;

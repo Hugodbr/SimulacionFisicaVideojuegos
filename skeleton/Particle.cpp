@@ -55,10 +55,9 @@ Particle::~Particle()
 	DeregisterRenderItem(_renderItem);
 }
 
-Particle* Particle::clone() const
+std::unique_ptr<Particle> Particle::clone() const
 {
-	// TODO
-	return nullptr;
+	return std::make_unique<Particle>(*this);
 }
 
 void Particle::setOrigin(const physx::PxTransform& origin)
@@ -123,15 +122,15 @@ void Particle::updateAge(double dt)
 	_age += dt;
 }
 
-bool Particle::isAlive() const
-{
-	return _alive;
-}
-
-void Particle::kill()
-{
-	_alive = false;
-}
+//bool Particle::isAlive() const
+//{
+//	return _alive;
+//}
+//
+//void Particle::kill()
+//{
+//	_alive = false;
+//}
 
 void Particle::eulerIntegration(double dt)
 {

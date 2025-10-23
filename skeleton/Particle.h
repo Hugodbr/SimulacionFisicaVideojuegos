@@ -15,7 +15,7 @@ public:
 
 	virtual ~Particle();
 
-	virtual Particle* clone() const;
+	virtual std::unique_ptr<Particle> clone() const;
 
 	virtual void setOrigin(const physx::PxTransform &origin);
 	virtual void setVelocity(const physx::PxVec3 &velocity);
@@ -24,9 +24,9 @@ public:
 	virtual double getAge() const;
 	virtual physx::PxVec3 getPosition() const;
 	virtual physx::PxVec3 getVelocity() const;
-	virtual bool isAlive() const;
+	//virtual bool isAlive() const;
 
-	virtual void kill();
+	//virtual void kill();
 
 	virtual void update(double dt);
 

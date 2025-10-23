@@ -1,15 +1,13 @@
 #pragma once
 #include "ParticleGenerator.h"
 
-template<typename T>
-class UniformParticleGenerator : public ParticleGenerator<T>
+
+class UniformParticleGenerator : public ParticleGenerator
 {
 public:
 
 	UniformParticleGenerator();
 	~UniformParticleGenerator();
-
-	std::list<std::unique_ptr<Particle>> generateParticles(double deltaTime) override;
 
 	double getDistribution() const override;
 
