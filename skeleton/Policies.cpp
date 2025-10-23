@@ -1,6 +1,5 @@
 #include "Policies.h"
 
-#include "Particle.h"
 
 
 //=========================================================================================================
@@ -156,13 +155,13 @@ bool ParticleGenerationPolicy::shouldSpawn(double distr, double deltaTime)
     return true;
 }
 
-int ParticleGenerationPolicy::spawnNumber(double distr)
+int ParticleGenerationPolicy::spawnNumber(double distr) const
 {
     if (useSpawnCount) {
-        return spawnCount.mean + spawnCount.deviation * distr;
+        return static_cast<int>(spawnCount.mean + spawnCount.deviation * distr);
     }
     else {
-        return spawnCount.mean;
+        return static_cast<int>(spawnCount.mean);
     }
 }
 

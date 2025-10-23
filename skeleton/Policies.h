@@ -6,14 +6,14 @@
 
 #include <PxPhysicsAPI.h>
 
-class Particle;
+#include "Particle.h"
 
 
 struct Vector3Stats {
     physx::PxVec3 mean;
     physx::PxVec3 deviation;
 
-    Vector3Stats() : mean(physx::PxVec3(0, 0, 0)), deviation(physx::PxVec3(0, 0, 0)) {}
+    Vector3Stats(): mean(physx::PxVec3(0, 0, 0)), deviation(physx::PxVec3(0, 0, 0)) {}
     Vector3Stats(physx::PxVec3 mean, physx::PxVec3 deviation) : mean(mean), deviation(deviation) {}
 };
 
@@ -87,7 +87,7 @@ public:
     physx::PxVec3 generatePosition(double distr); // generate a random spawn point
     
     bool shouldSpawn(double distr, double deltaTime); // If should spawn at a frame when using spawn interval
-    int spawnNumber(double distr); // How many to be spawned if spawn is not constant
+    int spawnNumber(double distr) const; // How many to be spawned if spawn is not constant
 };
 
 

@@ -1,8 +1,6 @@
 #include "ParticleWithMass.h"
 
 
-
-
 ParticleWithMass::ParticleWithMass(
 	const physx::PxTransform& initTransform,
 	const physx::PxVec3&      realVelocity,
@@ -40,8 +38,24 @@ ParticleWithMass::ParticleWithMass(const physx::PxTransform& initTransform, cons
 {
 }
 
-ParticleWithMass::~ParticleWithMass()
+ParticleWithMass::ParticleWithMass(const ParticleWithMass& other)
+	: Particle(other)
 {
+	_gravityFactor = other._gravityFactor;
+	_velocityFactor = _velocityFactor;
+
+	_gravity = other._gravity;
+	_gravityReal = other._gravityReal;
+
+	_velocityReal = other._velocityReal;
+
+	_mass = other._mass;
+	_massReal = other._massReal;
+}
+
+std::unique_ptr<Particle> ParticleWithMass::clone() const
+{
+	return std::make_unique<ParticleWithMass>(*this);
 }
 
 void ParticleWithMass::setSimulatedVelocity()

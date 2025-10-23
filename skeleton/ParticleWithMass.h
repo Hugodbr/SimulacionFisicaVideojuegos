@@ -38,7 +38,13 @@ public:
 		Constants::Integration_Method integrationMethod
 	);
 
-	virtual ~ParticleWithMass();
+	// Copy constructor
+	ParticleWithMass(const ParticleWithMass& other);
+
+	virtual ~ParticleWithMass() = default;
+
+	// Returns a new Particle that is a clone from this one
+	virtual std::unique_ptr<Particle> clone() const override;
 
 protected:
 

@@ -1,19 +1,18 @@
 #pragma once
-#include "ParticleSystem.h"
 
+#include "ParticleSystem.h"
 
 
 class RainSystem : public ParticleSystem
 {
 public:
-	// Origin = center
-	// Radius = area radius
+
 	RainSystem(const physx::PxVec3 &origin);
 	~RainSystem() = default;
 
 	void init() override;
 	void update(double deltaTime) override;
 
+
 protected:
 };
-

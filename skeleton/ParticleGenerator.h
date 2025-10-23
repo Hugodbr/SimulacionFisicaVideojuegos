@@ -8,16 +8,16 @@
 #include "Policies.h"
 
 
-class Particle;
-
 // Abstract class
-// The Generator handles spawn and death rules of particles
+// The Generator handles spawn and death rules of particles based on probabilistics
+// Derived classes implement their own probability distribution
 class ParticleGenerator
 {
 public:
 
 	ParticleGenerator();
-	virtual ~ParticleGenerator();
+
+	virtual ~ParticleGenerator() = default;
 
 	virtual void init(
 		const physx::PxVec3& emitterOrigin,
@@ -54,15 +54,15 @@ public:
 
 protected:
 
-	std::mt19937 _mt;
+	mutable std::mt19937 _mt;
 
 	physx::PxVec3 _emitterOrigin;
 
 	physx::PxVec3 _meanVelocity;
 	physx::PxVec3 _velocityDeviation;
 
-	std::shared_ptr<Particle> _modelParticle;
+	Particle& _modelParticle; // Can be change by another in run time with this implementation
 
-	ParticleGenerationPolicy* _generationPolicy;
-	ParticleLifetimePolicy* _lifetimePolicy;
+	std::unique_ptr<ParticleGenerationPolicy>  _generationPolicy;
+	std::unique_ptr<ParticleLifetimePolicy> _lifetimePolicy;
 };

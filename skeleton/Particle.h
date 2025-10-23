@@ -1,20 +1,41 @@
 #pragma once
 
+#include <memory>
+
 #include "RenderUtils.hpp"
+
 #include "Constants.h"
 
 
 class RenderItem;
 
+
 class Particle
 {
 public:
 
-	Particle(const physx::PxTransform &initTransform, const physx::PxVec3 &initVelocity, const physx::PxVec3 &initAcceleration, double damping, Constants::Integration_Method integrationMethod, float size = Constants::Particle::Size);
-	Particle(const physx::PxTransform &initTransform, const physx::PxVec3 &initVelocity, const physx::PxVec3 &initAcceleration, Constants::Integration_Method integrationMethod);
+	Particle();
 
-	virtual ~Particle();
+	Particle(const physx::PxTransform &initTransform, 
+		const physx::PxVec3 &initVelocity, 
+		const physx::PxVec3 &initAcceleration, 
+		double damping, 
+		Constants::Integration_Method integrationMethod, 
+		float size = Constants::Particle::Size
+	);
 
+	Particle(const physx::PxTransform &initTransform,
+		const physx::PxVec3 &initVelocity, 
+		const physx::PxVec3 &initAcceleration, 
+		Constants::Integration_Method integrationMethod
+	);
+
+	// Copy constructor
+	Particle(const Particle& other);
+
+	virtual ~Particle(); 
+
+	// Returns a new Particle that is a clone from this one
 	virtual std::unique_ptr<Particle> clone() const;
 
 	virtual void setOrigin(const physx::PxTransform &origin);
@@ -24,9 +45,6 @@ public:
 	virtual double getAge() const;
 	virtual physx::PxVec3 getPosition() const;
 	virtual physx::PxVec3 getVelocity() const;
-	//virtual bool isAlive() const;
-
-	//virtual void kill();
 
 	virtual void update(double dt);
 
@@ -36,8 +54,10 @@ protected:
 	virtual void createRenderItem();
 
 	virtual void integrate(double dt);
+
 	virtual void updateAge(double dt);
 
+	// Integration methods
 	virtual void eulerIntegration(double dt);
 	virtual void eulerSemiImplicitIntegration(double dt);
 	virtual void verletIntegration(double dt);
@@ -66,7 +86,6 @@ protected:
 	double _size;
 
 	double _age;
-	bool _alive;
 
 private:
 

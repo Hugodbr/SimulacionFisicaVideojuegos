@@ -6,6 +6,35 @@
 #include "ParticleGenerator.h"
 
 
+Particle::Particle()
+{
+	_transform = physx::PxTransform();
+	_velocity = physx::PxVec3();
+	_acceleration = physx::PxVec3();
+	_damping = Constants::Physics::Damping;
+	_integrationMethod = Constants::Integration_Method::VERLET;
+	_color = Constants::Color::White;
+	_transformPrevious = _transform;
+	_velocityPrevious = _velocity;
+	_size = Constants::Particle::Size;
+	_age = 0.0;
+	_firstIntegration = true;
+
+	createRenderItem();
+
+	switch (_integrationMethod)
+	{
+	case Constants::Integration_Method::EULER:
+		break;
+	case Constants::Integration_Method::EULER_SEMI_IMPLICIT:
+		break;
+	case Constants::Integration_Method::VERLET:
+		_velocityPrevious = _velocity;
+		_transformPrevious = _transform;
+		break;
+	}
+}
+
 Particle::Particle(
 	const physx::PxTransform& initTransform, 
 	const physx::PxVec3& initVelocity, 
@@ -20,34 +49,59 @@ Particle::Particle(
 	_acceleration(initAcceleration),
 	_damping(damping),
 	_integrationMethod(integrationMethod),
-	_renderItem(nullptr),
-	_shape(nullptr),
 	_color(Constants::Color::White),
 	_transformPrevious(initTransform),
 	_velocityPrevious(initVelocity),
 	_size(size),
 	_age(0.0),
-	_alive(true),
 	_firstIntegration(true)
 {
 	createRenderItem();
 
 	switch (_integrationMethod) 
 	{
-		case Constants::Integration_Method::EULER:
-				break;
-		case Constants::Integration_Method::EULER_SEMI_IMPLICIT:
-				break;
-		case Constants::Integration_Method::VERLET:
-				_velocityPrevious = _velocity;
-				_transformPrevious = _transform;
-				break;
+	case Constants::Integration_Method::EULER:
+		break;
+	case Constants::Integration_Method::EULER_SEMI_IMPLICIT:
+		break;
+	case Constants::Integration_Method::VERLET:
+		_velocityPrevious = _velocity;
+		_transformPrevious = _transform;
+		break;
 	}
 }
 
 Particle::Particle(const physx::PxTransform& initTransform, const physx::PxVec3& initVelocity, const physx::PxVec3& initAcceleration, Constants::Integration_Method integrationMethod)
 	:Particle(initTransform, initVelocity, initAcceleration, Constants::Physics::Damping, integrationMethod)
+{ }
+
+Particle::Particle(const Particle& other)
 {
+	_transform = other._transform;
+	_velocity = other._velocity;
+	_acceleration = other._acceleration;
+	_damping = other._damping;
+	_integrationMethod = other._integrationMethod;
+	_color = other._color;
+	_transformPrevious = other._transformPrevious;
+	_velocityPrevious = other._velocityPrevious;
+	_size = other._size;
+	_age = other._age;
+	_firstIntegration = true;
+
+	createRenderItem();
+
+	switch (_integrationMethod)
+	{
+	case Constants::Integration_Method::EULER:
+		break;
+	case Constants::Integration_Method::EULER_SEMI_IMPLICIT:
+		break;
+	case Constants::Integration_Method::VERLET:
+		_velocityPrevious = _velocity;
+		_transformPrevious = _transform;
+		break;
+	}
 }
 
 Particle::~Particle()
@@ -121,16 +175,6 @@ void Particle::updateAge(double dt)
 {
 	_age += dt;
 }
-
-//bool Particle::isAlive() const
-//{
-//	return _alive;
-//}
-//
-//void Particle::kill()
-//{
-//	_alive = false;
-//}
 
 void Particle::eulerIntegration(double dt)
 {

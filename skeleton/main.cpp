@@ -120,8 +120,8 @@ void initPhysics(bool interactive)
 	cam = GetCamera();
 	//shootParticle();
 
-	rs = new RainSystem(physx::PxVec3(0, 0, 0), 50.0);
-	particleSystems.push_back(rs);
+	//rs = new RainSystem(physx::PxVec3(0, 0, 0), 50.0);
+	//particleSystems.push_back(rs);
 	
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
 	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));

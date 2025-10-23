@@ -6,17 +6,18 @@ RainParticle::RainParticle(
 	Constants::Integration_Method integrationMethod
 	)
 		: ParticleWithMass(
-		initTransform,
-		initDirection* Constants::Particle::WithMass::Rain::Speed,
-		physx::PxVec3(0, 0, 0), // initial acceleration = 0
-		Constants::Particle::WithMass::Rain::Mass,
-		Constants::Particle::WithMass::Rain::Size,
-		Constants::Particle::WithMass::Rain::gFactor,
-		Constants::Particle::WithMass::Rain::vFactor,
-		integrationMethod)
-{
-}
+			initTransform,
+			initDirection* Constants::Particle::WithMass::Rain::Speed,
+			physx::PxVec3(0, 0, 0), // initial acceleration = 0
+			Constants::Particle::WithMass::Rain::Mass,
+			Constants::Particle::WithMass::Rain::Size,
+			Constants::Particle::WithMass::Rain::gFactor,
+			Constants::Particle::WithMass::Rain::vFactor,
+			integrationMethod
+		)
+{ }
 
-RainParticle::~RainParticle()
+std::unique_ptr<Particle> RainParticle::clone() const
 {
+	return std::make_unique<RainParticle>(*this);
 }
