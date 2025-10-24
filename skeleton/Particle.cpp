@@ -116,7 +116,7 @@ std::unique_ptr<Particle> Particle::clone() const
 
 void Particle::setOrigin(const physx::PxTransform& origin)
 {
-	_transform = _transformPrevious = origin;	
+	_transform.p = _transformPrevious.p = origin.p;	
 }
 
 void Particle::setVelocity(const physx::PxVec3& velocity)
@@ -214,13 +214,13 @@ void Particle::verletIntegration(double dt)
 		_firstIntegration = false;
 	}
 
-	// Se usa la velocidad en este método?
+	// Se usa la velocidad en este mï¿½todo?
 	// no
 	// 
-	// Si no se usa, cómo hacer el damping?
+	// Si no se usa, cï¿½mo hacer el damping?
 	// no, se usa la formula para la velocidad
 	//
-	// Está bien inicializar la transform(t-1) como transform inicial?
+	// Estï¿½ bien inicializar la transform(t-1) como transform inicial?
 	// si
 	// 
 
