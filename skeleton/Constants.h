@@ -61,7 +61,7 @@ namespace Constants
 
 			namespace Rain {
 				static const ParticleType type = RAIN;
-				static constexpr float Size = 10.0f;
+				static constexpr float Size = 2.0f;
 				static constexpr float Speed = 0.0f;
 				static constexpr float Mass = 0.001f;
 				static constexpr double gFactor = 1;

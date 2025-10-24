@@ -106,7 +106,10 @@ Particle* Particle::clone() const
 
 void Particle::setOrigin(const physx::PxTransform& origin)
 {
-	_transform = _transformPrevious = origin;
+	_transform.p = _transformPrevious.p = origin.p;
+	//_transform.p.y = _transformPrevious.p.y = origin.p.y;
+	//_transform = _transformPrevious = origin;
+	//_transform = _transformPrevious = origin;
 }
 
 void Particle::setVelocity(const physx::PxVec3& velocity)

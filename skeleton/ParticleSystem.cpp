@@ -11,5 +11,5 @@ ParticleSystem::ParticleSystem()
 
 bool ParticleSystem::mustDelete(const Particle& p, const ParticleGenerator& gen) const
 {
-    return gen.getLifetimePolicy().shouldDelete(gen.getDistribution(), p);
+    return false;
 }

@@ -42,9 +42,6 @@ public:
 	//virtual void setModelParticle(std::shared_ptr<Particle> model);
 	virtual void setModelParticle(Particle* model);
 
-	virtual void setGenerationPolicy(const ParticleGenerationPolicy& genPolicy);
-	virtual void setLifetimePolicy(const ParticleLifetimePolicy& lifePolicy);
-
 	// Getters
 	virtual double getDistribution() const = 0;
 
@@ -54,9 +51,6 @@ public:
 	virtual physx::PxVec3 getVelocityDeviation() const;
 
 	virtual const Particle& getModelParticle() const;
-
-	virtual ParticleGenerationPolicy& getGenerationPolicy() const;
-	virtual ParticleLifetimePolicy& getLifetimePolicy() const;
 
 
 protected:
@@ -68,9 +62,9 @@ protected:
 	physx::PxVec3 _meanVelocity;
 	physx::PxVec3 _velocityDeviation;
 
+	double accumulator = 0.0;
+
 	//std::shared_ptr<Particle> _modelParticle; // Can be change by another in run time with this implementation
 	Particle* _modelParticle; // Can be change by another in run time with this implementation
 
-	std::unique_ptr<ParticleGenerationPolicy>  _generationPolicy;
-	std::unique_ptr<ParticleLifetimePolicy> _lifetimePolicy;
 };

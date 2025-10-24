@@ -35,32 +35,7 @@ void RainSystem::init()
 	);
 
 	//=========================================================================
-	// Create generation policy
-	ParticleGenerationPolicy genPolicy = ParticleGenerationPolicy(
-		true, ScalarStats(1.0, 1.0),
-		true, ScalarStats(1.0, 1.0)
-	);
-	// Create the region shape for the policy
-	//ParticleGenerationPolicy::volumeShape sphereShape;
-	//new (&sphereShape.sphere) Vector3Stats(physx::PxVec3(0.0f, 0.0f, 0.0f), physx::PxVec3(100.0f, 100.0f, 100.0f));
-	ParticleGenerationPolicy::volumeShape pointShape;
-	new (&pointShape.point) Vector3Stats(physx::PxVec3(0.0f, 50.0f, 0.0f), physx::PxVec3(0, 0, 0));
-	//new (&pointShape.point) Vector3Stats(physx::PxVec3(0.0f, -100.0f, 0.0f)_emitterOrigin);
 
-	// Set the region of generation: region type and shape
-	//genPolicy.setRegion(SpawnRegionType::SPHERE, sphereShape);
-	genPolicy.setRegion(SpawnRegionType::POINT, pointShape);
-
-	// Assign generator policy to the generator
-	generator->setGenerationPolicy(genPolicy);
-
-	//=========================================================================
-	// Create lifetime policy
-	ParticleLifetimePolicy lifePolicy = ParticleLifetimePolicy(
-		ScalarStats(5, 0.1)
-	);
-
-	generator->setLifetimePolicy(lifePolicy);
 
 	//=========================================================================
 	//_generatorAndChildParticlesList.push_back(

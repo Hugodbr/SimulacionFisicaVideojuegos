@@ -49,15 +49,16 @@ struct ParticleGenerationPolicy
 
     SpawnRegionType regionType = SpawnRegionType::POINT;
     Vector3Stats position;    // mean = center, deviation = extents or radius
-
-    union volumeShape {
-        Vector3Stats point;  // mean=center, deviation.x = 0
-        physx::PxBounds3 box;
-        Vector3Stats sphere; // mean=center, deviation.x = radius (OBS: better with Gaussian distribution?)
-        Vector3Stats disc;   // mean=center, deviation.x = radius (OBS: define plane by vector components, i.e. XY plane)
-        volumeShape() {}
-        ~volumeShape() {}
-    } shape;
+    
+    Vector3Stats point;
+    //union volumeShape {
+    //    Vector3Stats point;  // mean=center, deviation.x = 0
+    //    physx::PxBounds3 box;
+    //    Vector3Stats sphere; // mean=center, deviation.x = radius (OBS: better with Gaussian distribution?)
+    //    Vector3Stats disc;   // mean=center, deviation.x = radius (OBS: define plane by vector components, i.e. XY plane)
+    //    volumeShape() {}
+    //    ~volumeShape() {}
+    //} shape;
 
 private:
     double currentSpawnInterval = INT_MAX;
@@ -82,7 +83,7 @@ public:
     // METHODS -----------------------------------------------------------------------------------------
     void setSpawnCount(const ScalarStats& newSpawnCount);
     void setSpawnInterval(const ScalarStats& newSpawnInterval);
-    void setRegion(SpawnRegionType type, const volumeShape& shape);
+    void setRegion(SpawnRegionType type, Vector3Stats point);
 
     physx::PxVec3 generatePosition(double distr); // generate a random spawn point
     
