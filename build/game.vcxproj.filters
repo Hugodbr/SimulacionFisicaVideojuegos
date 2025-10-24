@@ -10,6 +10,42 @@
     <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\RenderUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\Particle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\ParticleSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\ParticleGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\Policies.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\CoordAxis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\ParticleWithMass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\Bullet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\CannonBall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\RainParticle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\RainSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\UniformParticleGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\GaussianParticleGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\Render\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -24,9 +24,20 @@ set(MY_SOURCE_FILES
     "Particle.cpp"
     "ParticleSystem.cpp"
     "ParticleGenerator.cpp"
+    "Policies.cpp"
+
+    # "Constants.cpp"
+    "CoordAxis.cpp"
+
+    "ParticleWithMass.cpp"
+    "Bullet.cpp"
+    "CannonBall.cpp"
+    "RainParticle.cpp"
+    
+    "RainSystem.cpp"
+
     "UniformParticleGenerator.cpp"
     "GaussianParticleGenerator.cpp"
-    "Policies.cpp"
     
     "Render/Camera.cpp"
     "Render/Render.cpp"
@@ -38,9 +49,8 @@ set(MY_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/skeleton)
 
 set(MY_INCLUDE_DIRECTORIES
     "${MY_SOURCE_DIR}"
-    "${MY_SOURCE_DIR}/Physics"
-    "${MY_SOURCE_DIR}/Render"
-    "${MY_SOURCE_DIR}/Utils")
+    # "${MY_SOURCE_DIR}/Physics"
+    "${MY_SOURCE_DIR}/Render")
 
 set(APPENDED_SOURCE_FILES "")
 
