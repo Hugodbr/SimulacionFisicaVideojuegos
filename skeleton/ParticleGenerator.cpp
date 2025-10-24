@@ -15,8 +15,6 @@ void ParticleGenerator::init(const physx::PxVec3& emitterOrigin, const Vector3St
     _meanVelocity = velocity.mean;
     _velocityDeviation = velocity.deviation;
     _modelParticle = modelParticle.clone();
-
-    std::cout << "ParticleGenerator -> init -> modelParticle: " << &_modelParticle << std::endl;
 }
 
 void ParticleGenerator::setEmitterOrigin(const physx::PxVec3& emitterOrigin) {
@@ -77,19 +75,21 @@ std::list<std::unique_ptr<Particle>> ParticleGenerator::generateParticles(double
         }
     }
 
-    std::cout << "ParticleGenerator -> generate particles -> before creating particles." << std::endl;
+    //std::cout << "ParticleGenerator -> generate particles -> before creating particles." << std::endl;
     // Create particles
     std::list<std::unique_ptr<Particle>> generatedParticles;
     const int numOfGenerations = _generationPolicy->spawnNumber(getDistribution());
 
     for (int i = 0; i < numOfGenerations; ++i)
     {
-        std::cout << "ParticleGenerator -> generate particles -> generating particles." << std::endl;
+        //std::cout << "ParticleGenerator -> generate particles -> generating particles." << std::endl;
 
         std::unique_ptr<Particle> newParticle = _modelParticle->clone();
         // Setup particle
         physx::PxTransform t = physx::PxTransform();
-        t.p = _generationPolicy->generatePosition(getDistribution());
+        t.p = _generationPolicy->generatePosition([this]() {
+            return getDistribution();
+            });
         newParticle->setOrigin(t);
 
         generatedParticles.push_back(std::move(newParticle));

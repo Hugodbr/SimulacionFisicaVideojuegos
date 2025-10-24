@@ -106,7 +106,9 @@ Particle::Particle(const Particle& other)
 
 Particle::~Particle()
 {
-	DeregisterRenderItem(_renderItem);
+	if (_renderItem) {
+		_renderItem->release();
+	}
 }
 
 std::unique_ptr<Particle> Particle::clone() const
@@ -128,7 +130,6 @@ void Particle::createRenderItem()
 {
 	_shape = CreateShape(physx::PxSphereGeometry(_size));
 	_renderItem = new RenderItem(_shape, &_transform, _color);
-	RegisterRenderItem(_renderItem);
 }
 
 double Particle::getAge() const {
@@ -224,7 +225,7 @@ void Particle::verletIntegration(double dt)
 	// si
 	// 
 
-	std::cout << "Particle -> verletIntegration -> position: (" << _transform.p.x << "," << _transform.p.y << "," << _transform.p.z << ")" << std::endl;
+	//std::cout << "Particle -> verletIntegration -> position: (" << _transform.p.x << "," << _transform.p.y << "," << _transform.p.z << ")" << std::endl;
 
 	physx::PxTransform a_posPrevious = _transform;
 

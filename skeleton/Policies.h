@@ -84,7 +84,7 @@ public:
     void setSpawnInterval(const ScalarStats& newSpawnInterval);
     void setRegion(SpawnRegionType type, const volumeShape& shape);
 
-    physx::PxVec3 generatePosition(double distr); // generate a random spawn point
+    physx::PxVec3 generatePosition(const std::function<double()>& distributionFunc); // generate a random spawn point
     
     bool shouldSpawn(double distr, double deltaTime); // If should spawn at a frame when using spawn interval
     int spawnNumber(double distr) const; // How many to be spawned if spawn is not constant

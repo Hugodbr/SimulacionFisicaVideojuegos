@@ -88,6 +88,8 @@ void ParticleGenerationPolicy::setSpawnInterval(const ScalarStats& newSpawnInter
 
 void ParticleGenerationPolicy::setRegion(SpawnRegionType type, const volumeShape& shape)
 {
+    regionType = type;
+
     switch (type) 
     {
     case SpawnRegionType::POINT: {
@@ -102,6 +104,9 @@ void ParticleGenerationPolicy::setRegion(SpawnRegionType type, const volumeShape
 
         position.mean = shape.box.getCenter();
         position.deviation = shape.box.getDimensions()/2.0;
+
+        std::cout << "ParticleGenerationPolicy -> position.mean: (" << position.mean.x << "," << position.mean.y << "," << position.mean.z << ")" << std::endl;
+        std::cout << "ParticleGenerationPolicy -> position.deviation: (" << position.deviation.x << "," << position.deviation.y << "," << position.deviation.z << ")" << std::endl;
         break;
     }
     case SpawnRegionType::SPHERE: {
@@ -122,22 +127,35 @@ void ParticleGenerationPolicy::setRegion(SpawnRegionType type, const volumeShape
 }
 
 // Redundancy for further implementation if needed
-physx::PxVec3 ParticleGenerationPolicy::generatePosition(double distr)
+physx::PxVec3 ParticleGenerationPolicy::generatePosition(const std::function<double()>& distributionFunc)
 {
-    if (regionType == SpawnRegionType::POINT) {
-        return position.mean;
-    }
-    else if (regionType == SpawnRegionType::BOX) {
-        return position.mean + position.deviation * distr;
-    }
-    else if (regionType == SpawnRegionType::SPHERE) {
-        return position.mean + position.deviation * distr;
-    }
-    else if (regionType == SpawnRegionType::DISC) {
-        return position.mean + position.deviation * distr;
-    }
+    //if (regionType == SpawnRegionType::POINT) {
+    //    return position.mean;
+    //}
+    //else if (regionType == SpawnRegionType::BOX) {
+    //    physx::PxVec3 generatedPosition;
+    //    generatedPosition.x = position.mean.x + position.deviation.x * distributionFunc();
+    //    generatedPosition.y = position.mean.y + position.deviation.y * distributionFunc();
+    //    generatedPosition.z = position.mean.z + position.deviation.z * distributionFunc();
+    //    std::cout << "ParticleGenerationPolicy -> generatePosition: (" << generatedPosition.x << "," << generatedPosition.y << "," << generatedPositionpos.z << ")" << std::endl;
+    //    return generatedPosition;
+    //}
+    //else if (regionType == SpawnRegionType::SPHERE) {
+    //    return position.mean + position.deviation * distr;
+    //}
+    //else if (regionType == SpawnRegionType::DISC) {
+    //    return position.mean + position.deviation * distr;
+    //}
 
-    return position.mean + position.deviation * distr;
+    physx::PxVec3 generatedPosition;
+    generatedPosition.x = position.mean.x + position.deviation.x * distributionFunc();
+    generatedPosition.y = position.mean.y + position.deviation.y * distributionFunc();
+    generatedPosition.z = position.mean.z + position.deviation.z * distributionFunc();
+    std::cout << "ParticleGenerationPolicy -> generatePosition: (" << generatedPosition.x << "," << generatedPosition.y << "," << generatedPosition.z << ")" << std::endl;
+    return generatedPosition;
+
+
+    //return position.mean + position.deviation * distr;
 }
 
 bool ParticleGenerationPolicy::shouldSpawn(double distr, double deltaTime)

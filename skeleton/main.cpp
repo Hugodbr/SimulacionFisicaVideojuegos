@@ -120,7 +120,7 @@ void initPhysics(bool interactive)
 	cam = GetCamera();
 	//shootParticle();
 
-	rs = new RainSystem(physx::PxVec3(0, 1000, 0));
+	rs = new RainSystem(physx::PxVec3(0, 50, 0));
 	rs->init();
 	particleSystems.push_back(rs);
 	
@@ -154,6 +154,14 @@ void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
 
+	//DeregisterRenderItem(sphere);
+	//delete axis;
+
+	for (auto* sys : particleSystems) {
+		delete sys;
+		sys = nullptr;
+	}
+
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();
 	gDispatcher->release();
@@ -164,14 +172,6 @@ void cleanupPhysics(bool interactive)
 	transport->release();
 	
 	gFoundation->release();
-	
-	//DeregisterRenderItem(sphere);
-	delete axis;
-
-	for (auto* sys : particleSystems) {
-		delete sys;
-		sys = nullptr;
-	}
 }
 
 // Function called when a key is pressed
