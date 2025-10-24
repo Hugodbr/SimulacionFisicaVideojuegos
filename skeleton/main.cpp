@@ -42,7 +42,7 @@ ContactReportCallback gContactReportCallback;
 
 //RenderItem* sphere = nullptr;
 CoordAxis* axis = nullptr;
-//std::vector<Particle*> particles;
+std::vector<Particle*> particles;
 Camera* cam = nullptr;
 std::vector<ParticleSystem*> particleSystems;
 
@@ -65,11 +65,11 @@ void shootBullet() {
 	//// ????
 	//// La bala no sale de donde esta la camara
 
-	//physx::PxTransform initTransform = physx::PxTransform(cam->getDir().x, cam->getDir().y, cam->getDir().z);
-	//physx::PxVec3      initDirection = physx::PxVec3(cam->getDir().x, cam->getDir().y, cam->getDir().z).getNormalized();
-	////std::cout << initDirection.x << " " << initDirection.y << " " << initDirection.z;
-
-	//particles.push_back(new CannonBall(initTransform, initDirection, Constants::Integration_Method::VERLET));
+	physx::PxTransform initTransform = physx::PxTransform(cam->getDir().x, cam->getDir().y, cam->getDir().z);
+	physx::PxVec3      initDirection = physx::PxVec3(cam->getDir().x, cam->getDir().y, cam->getDir().z).getNormalized();
+	//std::cout << initDirection.x << " " << initDirection.y << " " << initDirection.z;
+	auto p = new CannonBall(initTransform, initDirection, Constants::Integration_Method::VERLET);
+	particles.push_back(p->clone());
 }
 
 void createParticles(Constants::ParticleType particleType)
@@ -120,7 +120,8 @@ void initPhysics(bool interactive)
 	cam = GetCamera();
 	//shootParticle();
 
-	rs = new RainSystem(physx::PxVec3(0, 1000, 0));
+	// RAIN SYSTEM
+	rs = new RainSystem(physx::PxVec3(0, 60, 0));
 	rs->init();
 	particleSystems.push_back(rs);
 	
@@ -139,12 +140,17 @@ void stepPhysics(bool interactive, double dt)
 {
 	PX_UNUSED(interactive);
 
+
+	//for (auto* p : particles) {
+	//	p->update(dt);
+	//}
+
+	std::cout << "<-----------------Step Physics------------------>" << std::endl;
+	gScene->simulate(dt);
+	gScene->fetchResults(true);
 	for (auto& ps : particleSystems) {
 		ps->update(dt);
 	}
-
-	gScene->simulate(dt);
-	gScene->fetchResults(true);
 	std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
 
@@ -153,6 +159,19 @@ void stepPhysics(bool interactive, double dt)
 void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
+
+	//DeregisterRenderItem(sphere);
+	//delete axis;
+
+	//for (auto* sys : particleSystems) {
+	//	delete sys;
+	//	sys = nullptr;
+	//}
+
+	//for (auto* p : particles) {
+	//	delete p;
+	//	p = nullptr;
+	//}
 
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();
@@ -165,13 +184,7 @@ void cleanupPhysics(bool interactive)
 	
 	gFoundation->release();
 	
-	//DeregisterRenderItem(sphere);
-	delete axis;
 
-	for (auto* sys : particleSystems) {
-		delete sys;
-		sys = nullptr;
-	}
 }
 
 // Function called when a key is pressed
@@ -189,8 +202,9 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		shootBullet();
 		break;
 	//case ' ':	break;
-	case ' ':
+	case 'V':
 	{
+		rs->doit(); // TESTE
 		break;
 	}
 	default:

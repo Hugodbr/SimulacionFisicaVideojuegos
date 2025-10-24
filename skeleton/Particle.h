@@ -15,7 +15,7 @@ class Particle
 {
 public:
 
-	Particle();
+	//Particle();
 
 	Particle(const physx::PxTransform &initTransform, 
 		const physx::PxVec3 &initVelocity, 
@@ -31,23 +31,31 @@ public:
 		Constants::Integration_Method integrationMethod
 	);
 
-	// Copy constructor
-	Particle(const Particle& other);
+	// Copy constructor deletion
+	Particle(const Particle& other) = delete;
+	Particle& operator=(const Particle&) = delete;
 
 	virtual ~Particle(); 
 
 	// Returns a new Particle that is a clone from this one
-	virtual std::unique_ptr<Particle> clone() const;
+	//virtual std::unique_ptr<Particle> clone() const;
+	virtual Particle* clone() const;
 
 	virtual void setOrigin(const physx::PxTransform &origin);
 	virtual void setVelocity(const physx::PxVec3 &velocity);
 	virtual void setAge(double age);
+	virtual void setColor(const physx::PxVec4 &newColor);
+
+	virtual void removeRenderItem();
 
 	virtual double getAge() const;
 	virtual physx::PxVec3 getPosition() const;
 	virtual physx::PxVec3 getVelocity() const;
 
 	virtual void update(double dt);
+
+	virtual bool isAlive() const;
+	virtual void kill();
 
 
 protected:
@@ -87,6 +95,7 @@ protected:
 	double _size;
 
 	double _age;
+	bool _alive = true;
 
 private:
 

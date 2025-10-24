@@ -13,6 +13,9 @@ public:
 	void init() override;
 	void update(double deltaTime) override;
 
+	void doit();
 
 protected:
+
+	//std::vector<Particle*> _p;
 };

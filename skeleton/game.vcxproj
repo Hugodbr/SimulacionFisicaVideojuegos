@@ -67,7 +67,7 @@
     <ClCompile>
       <TreatWarningAsError>false</TreatWarningAsError>
       <StringPooling>true</StringPooling>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FloatingPointModel>Fast</FloatingPointModel>
       <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>

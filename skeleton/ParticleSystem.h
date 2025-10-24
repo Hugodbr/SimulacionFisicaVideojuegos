@@ -9,7 +9,9 @@
 class Particle;
 class ParticleGenerator;
 
-using GeneratorAndChildParticles = std::pair< std::unique_ptr<ParticleGenerator>, std::list<std::unique_ptr<Particle>> >;
+//using GeneratorAndChildParticles = std::pair< std::unique_ptr<ParticleGenerator>, std::list<std::unique_ptr<Particle>> >;
+//using GeneratorAndChildParticles = std::pair< ParticleGenerator*, std::list<Particle*> >;
+using GeneratorAndChildParticles = std::pair< ParticleGenerator*, std::vector<Particle*> >;
 
 // Abstract class
 // The System applies the generation rules during the update
@@ -35,9 +37,11 @@ protected:
 
 protected:
 
-	std::list<GeneratorAndChildParticles> _generatorAndChildParticlesList;
+	//std::list<GeneratorAndChildParticles> _generatorAndChildParticlesList;
+	std::vector<GeneratorAndChildParticles> _generatorAndChildParticlesList;
 
-	std::shared_ptr<Particle> _modelParticle;
+	//std::shared_ptr<Particle> _modelParticle;
+	Particle* _modelParticle;
 
 	physx::PxVec3 _emitterOrigin;
 };

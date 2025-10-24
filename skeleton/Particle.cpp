@@ -6,34 +6,34 @@
 #include "ParticleGenerator.h"
 
 
-Particle::Particle()
-{
-	_transform = physx::PxTransform();
-	_velocity = physx::PxVec3();
-	_acceleration = physx::PxVec3();
-	_damping = Constants::Physics::Damping;
-	_integrationMethod = Constants::Integration_Method::VERLET;
-	_color = Constants::Color::White;
-	_transformPrevious = _transform;
-	_velocityPrevious = _velocity;
-	_size = Constants::Particle::Size;
-	_age = 0.0;
-	_firstIntegration = true;
-
-	createRenderItem();
-
-	switch (_integrationMethod)
-	{
-	case Constants::Integration_Method::EULER:
-		break;
-	case Constants::Integration_Method::EULER_SEMI_IMPLICIT:
-		break;
-	case Constants::Integration_Method::VERLET:
-		_velocityPrevious = _velocity;
-		_transformPrevious = _transform;
-		break;
-	}
-}
+//Particle::Particle()
+//{
+//	_transform = physx::PxTransform();
+//	_velocity = physx::PxVec3();
+//	_acceleration = physx::PxVec3();
+//	_damping = Constants::Physics::Damping;
+//	_integrationMethod = Constants::Integration_Method::VERLET;
+//	_color = Constants::Color::White;
+//	_transformPrevious = _transform;
+//	_velocityPrevious = _velocity;
+//	_size = Constants::Particle::Size;
+//	_age = 0.0;
+//	_firstIntegration = true;
+//
+//	createRenderItem();
+//
+//	switch (_integrationMethod)
+//	{
+//	case Constants::Integration_Method::EULER:
+//		break;
+//	case Constants::Integration_Method::EULER_SEMI_IMPLICIT:
+//		break;
+//	case Constants::Integration_Method::VERLET:
+//		_velocityPrevious = _velocity;
+//		_transformPrevious = _transform;
+//		break;
+//	}
+//}
 
 Particle::Particle(
 	const physx::PxTransform& initTransform, 
@@ -75,48 +75,38 @@ Particle::Particle(const physx::PxTransform& initTransform, const physx::PxVec3&
 	:Particle(initTransform, initVelocity, initAcceleration, Constants::Physics::Damping, integrationMethod)
 { }
 
-Particle::Particle(const Particle& other)
-{
-	_transform = other._transform;
-	_velocity = other._velocity;
-	_acceleration = other._acceleration;
-	_damping = other._damping;
-	_integrationMethod = other._integrationMethod;
-	_color = other._color;
-	_transformPrevious = other._transformPrevious;
-	_velocityPrevious = other._velocityPrevious;
-	_size = other._size;
-	_age = other._age;
-	_firstIntegration = true;
-
-	createRenderItem();
-
-	switch (_integrationMethod)
-	{
-	case Constants::Integration_Method::EULER:
-		break;
-	case Constants::Integration_Method::EULER_SEMI_IMPLICIT:
-		break;
-	case Constants::Integration_Method::VERLET:
-		_velocityPrevious = _velocity;
-		_transformPrevious = _transform;
-		break;
-	}
-}
-
 Particle::~Particle()
 {
 	DeregisterRenderItem(_renderItem);
 }
 
-std::unique_ptr<Particle> Particle::clone() const
+//std::unique_ptr<Particle> Particle::clone() const
+//{
+//	return std::make_unique<Particle>(
+//		_transform,
+//		_velocity,
+//		_acceleration,
+//		_damping,
+//		_integrationMethod,
+//		_size
+//	);
+//}
+
+Particle* Particle::clone() const
 {
-	return std::make_unique<Particle>(*this);
+	return new Particle(
+		_transform,
+		_velocity,
+		_acceleration,
+		_damping,
+		_integrationMethod,
+		_size
+	);
 }
 
 void Particle::setOrigin(const physx::PxTransform& origin)
 {
-	_transform = _transformPrevious = origin;	
+	_transform = _transformPrevious = origin;
 }
 
 void Particle::setVelocity(const physx::PxVec3& velocity)
@@ -128,7 +118,6 @@ void Particle::createRenderItem()
 {
 	_shape = CreateShape(physx::PxSphereGeometry(_size));
 	_renderItem = new RenderItem(_shape, &_transform, _color);
-	RegisterRenderItem(_renderItem);
 }
 
 double Particle::getAge() const {
@@ -149,13 +138,33 @@ void Particle::update(double dt)
 	updateAge(dt);
 }
 
+bool Particle::isAlive() const
+{
+	return _alive;
+}
+
+void Particle::kill()
+{
+	_alive = false;
+}
+
 void Particle::setAge(double age) {
 	_age = age;
 }
 
+void Particle::setColor(const physx::PxVec4& newColor) {
+	_color = newColor;
+	_renderItem->color = _color;
+}
+
+void Particle::removeRenderItem()
+{
+	DeregisterRenderItem(_renderItem);
+}
+
 void Particle::integrate(double dt)
 {
-	//std::cout << "Integrating: velX: " << _velocity.x << " velY: " << _velocity.y << " velZ: " << _velocity.z << '\n';
+	std::cout << "Integrating: velX: " << _velocity.x << " velY: " << _velocity.y << " velZ: " << _velocity.z << '\n';
 
 	switch (_integrationMethod) 
 	{
@@ -214,13 +223,13 @@ void Particle::verletIntegration(double dt)
 		_firstIntegration = false;
 	}
 
-	// Se usa la velocidad en este método?
+	// Se usa la velocidad en este mï¿½todo?
 	// no
 	// 
-	// Si no se usa, cómo hacer el damping?
+	// Si no se usa, cï¿½mo hacer el damping?
 	// no, se usa la formula para la velocidad
 	//
-	// Está bien inicializar la transform(t-1) como transform inicial?
+	// Estï¿½ bien inicializar la transform(t-1) como transform inicial?
 	// si
 	// 
 

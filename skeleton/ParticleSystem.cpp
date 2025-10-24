@@ -4,10 +4,10 @@
 
 
 ParticleSystem::ParticleSystem()
-    : _modelParticle(nullptr)
-    , _generatorAndChildParticlesList()
-    , _emitterOrigin(physx::PxVec3(0, 0, 0))
-{ }
+    : _emitterOrigin(physx::PxVec3(0, 0, 0))
+{
+    _generatorAndChildParticlesList = {};
+}
 
 bool ParticleSystem::mustDelete(const Particle& p, const ParticleGenerator& gen) const
 {

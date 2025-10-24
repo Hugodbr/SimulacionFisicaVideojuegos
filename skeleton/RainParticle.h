@@ -11,8 +11,14 @@ public:
 		Constants::Integration_Method integrationMethod = Constants::Integration_Method::VERLET
 	);
 
+	// Copy constructor deletion
+	RainParticle(const RainParticle& other) = delete;
+	RainParticle& operator=(const RainParticle&) = delete;
+
 	~RainParticle() = default;
 
 	// Returns a new Particle that is a clone from this one
-	std::unique_ptr<Particle> clone() const override;
+	//std::unique_ptr<Particle> clone() const override;
+	RainParticle* clone() const;
+
 };

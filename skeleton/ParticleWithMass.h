@@ -38,13 +38,15 @@ public:
 		Constants::Integration_Method integrationMethod
 	);
 
-	// Copy constructor
-	ParticleWithMass(const ParticleWithMass& other);
+	// Copy constructor deletion
+	ParticleWithMass(const ParticleWithMass& other) = delete;
+	ParticleWithMass& operator=(const ParticleWithMass&) = delete;
 
 	virtual ~ParticleWithMass() = default;
 
 	// Returns a new Particle that is a clone from this one
-	virtual std::unique_ptr<Particle> clone() const override;
+	//virtual std::unique_ptr<Particle> clone() const override;
+	virtual ParticleWithMass* clone() const;
 
 protected:
 

@@ -1,4 +1,5 @@
 #include <vector>
+#include <iostream>
 
 #include "PxPhysicsAPI.h"
 
@@ -114,6 +115,8 @@ void renderCallback()
 		renderShape(*obj->shape, objTransform ? *objTransform : physx::PxTransform(PxIdentity), obj->color);
 	}
 
+	std::cout << "Num render items: " << static_cast<int>(gRenderItems.size()) << std::endl;
+
 	//PxScene* scene;
 	//PxGetPhysics().getScenes(&scene, 1);
 	//PxU32 nbActors = scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC);
@@ -157,11 +160,13 @@ void renderLoop()
 
 void RegisterRenderItem(const RenderItem* _item)
 {
+	std::cout << "RegisterRenderItem" << std::endl;
 	gRenderItems.push_back(_item);
 }
 
 void DeregisterRenderItem(const RenderItem* _item)
 {
+	std::cout << "DeregisterRenderItem" << std::endl;
 	auto it = find(gRenderItems.begin(), gRenderItems.end(), _item);
 	gRenderItems.erase(it);
 }
