@@ -1,0 +1,370 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/bin/game_Debug.exe"
+		},
+		{
+			"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/bin/game_Debug.pdb"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"target_link_libraries",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 38,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 130,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 40,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 133,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "/DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++17 -MTd -Zi"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/skeleton/include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/skeleton/include/render"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/skeleton/include/particle"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/skeleton/include/particle/generators"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/skeleton/include/particle/systems"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/skeleton/include/particle/types"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/skeleton/include/particle/policies"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/skeleton/include/utils"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/common/Common"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/common/Graphics/include/win32/GL"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/common/PhysX-3.4/PhysX_3.4/Include"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/common/PhysX-3.4/PxShared/include"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					1
+				],
+				"standard" : "17"
+			},
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
+		}
+	],
+	"id" : "game::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "/DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -MTd -Zi",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "/machine:x64 /debug /INCREMENTAL",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "/subsystem:console",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "C:\\Users\\hugod\\GitHub\\SimulacionFisicaVideojuegos\\common\\lib\\vc14win64\\UtilsDEBUG.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "C:\\Users\\hugod\\GitHub\\SimulacionFisicaVideojuegos\\common\\Graphics\\lib\\win64\\glut\\glut32.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "C:\\Users\\hugod\\GitHub\\SimulacionFisicaVideojuegos\\common\\PhysX-3.4\\PhysX_3.4\\Lib\\vc14win64\\PhysX3DEBUG_x64.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "C:\\Users\\hugod\\GitHub\\SimulacionFisicaVideojuegos\\common\\PhysX-3.4\\PhysX_3.4\\Lib\\vc14win64\\PhysX3CharacterKinematicDEBUG_x64.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "C:\\Users\\hugod\\GitHub\\SimulacionFisicaVideojuegos\\common\\PhysX-3.4\\PhysX_3.4\\Lib\\vc14win64\\PhysX3CommonDEBUG_x64.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "C:\\Users\\hugod\\GitHub\\SimulacionFisicaVideojuegos\\common\\PhysX-3.4\\PhysX_3.4\\Lib\\vc14win64\\PhysX3CookingDEBUG_x64.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "C:\\Users\\hugod\\GitHub\\SimulacionFisicaVideojuegos\\common\\PhysX-3.4\\PhysX_3.4\\Lib\\vc14win64\\PhysX3ExtensionsDEBUG.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "C:\\Users\\hugod\\GitHub\\SimulacionFisicaVideojuegos\\common\\PhysX-3.4\\PxShared\\lib\\vc14win64\\PsFastXmlDEBUG_x64.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "C:\\Users\\hugod\\GitHub\\SimulacionFisicaVideojuegos\\common\\PhysX-3.4\\PxShared\\lib\\vc14win64\\PxFoundationDEBUG_x64.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "C:\\Users\\hugod\\GitHub\\SimulacionFisicaVideojuegos\\common\\PhysX-3.4\\PxShared\\lib\\vc14win64\\PxPvdSDKDEBUG_x64.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "C:\\Users\\hugod\\GitHub\\SimulacionFisicaVideojuegos\\common\\PhysX-3.4\\PxShared\\lib\\vc14win64\\PxTaskDEBUG_x64.lib",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "game",
+	"nameOnDisk" : "game_Debug.exe",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/callbacks.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/main.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/particle/Particle.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/particle/ParticleGenerator.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/particle/ParticleSystem.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/particle/generators/GaussianParticleGenerator.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/particle/generators/UniformParticleGenerator.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/particle/policies/Policies.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/particle/systems/RainSystem.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/particle/types/Bullet.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/particle/types/CannonBall.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/particle/types/ParticleWithMass.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/particle/types/RainParticle.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/render/Camera.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/render/Render.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/render/RenderUtils.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "skeleton/src/utils/CoordAxis.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "EXECUTABLE"
+}

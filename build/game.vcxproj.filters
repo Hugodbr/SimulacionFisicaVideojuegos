@@ -1,55 +1,55 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\main.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\callbacks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\callbacks.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\RenderUtils.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\particle\Particle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\Particle.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\particle\ParticleGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\ParticleSystem.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\particle\ParticleSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\ParticleGenerator.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\particle\generators\GaussianParticleGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\Policies.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\particle\generators\UniformParticleGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\CoordAxis.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\particle\policies\Policies.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\ParticleWithMass.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\particle\systems\RainSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\Bullet.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\particle\types\Bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\CannonBall.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\particle\types\CannonBall.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\RainParticle.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\particle\types\ParticleWithMass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\RainSystem.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\particle\types\RainParticle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\UniformParticleGenerator.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\render\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\GaussianParticleGenerator.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\render\Render.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\Render\Camera.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\render\RenderUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\Render\Render.cpp">
+    <ClCompile Include="C:\Users\hugod\GitHub\SimulacionFisicaVideojuegos\skeleton\src\utils\CoordAxis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -14,56 +14,30 @@ if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
-# Código fuente de la aplicación, añadirlos como si la raiz estuviera ya en /src 
+# Root paths
+set(SKELETON_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/skeleton/src")
+set(SKELETON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/skeleton/include")
 
-set(MY_SOURCE_FILES 
-    "main.cpp" 
-    "callbacks.cpp"
-    "RenderUtils.cpp"
-
-    "Particle.cpp"
-    "ParticleSystem.cpp"
-    "ParticleGenerator.cpp"
-    "Policies.cpp"
-
-    # "Constants.cpp"
-    "CoordAxis.cpp"
-
-    "ParticleWithMass.cpp"
-    "Bullet.cpp"
-    "CannonBall.cpp"
-    "RainParticle.cpp"
-    
-    "RainSystem.cpp"
-
-    "UniformParticleGenerator.cpp"
-    "GaussianParticleGenerator.cpp"
-    
-    "Render/Camera.cpp"
-    "Render/Render.cpp"
+# Collect source files recursively
+file(GLOB_RECURSE MY_SOURCE_FILES
+    "${SKELETON_SRC_DIR}/*.cpp"
 )
 
 # Include directories
-
-set(MY_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/skeleton)
-
 set(MY_INCLUDE_DIRECTORIES
-    "${MY_SOURCE_DIR}"
-    # "${MY_SOURCE_DIR}/Physics"
-    "${MY_SOURCE_DIR}/Render")
+    "${SKELETON_INCLUDE_DIR}"
+    "${SKELETON_INCLUDE_DIR}/render"
+    "${SKELETON_INCLUDE_DIR}/particle"
+    "${SKELETON_INCLUDE_DIR}/particle/generators"
+    "${SKELETON_INCLUDE_DIR}/particle/systems"
+    "${SKELETON_INCLUDE_DIR}/particle/types"
+    "${SKELETON_INCLUDE_DIR}/particle/policies"
+    "${SKELETON_INCLUDE_DIR}/utils"
+)
 
-set(APPENDED_SOURCE_FILES "")
+add_executable(game ${MY_SOURCE_FILES})
 
-foreach(file IN LISTS MY_SOURCE_FILES)
-    list(APPEND APPENDED_SOURCE_FILES "${MY_SOURCE_DIR}/${file}")
-endforeach()
-
-# Asignacion de ficheros fuente propios
-
-add_executable(game ${APPENDED_SOURCE_FILES})
 target_include_directories(game PRIVATE ${MY_INCLUDE_DIRECTORIES})
-
-# A partir de aquí empiezan las dependencias
 
 set(INCLUDE_DEPENDENCIES "")
 set(LIB_DEPENDENCIES "")
