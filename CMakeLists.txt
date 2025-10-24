@@ -5,13 +5,18 @@ project(SIM_3_GDV VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Checked;Profile" CACHE STRING "" FORCE)
 
-# Selecciona la versión C++20 del estándar (sin extensiones)
+# Selecciona la versión C++17 del estándar (sin extensiones)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
+# Suppress CMP0175 warning (if needed)
+if(POLICY CMP0175)
+    cmake_policy(SET CMP0175 OLD)
 endif()
 
 # Root paths
@@ -37,6 +42,7 @@ set(MY_INCLUDE_DIRECTORIES
 
 add_executable(game ${MY_SOURCE_FILES})
 
+# Apply project-specific include directories
 target_include_directories(game PRIVATE ${MY_INCLUDE_DIRECTORIES})
 
 set(INCLUDE_DEPENDENCIES "")
@@ -52,22 +58,16 @@ function(add_multiconfig_lib base_path target_name lib_base_name lib_suffix)
     )
 endfunction()
 
-
 # ---------------------------------------------------------------------
-
 set(COMMON_PATH "${CMAKE_CURRENT_SOURCE_DIR}/common/Common")
-
 list(APPEND INCLUDE_DEPENDENCIES ${COMMON_PATH})
 
 # ---------------------------------------------------------------------
-
 set(LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/common/lib/vc14win64")
-
 add_multiconfig_lib("${LIB_PATH}" "UtilsLib" "Utils" "")
 list(APPEND LIB_DEPENDENCIES UtilsLib)
 
 # ---------------------------------------------------------------------
-
 set(GRAPHICS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/common/Graphics")
 
 # Ver arquitectura
@@ -81,7 +81,6 @@ list(APPEND LIB_DEPENDENCIES ${GLUT_LIB})
 list(APPEND INCLUDE_DEPENDENCIES ${GRAPHICS_PATH}/include/win32/GL)
 
 # ---------------------------------------------------------------------
-
 set(PHYSX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/common/PhysX-3.4")
 
 set(PHYSX_CORE_PATH "${PHYSX_PATH}/PhysX_3.4")
@@ -118,25 +117,40 @@ list(APPEND LIB_DEPENDENCIES
 
 list(APPEND INCLUDE_DEPENDENCIES "${PHYSX_SHARED_PATH}/include")
 
-
 # ---------------------------------------------------------------------
-
 set(UTILS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/common/Utils")
-
 list(APPEND INCLUDE_DEPENDENCIES "${PHYSX_SHARED_PATH}/include")
 
 # ---------------------------------------------------------------------
+# Fetch and Configure Assimp (moved to after INCLUDE_DEPENDENCIES initialization)
+include(FetchContent)
 
-target_link_libraries(game
-    PRIVATE ${LIB_DEPENDENCIES})
+FetchContent_Declare(
+    assimp
+    GIT_REPOSITORY https://github.com/assimp/assimp.git
+    GIT_TAG v6.0.2
+)
 
-target_include_directories(game PRIVATE
-    "${INCLUDE_DEPENDENCIES}")
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "Build Assimp tools" FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "Build Assimp tests" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "Install Assimp" FORCE)
+set(ASSIMP_BUILD_ZLIB ON CACHE BOOL "Build Zlib with Assimp" FORCE)
+set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "Build Assimp samples" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build static Assimp library" FORCE)
+
+FetchContent_MakeAvailable(assimp)
+
+list(APPEND LIB_DEPENDENCIES assimp::assimp)
+list(APPEND INCLUDE_DEPENDENCIES ${assimp_SOURCE_DIR}/include/assimp ${assimp_BINARY_DIR}/include)
+
+# ---------------------------------------------------------------------
+target_link_libraries(game PRIVATE ${LIB_DEPENDENCIES})
+target_include_directories(game PRIVATE ${INCLUDE_DEPENDENCIES})
 
 set_target_properties(game PROPERTIES 
-	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin
-	RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/bin
-	RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/bin
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/bin
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/bin
     OUTPUT_NAME_DEBUG game_Debug
     OUTPUT_NAME_RELEASE game_Release
 )

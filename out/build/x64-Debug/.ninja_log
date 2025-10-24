@@ -1,0 +1,19 @@
+# ninja log v6
+75	628	7830452818282205	CMakeFiles/game.dir/skeleton/src/render/Camera.cpp.obj	a9551dce556be1ca
+8	2253	7830452817607012	CMakeFiles/game.dir/skeleton/src/callbacks.cpp.obj	cbe08ffe6061dfc2
+80	2268	7830452818332253	CMakeFiles/game.dir/skeleton/src/render/Render.cpp.obj	ddd154af633994c2
+85	2278	7830452818392204	CMakeFiles/game.dir/skeleton/src/render/RenderUtils.cpp.obj	8e27ae154e9f3012
+90	2288	7830452818442223	CMakeFiles/game.dir/skeleton/src/utils/CoordAxis.cpp.obj	6d1d638d442698e2
+59	2354	7830452818122223	CMakeFiles/game.dir/skeleton/src/particle/types/CannonBall.cpp.obj	db73e96144145ff4
+64	2376	7830452818172202	CMakeFiles/game.dir/skeleton/src/particle/types/ParticleWithMass.cpp.obj	e05d648f150f6560
+53	2397	7830452818062242	CMakeFiles/game.dir/skeleton/src/particle/types/Bullet.cpp.obj	4a91d31e8682d39f
+70	2413	7830452818232206	CMakeFiles/game.dir/skeleton/src/particle/types/RainParticle.cpp.obj	f5ea2725162301b2
+38	2474	7830452817912200	CMakeFiles/game.dir/skeleton/src/particle/generators/UniformParticleGenerator.cpp.obj	2da2c7a6d2eabd1e
+17	2525	7830452817707062	CMakeFiles/game.dir/skeleton/src/particle/Particle.cpp.obj	3b793717fae787ac
+26	2563	7830452817792194	CMakeFiles/game.dir/skeleton/src/particle/ParticleSystem.cpp.obj	d577eb14dc1b02ec
+31	2572	7830452817842190	CMakeFiles/game.dir/skeleton/src/particle/generators/GaussianParticleGenerator.cpp.obj	38c6cd668bf3ac5d
+22	2616	7830452817747069	CMakeFiles/game.dir/skeleton/src/particle/ParticleGenerator.cpp.obj	332090fa200289d1
+48	2649	7830452818012192	CMakeFiles/game.dir/skeleton/src/particle/systems/RainSystem.cpp.obj	15a3219664fdfa50
+13	2684	7830452817667086	CMakeFiles/game.dir/skeleton/src/main.cpp.obj	9a5f55e33dc81f06
+43	2721	7830452817962205	CMakeFiles/game.dir/skeleton/src/particle/policies/Policies.cpp.obj	5db80968f9c6f6f
+2721	3478	7830452844740898	C:/Users/hugod/GitHub/SimulacionFisicaVideojuegos/bin/game_Debug.exe	711e016c7fa3e4b1

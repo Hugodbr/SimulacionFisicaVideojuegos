@@ -7,6 +7,7 @@
 #include <PxPhysicsAPI.h>
 
 #include "Particle.h"
+#include "MeshData.h"
 
 
 struct Vector3Stats {
