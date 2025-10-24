@@ -1,6 +1,8 @@
 #ifndef __RENDER_UTILS_H__
 #define __RENDER_UTILS_H__
 
+#include <iostream>
+
 #include "PxPhysicsAPI.h"
 #include "core.hpp"
 
@@ -33,16 +35,6 @@ public:
 	}
 
 	RenderItem() : shape(NULL), transform(NULL), references(1) {}
-
-	// Possible issue (!) nao sei se isso funciona direito
-	RenderItem(const RenderItem& other)
-	{
-		shape = other.shape;
-		transform = other.transform;
-		actor = other.actor;
-		color = other.color;
-		references = 1;
-	}
 
 	void addReference()
 	{
