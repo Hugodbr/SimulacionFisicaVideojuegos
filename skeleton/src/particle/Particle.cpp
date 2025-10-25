@@ -20,60 +20,50 @@ Particle::Particle()
 	_age = 0.0;
 	_firstIntegration = true;
 
-	createRenderItem();
-
-	switch (_integrationMethod)
-	{
-	case Constants::Integration_Method::EULER:
-		break;
-	case Constants::Integration_Method::EULER_SEMI_IMPLICIT:
-		break;
-	case Constants::Integration_Method::VERLET:
-		_velocityPrevious = _velocity;
-		_transformPrevious = _transform;
-		break;
-	}
+	init();
 }
 
 Particle::Particle(
-	const physx::PxTransform& initTransform, 
-	const physx::PxVec3& initVelocity, 
-	const physx::PxVec3& initAcceleration, 
-	double damping, 
-	Constants::Integration_Method integrationMethod,
-	float size
-)
-	:
-	_transform(initTransform),
-	_velocity(initVelocity),
-	_acceleration(initAcceleration),
-	_damping(damping),
-	_integrationMethod(integrationMethod),
-	_color(Constants::Color::White),
-	_transformPrevious(initTransform),
-	_velocityPrevious(initVelocity),
-	_size(size),
-	_age(0.0),
-	_firstIntegration(true)
+    const physx::PxTransform &initTransform,
+    const physx::PxVec3 &initVelocity,
+    const physx::PxVec3 &initAcceleration,
+    double damping,
+    Constants::Integration_Method integrationMethod,
+    float size)
+    : _transform(initTransform),
+      _velocity(initVelocity),
+      _acceleration(initAcceleration),
+      _damping(damping),
+      _integrationMethod(integrationMethod),
+      _color(Constants::Color::White),
+      _transformPrevious(initTransform),
+      _velocityPrevious(initVelocity),
+      _size(size),
+      _age(0.0),
+      _firstIntegration(true)
 {
-	createRenderItem();
-
-	switch (_integrationMethod) 
-	{
-	case Constants::Integration_Method::EULER:
-		break;
-	case Constants::Integration_Method::EULER_SEMI_IMPLICIT:
-		break;
-	case Constants::Integration_Method::VERLET:
-		_velocityPrevious = _velocity;
-		_transformPrevious = _transform;
-		break;
-	}
+	init();
 }
 
 Particle::Particle(const physx::PxTransform& initTransform, const physx::PxVec3& initVelocity, const physx::PxVec3& initAcceleration, Constants::Integration_Method integrationMethod)
-	:Particle(initTransform, initVelocity, initAcceleration, Constants::Physics::Damping, integrationMethod)
+	: Particle(initTransform, initVelocity, initAcceleration, Constants::Physics::Damping, integrationMethod)
 { }
+
+Particle::Particle(const physx::PxTransform &initTransform, const physx::PxVec3 &initVelocity, const physx::PxVec3 &initAcceleration, Constants::Integration_Method integrationMethod, float size, double damping, const physx::PxVec4 &color)
+	: _transform(initTransform),
+	  _velocity(initVelocity),
+	  _acceleration(initAcceleration),
+	  _damping(damping),
+	  _integrationMethod(integrationMethod),
+	  _color(color),
+	  _transformPrevious(initTransform),
+	  _velocityPrevious(initVelocity),
+	  _size(size),
+	  _age(0.0),
+	  _firstIntegration(true)
+{
+	init();
+}
 
 Particle::Particle(const Particle& other)
 {
@@ -89,6 +79,18 @@ Particle::Particle(const Particle& other)
 	_age = other._age;
 	_firstIntegration = true;
 
+	init();
+}
+
+Particle::~Particle()
+{
+	if (_renderItem != nullptr) {
+		_renderItem->release();
+	}
+}
+
+void Particle::init()
+{
 	createRenderItem();
 
 	switch (_integrationMethod)
@@ -101,13 +103,10 @@ Particle::Particle(const Particle& other)
 		_velocityPrevious = _velocity;
 		_transformPrevious = _transform;
 		break;
-	}
-}
-
-Particle::~Particle()
-{
-	if (_renderItem) {
-		_renderItem->release();
+	case Constants::Integration_Method::NONE:
+		_velocity = _velocityPrevious = physx::PxVec3(0, 0, 0);
+		_acceleration = physx::PxVec3(0, 0, 0);
+		break;
 	}
 }
 
@@ -148,6 +147,17 @@ void Particle::update(double dt)
 {
 	integrate(dt);
 	updateAge(dt);
+}
+
+void Particle::setColor(const physx::PxVec4 &color)
+{
+	_color = color;
+	_renderItem->setColor(_color);
+}
+
+void Particle::setVisibility(bool visibility)
+{
+	_renderItem->setVisibility(visibility);
 }
 
 void Particle::setAge(double age) {

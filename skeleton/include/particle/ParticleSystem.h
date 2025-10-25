@@ -30,6 +30,8 @@ public:
 
 protected:
 
+	virtual void createParticleGenerator() = 0;
+
 	virtual bool mustDelete(const Particle& p, const ParticleGenerator& gen) const;
 
 

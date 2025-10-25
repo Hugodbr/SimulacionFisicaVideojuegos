@@ -21,7 +21,8 @@ namespace Constants
 	enum Integration_Method {
 		EULER,
 		EULER_SEMI_IMPLICIT,
-		VERLET
+		VERLET,
+		NONE
 	};
 
 	namespace Particle {
@@ -63,9 +64,9 @@ namespace Constants
 				static const ParticleType type = RAIN;
 				static constexpr float Size = 0.1f;
 				static constexpr float Speed = 0.0f;
-				static constexpr float Mass = 0.001f;
-				static constexpr double gFactor = 1;
-				static constexpr double vFactor = 1;
+				static constexpr float Mass = 0.0f;
+				static constexpr double gFactor = 0;
+				static constexpr double vFactor = 0;
 			};
 		};
 

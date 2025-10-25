@@ -56,6 +56,7 @@ struct ParticleGenerationPolicy
         physx::PxBounds3 box;
         Vector3Stats sphere; // mean=center, deviation.x = radius (OBS: better with Gaussian distribution?)
         Vector3Stats disc;   // mean=center, deviation.x = radius (OBS: define plane by vector components, i.e. XY plane)
+        MeshData mesh;
         volumeShape() {}
         ~volumeShape() {}
     } shape;

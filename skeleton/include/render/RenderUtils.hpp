@@ -50,6 +50,9 @@ public:
 		}
 	}
 
+	void setColor(const Vector4& newColor);
+	void setVisibility(bool visibility);
+
 public:
 	physx::PxShape* shape;
 	const physx::PxTransform* transform;
@@ -57,6 +60,8 @@ public:
 	Vector4 color;
 
 	unsigned references;
+
+	bool visible;
 };
 
 double GetLastTime();

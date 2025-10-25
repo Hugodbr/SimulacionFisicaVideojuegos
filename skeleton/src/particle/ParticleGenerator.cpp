@@ -9,12 +9,18 @@ ParticleGenerator::ParticleGenerator()
     , _lifetimePolicy(std::make_unique<ParticleLifetimePolicy>()) // Must initialize
 { }
 
-void ParticleGenerator::init(const physx::PxVec3& emitterOrigin, const Vector3Stats& velocity, const Particle& modelParticle)
+void ParticleGenerator::init(
+    const Particle& modelParticle,
+    const physx::PxVec3& emitterOrigin, 
+    const Vector3Stats& velocity
+)
 {
     _emitterOrigin = emitterOrigin;
     _meanVelocity = velocity.mean;
     _velocityDeviation = velocity.deviation;
     _modelParticle = modelParticle.clone();
+
+    _modelParticle->setVisibility(false); // hide the model particle
 }
 
 void ParticleGenerator::setEmitterOrigin(const physx::PxVec3& emitterOrigin) {

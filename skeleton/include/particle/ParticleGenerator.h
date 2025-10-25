@@ -20,9 +20,9 @@ public:
 	virtual ~ParticleGenerator() = default;
 
 	virtual void init(
+		const Particle& modelParticle,
 		const physx::PxVec3& emitterOrigin,
-		const Vector3Stats& velocity,
-		const Particle& modelParticle
+		const Vector3Stats& velocity
 	);
 
 	virtual std::list<std::unique_ptr<Particle>> generateParticles(double deltaTime);
@@ -61,7 +61,7 @@ protected:
 	physx::PxVec3 _meanVelocity;
 	physx::PxVec3 _velocityDeviation;
 
-	std::unique_ptr<Particle> _modelParticle; // Can be change by another in run time with this implementation
+	std::unique_ptr<Particle> _modelParticle;
 
 	std::unique_ptr<ParticleGenerationPolicy>  _generationPolicy;
 	std::unique_ptr<ParticleLifetimePolicy> _lifetimePolicy;

@@ -162,8 +162,10 @@ void RegisterRenderItem(const RenderItem* _item)
 
 void DeregisterRenderItem(const RenderItem* _item)
 {
-	auto it = find(gRenderItems.begin(), gRenderItems.end(), _item);
-	gRenderItems.erase(it);
+	auto it = std::find(gRenderItems.begin(), gRenderItems.end(), _item);
+	if (it != gRenderItems.end()) {
+		gRenderItems.erase(it);
+	}
 }
 
 double GetLastTime()
@@ -184,4 +186,21 @@ PxShape* CreateShape(const PxGeometry& geo, const PxMaterial* mat)
 
 	PxShape* shape = gPhysics->createShape(geo, *mat);
 	return shape;
+}
+
+void RenderItem::setColor(const Vector4 &newColor)
+{
+	color = newColor;
+}
+
+void RenderItem::setVisibility(bool visibility)
+{
+	if (visibility) {
+		visible = true;
+		RegisterRenderItem(this);
+	}
+	else {
+		visible = false;
+		DeregisterRenderItem(this);
+	}
 }

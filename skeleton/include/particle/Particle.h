@@ -31,6 +31,15 @@ public:
 		Constants::Integration_Method integrationMethod
 	);
 
+	Particle(const physx::PxTransform &initTransform,
+		const physx::PxVec3 &initVelocity, 
+		const physx::PxVec3 &initAcceleration, 
+		Constants::Integration_Method integrationMethod,
+		float size,
+		double damping,
+		const physx::PxVec4 &color
+	);
+
 	// Copy constructor
 	Particle(const Particle& other);
 
@@ -49,8 +58,13 @@ public:
 
 	virtual void update(double dt);
 
+	virtual void setColor(const physx::PxVec4& color);
+	virtual void setVisibility(bool visibility);
+
 
 protected:
+
+	virtual void init();
 
 	virtual void createRenderItem();
 

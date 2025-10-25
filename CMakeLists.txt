@@ -28,6 +28,9 @@ file(GLOB_RECURSE MY_SOURCE_FILES
     "${SKELETON_SRC_DIR}/*.cpp"
 )
 
+# Explicitly add MeshData.cpp
+list(APPEND MY_SOURCE_FILES "${SKELETON_SRC_DIR}/utils/MeshData.cpp")
+
 # Include directories
 set(MY_INCLUDE_DIRECTORIES
     "${SKELETON_INCLUDE_DIR}"

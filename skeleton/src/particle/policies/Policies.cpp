@@ -69,7 +69,7 @@ ParticleGenerationPolicy::ParticleGenerationPolicy(const ParticleGenerationPolic
         new (&shape.disc) Vector3Stats(other.shape.disc);
         break;
     case SpawnRegionType::MESH:
-        // Mesh volume copy, if implemented later // TODO
+        new (&shape.mesh) MeshData(other.shape.mesh);
         break;
     }
 }
@@ -123,6 +123,17 @@ void ParticleGenerationPolicy::setRegion(SpawnRegionType type, const volumeShape
         position.deviation = shape.disc.deviation;
         break;
     }
+    case SpawnRegionType::MESH: {
+        new (&this->shape.mesh) MeshData(shape.mesh);
+        // this->shape.mesh.indices = shape.mesh.indices;
+
+        // for (size_t i = 0; i < shape.mesh.vertices.size(); ++i)
+        //     this->shape.mesh.vertices[i] = shape.mesh.vertices[i];
+
+        position.mean = physx::PxVec3(0, 60, 0);
+        position.deviation = physx::PxVec3(0, 0, 0);
+        break;
+    }
     }
 }
 
@@ -146,6 +157,10 @@ physx::PxVec3 ParticleGenerationPolicy::generatePosition(const std::function<dou
     //else if (regionType == SpawnRegionType::DISC) {
     //    return position.mean + position.deviation * distr;
     //}
+    if (regionType == SpawnRegionType::MESH) {
+        std::cout << "ParticleGenerationPolicy -> generatePosition: MESH region." << std::endl;
+        return shape.mesh.randomPointOnMesh(distributionFunc) + position.mean;
+    }
 
     physx::PxVec3 generatedPosition;
     generatedPosition.x = position.mean.x + position.deviation.x * distributionFunc();

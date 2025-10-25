@@ -15,4 +15,6 @@ public:
 
 
 protected:
+
+	void createParticleGenerator() override;
 };

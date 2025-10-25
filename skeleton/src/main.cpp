@@ -21,6 +21,7 @@
 #include "CannonBall.h"
 
 #include "RainSystem.h"
+#include "GridSystem.h"
 
 
 std::string display_text = "This is a test";
@@ -49,8 +50,6 @@ CoordAxis* axis = nullptr;
 Camera* cam = nullptr;
 std::vector<ParticleSystem*> particleSystems;
 
-// Systems
-RainSystem* rs = nullptr;
 
 void shootParticle() {
 
@@ -123,9 +122,18 @@ void initPhysics(bool interactive)
 	cam = GetCamera();
 	//shootParticle();
 
-	rs = new RainSystem(physx::PxVec3(0, 50, 0));
-	rs->init();
-	particleSystems.push_back(rs);
+	// RainSystem* rs = new RainSystem(physx::PxVec3(0, 60, 0));
+	// rs->init();
+	// particleSystems.push_back(rs);
+
+	ParticleSystem* gridSystem = new GridSystem(
+		physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100)), 
+		1.0f, 
+		20.0,
+		Constants::Color::White
+	);
+	gridSystem->init();
+	particleSystems.push_back(gridSystem);
 	
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
 	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));
