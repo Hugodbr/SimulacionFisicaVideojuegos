@@ -71,20 +71,21 @@ ParticleLifetimePolicy& ParticleGenerator::getLifetimePolicy() const {
     return *_lifetimePolicy;
 }
 
-std::list<std::unique_ptr<Particle>> ParticleGenerator::generateParticles(double deltaTime) 
+std::vector<std::unique_ptr<Particle>> ParticleGenerator::generateParticles(double deltaTime) 
 {
     //std::cout << "ParticleGenerator -> generate particles." << std::endl; OK
 
     if (_generationPolicy->useSpawnInterval) {
         if (!_generationPolicy->shouldSpawn(getDistribution(), deltaTime)) { // if NOT should spawn return an empty list
-            return std::list<std::unique_ptr<Particle>>();
+            return std::vector<std::unique_ptr<Particle>>();
         }
     }
 
     //std::cout << "ParticleGenerator -> generate particles -> before creating particles." << std::endl;
     // Create particles
-    std::list<std::unique_ptr<Particle>> generatedParticles;
     const int numOfGenerations = _generationPolicy->spawnNumber(getDistribution());
+    std::vector<std::unique_ptr<Particle>> generatedParticles;
+    generatedParticles.reserve(numOfGenerations);
 
     for (int i = 0; i < numOfGenerations; ++i)
     {

@@ -58,6 +58,44 @@ std::unique_ptr<Particle> ParticleWithMass::clone() const
 	return std::make_unique<ParticleWithMass>(*this);
 }
 
+void ParticleWithMass::addForce(const physx::PxVec3 &force)
+{
+	_forces.push_back(force);
+}
+
+void ParticleWithMass::clearForces()
+{
+	_forces.clear();
+	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+}
+
+physx::PxVec3 ParticleWithMass::getResultingForce()
+{
+	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+	for (const auto& force : _forces) {
+		_resultingForce += force;
+	}
+
+	return _resultingForce;
+}
+
+double ParticleWithMass::getInverseMass() const {
+    return _inverseMass;
+}
+
+void ParticleWithMass::changeMass(double newMass)
+{
+	_massReal = newMass;
+	setSimulatedMass();
+}
+
+void ParticleWithMass::update(double dt)
+{
+	Particle::update(dt);
+
+	_acceleration += getResultingForce() * static_cast<float>(_inverseMass);
+}
+
 void ParticleWithMass::setSimulatedVelocity()
 {
 	_velocity = _velocityReal * _velocityFactor;
@@ -73,8 +111,9 @@ void ParticleWithMass::setSimulatedAcceleration()
 	_acceleration = _acceleration + _gravity;
 }
 
-// Se calcula con base en la Energía Cinética que debe ser igual la real y la simulada
+// Se calcula con base en la Energï¿½a Cinï¿½tica que debe ser igual la real y la simulada
 void ParticleWithMass::setSimulatedMass()
 {
 	_mass = _massReal * pow((_velocityReal.magnitude() / _velocity.magnitude()), 2);
+	_inverseMass = (_mass != 0.0) ? 1.0 / _mass : 0.0;
 }

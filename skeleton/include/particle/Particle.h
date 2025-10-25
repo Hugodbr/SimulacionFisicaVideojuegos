@@ -13,6 +13,11 @@ class RenderItem;
 
 class Particle
 {
+private:
+	static uint64_t _nextId; // Static counter for generating unique IDs
+protected:
+    uint64_t _id; // Protected to allow derived classes access
+
 public:
 
 	Particle();
@@ -55,12 +60,16 @@ public:
 	virtual double getAge() const;
 	virtual physx::PxVec3 getPosition() const;
 	virtual physx::PxVec3 getVelocity() const;
+	virtual bool isAlive() const;
+
+	virtual void kill();
 
 	virtual void update(double dt);
 
 	virtual void setColor(const physx::PxVec4& color);
 	virtual void setVisibility(bool visibility);
 
+	uint64_t getId() const;
 
 protected:
 
@@ -101,6 +110,7 @@ protected:
 	double _size;
 
 	double _age;
+	bool _alive;
 
 private:
 

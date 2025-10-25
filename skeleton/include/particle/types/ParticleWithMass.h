@@ -1,4 +1,7 @@
 #pragma once
+
+#include <list>
+
 #include "Particle.h"
 
 
@@ -46,6 +49,15 @@ public:
 	// Returns a new Particle that is a clone from this one
 	virtual std::unique_ptr<Particle> clone() const override;
 
+	virtual void addForce(const physx::PxVec3& force);
+	virtual void clearForces();
+	virtual physx::PxVec3 getResultingForce();
+
+	virtual double getInverseMass() const;
+	virtual void changeMass(double newMass);
+
+	virtual void update(double dt) override;
+
 protected:
 
 	virtual void setSimulatedVelocity();
@@ -63,5 +75,9 @@ protected:
 
 	double _mass;
 	double _massReal;
+	double _inverseMass;
+
+	std::list<physx::PxVec3> _forces = {};
+	physx::PxVec3 _resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
 };
 

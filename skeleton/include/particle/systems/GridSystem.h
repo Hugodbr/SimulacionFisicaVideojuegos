@@ -12,11 +12,14 @@ public:
     void init() override;
     void update(double deltaTime) override;
 
-    void toggleVisibility(bool visible = false);
+    void toggleVisibility();
 
 protected:
+	// Returns the reserve count per generator for this system
+	virtual uint64_t getReserveCountPerGenerator() const override;
 
-    void createParticleGenerator() override;
+    // Only one generator for this system.
+    void createParticleGenerators() override;
 
     void createParticlesInGrid();
 
@@ -26,4 +29,6 @@ protected:
     float _pointSize;
     double _scale;
     Vector4 _color;
+
+    bool _visible = true;
 };

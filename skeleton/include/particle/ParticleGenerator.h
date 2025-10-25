@@ -25,7 +25,7 @@ public:
 		const Vector3Stats& velocity
 	);
 
-	virtual std::list<std::unique_ptr<Particle>> generateParticles(double deltaTime);
+	virtual std::vector<std::unique_ptr<Particle>> generateParticles(double deltaTime);
 
 	// Setters
 	virtual void setEmitterOrigin(const physx::PxVec3& emitterOrigin);

@@ -1,6 +1,5 @@
 #include "GridSystem.h"
 
-#include "Policies.h"
 #include "ConstantParticleGenerator.h"
 
 
@@ -29,7 +28,7 @@ void GridSystem::init()
     _modelParticle->setVisibility(false);
 
     // Create the particle generator
-    createParticleGenerator();
+    createParticleGenerators();
 
     // Create particles in grid
     createParticlesInGrid(); 
@@ -39,18 +38,23 @@ void GridSystem::update(double deltaTime)
 {
 }
 
-void GridSystem::toggleVisibility(bool visible)
+void GridSystem::toggleVisibility()
 {
-    for (auto& generatorAndParticles : _generatorAndChildParticlesList)
-    {
-        for (auto& particle : generatorAndParticles.second)
-        {
-            particle->setVisibility(visible);
+    _visible = !_visible;
+
+    for (auto& generatorAndParticles : _generatorAndChildParticlesList) {
+        for (auto& particle : generatorAndParticles.second) {
+            particle->setVisibility(_visible);
         }
     }
 }
 
-void GridSystem::createParticleGenerator()
+uint64_t GridSystem::getReserveCountPerGenerator() const
+{
+    return Constants::System::Grid::ReserveCountPerGenerator;
+}
+
+void GridSystem::createParticleGenerators()
 {
     // Create the generator
 	std::unique_ptr<ParticleGenerator> generator = std::make_unique<ConstantParticleGenerator>();
@@ -69,11 +73,8 @@ void GridSystem::createParticleGenerator()
     ParticleLifetimePolicy lifePolicy = ParticleLifetimePolicy();
     generator->setLifetimePolicy(lifePolicy);
 
-    // Add generator to the list
-    _generatorAndChildParticlesList.emplace_back(
-        std::move(generator), 
-        std::list<std::unique_ptr<Particle>>()
-    );
+    // Register the generator to this system
+    registerParticleGenerator(generator);
 }
 
 void GridSystem::createParticlesInGrid()

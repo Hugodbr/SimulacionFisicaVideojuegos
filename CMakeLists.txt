@@ -24,22 +24,29 @@ set(SKELETON_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/skeleton/src")
 set(SKELETON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/skeleton/include")
 
 # Collect source files recursively
-file(GLOB_RECURSE MY_SOURCE_FILES
+file(GLOB_RECURSE MY_SOURCE_FILES CONFIGURE_DEPENDS 
     "${SKELETON_SRC_DIR}/*.cpp"
 )
 
-# Explicitly add MeshData.cpp
-list(APPEND MY_SOURCE_FILES "${SKELETON_SRC_DIR}/utils/MeshData.cpp")
+# # Explicitly add MeshData.cpp
+# list(APPEND MY_SOURCE_FILES "${SKELETON_SRC_DIR}/utils/MeshData.cpp")
 
 # Include directories
 set(MY_INCLUDE_DIRECTORIES
     "${SKELETON_INCLUDE_DIR}"
+
     "${SKELETON_INCLUDE_DIR}/render"
+
     "${SKELETON_INCLUDE_DIR}/particle"
     "${SKELETON_INCLUDE_DIR}/particle/generators"
     "${SKELETON_INCLUDE_DIR}/particle/systems"
     "${SKELETON_INCLUDE_DIR}/particle/types"
     "${SKELETON_INCLUDE_DIR}/particle/policies"
+
+    "${SKELETON_INCLUDE_DIR}/force"
+    "${SKELETON_INCLUDE_DIR}/force/generators"
+    "${SKELETON_INCLUDE_DIR}/force/types"
+
     "${SKELETON_INCLUDE_DIR}/utils"
 )
 

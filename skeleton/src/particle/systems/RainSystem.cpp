@@ -21,6 +21,34 @@ void RainSystem::init()
 	_modelParticle = std::make_unique<RainParticle>(physx::PxTransform(_emitterOrigin), initDirection);
 	_modelParticle->setVelocity(physx::PxVec3(0, -1, 0));
 
+	// Create particle generators
+	createParticleGenerators();
+}
+
+void RainSystem::update(double deltaTime)
+{
+	for (auto itG = _generatorAndChildParticlesList.begin(); itG != _generatorAndChildParticlesList.end(); ++itG)
+	{
+		// Existing particles
+		for (auto& p : itG->second) { // for each particle of this generator father
+			p->update(deltaTime); // update particle
+		}
+		// Particle generation => generate and add to list
+		for (auto& p : (itG->first)->generateParticles(deltaTime)) {
+			itG->second.push_back(std::move(p));
+		}
+		// Cleanup dead particles
+		removeDeadParticles(itG);
+	}
+}
+
+uint64_t RainSystem::getReserveCountPerGenerator() const
+{
+    return Constants::System::Rain::ReserveCountPerGenerator;
+}
+
+void RainSystem::createParticleGenerators()
+{
 	// Create the generator
 	std::unique_ptr<ParticleGenerator> generator = std::make_unique<UniformParticleGenerator>();
 
@@ -51,13 +79,12 @@ void RainSystem::init()
 	ParticleGenerationPolicy::volumeShape meshShape;
 	MeshData meshData; 
 	// meshData.loadMesh("../resources/cone.obj");
-	meshData.loadMesh("../resources/monkey.obj");
+	meshData.loadMesh("../resources/circle.obj");
 	new (&meshShape.mesh) MeshData(meshData);
 	genPolicy.setRegion(SpawnRegionType::MESH, meshShape);
 	
 	// Assign generator policy to the generator
 	generator->setGenerationPolicy(genPolicy);
-
 
 	// 
 	//=========================================================================
@@ -68,50 +95,6 @@ void RainSystem::init()
 
 	generator->setLifetimePolicy(lifePolicy);
 
-	_generatorAndChildParticlesList.push_back(
-		GeneratorAndChildParticles(
-			std::move(generator),
-			std::list<std::unique_ptr<Particle>>() // empty list
-		)
-	);
-
-}
-
-void RainSystem::update(double dt)
-{
-	//std::cout << "Updating rain system" << std::endl; // OK
-
-	for (auto itG = _generatorAndChildParticlesList.begin(); itG != _generatorAndChildParticlesList.end(); )
-	{
-		//std::cout << "Updating rain system -> for each generator." << std::endl; // OK
-		//std::cout << ">NUM OF PARTICLES: " << itG->second.size() << std::endl;
-
-		// Existing particles
-		for (auto itP = itG->second.begin(); itP != itG->second.end(); ) // for each particle of this generator father
-		{
-			//std::cout << "Updating rain system -> for each particle of this generator." << std::endl;
-
-			(**itP).update(dt); // update particle
-
-			if (mustDelete(**itP, *itG->first)) {
-				itP = itG->second.erase(itP);  // erase returns the next valid iterator
-			}
-			else {
-				++itP;  // only increment if we didnt erase
-			}
-		}
-
-		//std::cout << "Before generating a particle" << std::endl; // OK
-		// Particle generation => generate and add to list
-		for (auto& p : (itG->first)->generateParticles(dt)) {
-			//std::cout << "Generated a particle" << std::endl;
-			itG->second.push_back(std::move(p));
-		}
-
-		++itG;
-	}
-}
-
-void RainSystem::createParticleGenerator()
-{
+	// Register the generator to this system
+	registerParticleGenerator(generator);
 }

@@ -13,8 +13,9 @@ public:
 	void init() override;
 	void update(double deltaTime) override;
 
-
+	// Returns the reserve count per generator for this system
+	virtual uint64_t getReserveCountPerGenerator() const override;
 protected:
 
-	void createParticleGenerator() override;
+	void createParticleGenerators() override;
 };

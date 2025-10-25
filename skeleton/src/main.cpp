@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <chrono>
 #include <thread>
+#include <iostream>
 
 #include <PxPhysicsAPI.h>
 
@@ -13,7 +14,8 @@
 #include "RenderUtils.hpp"
 #include "callbacks.hpp"
 
-#include <iostream>
+
+#include "ForceManager.h"
 
 #include "CoordAxis.h"
 #include "Particle.h"
@@ -45,10 +47,11 @@ PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
 //RenderItem* sphere = nullptr;
-CoordAxis* axis = nullptr;
-//std::vector<Particle*> particles;
+
 Camera* cam = nullptr;
 std::vector<ParticleSystem*> particleSystems;
+
+GridSystem* gridSystem = nullptr;
 
 
 void shootParticle() {
@@ -116,6 +119,7 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
+
 	//CoordAxis* axis = new CoordAxis();
 
 	//createParticles(Constants::DEFAULT);
@@ -126,9 +130,9 @@ void initPhysics(bool interactive)
 	// rs->init();
 	// particleSystems.push_back(rs);
 
-	ParticleSystem* gridSystem = new GridSystem(
+	gridSystem = new GridSystem(
 		physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100)), 
-		1.0f, 
+		0.5f, 
 		20.0,
 		Constants::Color::White
 	);
@@ -149,6 +153,8 @@ void initPhysics(bool interactive)
 void stepPhysics(bool interactive, double dt)
 {
 	PX_UNUSED(interactive);
+
+	ForceManager& fm = ForceManager::getInstance();
 
 	for (auto& ps : particleSystems) {
 		ps->update(dt);
@@ -199,9 +205,9 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		std::cout << cam->getDir().z << std::endl;
 		shootBullet();
 		break;
-	//case ' ':	break;
-	case ' ':
+	case 'G':
 	{
+		gridSystem->toggleVisibility();
 		break;
 	}
 	default:

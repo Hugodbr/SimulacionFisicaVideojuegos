@@ -39,8 +39,7 @@ Particle::Particle(
       _transformPrevious(initTransform),
       _velocityPrevious(initVelocity),
       _size(size),
-      _age(0.0),
-      _firstIntegration(true)
+      _age(0.0)
 {
 	init();
 }
@@ -59,8 +58,7 @@ Particle::Particle(const physx::PxTransform &initTransform, const physx::PxVec3 
 	  _transformPrevious(initTransform),
 	  _velocityPrevious(initVelocity),
 	  _size(size),
-	  _age(0.0),
-	  _firstIntegration(true)
+	  _age(0.0)
 {
 	init();
 }
@@ -77,7 +75,6 @@ Particle::Particle(const Particle& other)
 	_velocityPrevious = other._velocityPrevious;
 	_size = other._size;
 	_age = other._age;
-	_firstIntegration = true;
 
 	init();
 }
@@ -91,6 +88,11 @@ Particle::~Particle()
 
 void Particle::init()
 {
+	_id = _nextId++;
+
+	_alive = true;
+	_firstIntegration = true;
+
 	createRenderItem();
 
 	switch (_integrationMethod)
@@ -143,6 +145,14 @@ physx::PxVec3 Particle::getVelocity() const {
 	return _velocity;
 }
 
+bool Particle::isAlive() const {
+    return _alive;
+}
+
+void Particle::kill() {
+	_alive = false;
+}
+
 void Particle::update(double dt) 
 {
 	integrate(dt);
@@ -158,6 +168,10 @@ void Particle::setColor(const physx::PxVec4 &color)
 void Particle::setVisibility(bool visibility)
 {
 	_renderItem->setVisibility(visibility);
+}
+
+uint64_t Particle::getId() const { 
+	return _id; 
 }
 
 void Particle::setAge(double age) {

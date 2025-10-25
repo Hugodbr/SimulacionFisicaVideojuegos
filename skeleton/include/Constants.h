@@ -73,6 +73,15 @@ namespace Constants
 
 	};
 
+	namespace System {
+		namespace Grid {
+			static constexpr uint64_t ReserveCountPerGenerator = 125000;
+		};
+		namespace Rain {
+			static constexpr uint64_t ReserveCountPerGenerator = 2000;
+		};
+	};
+
 	namespace Color {
 		static const physx::PxVec4 White = physx::PxVec4(255, 255, 255, 255);
 		static const physx::PxVec4 Red   = physx::PxVec4(255, 0, 0, 255);
