@@ -126,18 +126,18 @@ void initPhysics(bool interactive)
 	cam = GetCamera();
 	//shootParticle();
 
-	// RainSystem* rs = new RainSystem(physx::PxVec3(0, 60, 0));
-	// rs->init();
-	// particleSystems.push_back(rs);
+	RainSystem* rs = new RainSystem(physx::PxVec3(0, 60, 0));
+	rs->init();
+	particleSystems.push_back(rs);
 
-	gridSystem = new GridSystem(
-		physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100)), 
-		0.5f, 
-		20.0,
-		Constants::Color::White
-	);
-	gridSystem->init();
-	particleSystems.push_back(gridSystem);
+	// gridSystem = new GridSystem(
+	// 	physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100)), 
+	// 	1.0f, 
+	// 	10.0,
+	// 	Constants::Color::White
+	// );
+	// gridSystem->init();
+	// particleSystems.push_back(gridSystem);
 	
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
 	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));
@@ -154,7 +154,7 @@ void stepPhysics(bool interactive, double dt)
 {
 	PX_UNUSED(interactive);
 
-	ForceManager& fm = ForceManager::getInstance();
+	// ForceManager& fm = ForceManager::getInstance();
 
 	for (auto& ps : particleSystems) {
 		ps->update(dt);

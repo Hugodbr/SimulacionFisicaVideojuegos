@@ -1,7 +1,10 @@
 #pragma once
 
 #include "ParticleSystem.h"
+#include "ParticlePool.h"
 
+class UniformParticleGenerator;
+class RainParticle;
 
 class RainSystem : public ParticleSystem
 {
@@ -17,5 +20,15 @@ public:
 	virtual uint64_t getReserveCountPerGenerator() const override;
 protected:
 
-	void createParticleGenerators() override;
+    void initParticleGeneratorAndPool();
+
+
+	// void createParticleGenerators() override;
+
+	    std::vector<
+        std::pair<
+            std::unique_ptr<UniformParticleGenerator>,
+            std::unique_ptr<ParticlePool<RainParticle>>
+            >
+        > _generatorsAndPools;
 };

@@ -105,8 +105,8 @@ void ParticleGenerationPolicy::setRegion(SpawnRegionType type, const volumeShape
         position.mean = shape.box.getCenter();
         position.deviation = shape.box.getDimensions()/2.0;
 
-        std::cout << "ParticleGenerationPolicy -> position.mean: (" << position.mean.x << "," << position.mean.y << "," << position.mean.z << ")" << std::endl;
-        std::cout << "ParticleGenerationPolicy -> position.deviation: (" << position.deviation.x << "," << position.deviation.y << "," << position.deviation.z << ")" << std::endl;
+        // std::cout << "ParticleGenerationPolicy -> position.mean: (" << position.mean.x << "," << position.mean.y << "," << position.mean.z << ")" << std::endl;
+        // std::cout << "ParticleGenerationPolicy -> position.deviation: (" << position.deviation.x << "," << position.deviation.y << "," << position.deviation.z << ")" << std::endl;
         break;
     }
     case SpawnRegionType::SPHERE: {
@@ -158,7 +158,7 @@ physx::PxVec3 ParticleGenerationPolicy::generatePosition(const std::function<dou
     //    return position.mean + position.deviation * distr;
     //}
     if (regionType == SpawnRegionType::MESH) {
-        std::cout << "ParticleGenerationPolicy -> generatePosition: MESH region." << std::endl;
+        // std::cout << "ParticleGenerationPolicy -> generatePosition: MESH region." << std::endl;
         return shape.mesh.randomPointOnMesh(distributionFunc) + position.mean;
     }
 
@@ -166,7 +166,7 @@ physx::PxVec3 ParticleGenerationPolicy::generatePosition(const std::function<dou
     generatedPosition.x = position.mean.x + position.deviation.x * distributionFunc();
     generatedPosition.y = position.mean.y + position.deviation.y * distributionFunc();
     generatedPosition.z = position.mean.z + position.deviation.z * distributionFunc();
-    std::cout << "ParticleGenerationPolicy -> generatePosition: (" << generatedPosition.x << "," << generatedPosition.y << "," << generatedPosition.z << ")" << std::endl;
+    // std::cout << "ParticleGenerationPolicy -> generatePosition: (" << generatedPosition.x << "," << generatedPosition.y << "," << generatedPosition.z << ")" << std::endl;
     return generatedPosition;
 
 

@@ -1,7 +1,6 @@
 #include "ParticleGenerator.h"
 
 
-
 // Must initialize
 ParticleGenerator::ParticleGenerator()
     : _mt(std::random_device{}())
@@ -103,4 +102,16 @@ std::vector<std::unique_ptr<Particle>> ParticleGenerator::generateParticles(doub
     }
 
     return generatedParticles;
+}
+
+int ParticleGenerator::numberOfGenerations()
+{
+    return _generationPolicy->spawnNumber(getDistribution());
+}
+
+physx::PxVec3 ParticleGenerator::getGeneratedPosition()
+{
+    return _generationPolicy->generatePosition([this]() {
+            return getDistribution();
+            });
 }

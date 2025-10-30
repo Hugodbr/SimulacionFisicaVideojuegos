@@ -58,26 +58,26 @@ std::unique_ptr<Particle> ParticleWithMass::clone() const
 	return std::make_unique<ParticleWithMass>(*this);
 }
 
-void ParticleWithMass::addForce(const physx::PxVec3 &force)
-{
-	_forces.push_back(force);
-}
+// void ParticleWithMass::addForce(const physx::PxVec3 &force)
+// {
+// 	_forces.push_back(force);
+// }
 
-void ParticleWithMass::clearForces()
-{
-	_forces.clear();
-	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
-}
+// void ParticleWithMass::clearForces()
+// {
+// 	_forces.clear();
+// 	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+// }
 
-physx::PxVec3 ParticleWithMass::getResultingForce()
-{
-	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
-	for (const auto& force : _forces) {
-		_resultingForce += force;
-	}
+// physx::PxVec3 ParticleWithMass::getResultingForce()
+// {
+// 	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+// 	for (const auto& force : _forces) {
+// 		_resultingForce += force;
+// 	}
 
-	return _resultingForce;
-}
+// 	return _resultingForce;
+// }
 
 double ParticleWithMass::getInverseMass() const {
     return _inverseMass;
@@ -93,7 +93,7 @@ void ParticleWithMass::update(double dt)
 {
 	Particle::update(dt);
 
-	_acceleration += getResultingForce() * static_cast<float>(_inverseMass);
+	// _acceleration += getResultingForce() * static_cast<float>(_inverseMass);
 }
 
 void ParticleWithMass::setSimulatedVelocity()

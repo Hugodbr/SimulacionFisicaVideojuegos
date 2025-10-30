@@ -6,6 +6,7 @@
 #include <PxPhysicsAPI.h>
 
 #include "Policies.h"
+#include "ParticlePool.h"
 
 
 // Abstract class
@@ -25,7 +26,11 @@ public:
 		const Vector3Stats& velocity
 	);
 
+
 	virtual std::vector<std::unique_ptr<Particle>> generateParticles(double deltaTime);
+
+	virtual int numberOfGenerations();
+	virtual physx::PxVec3 getGeneratedPosition();
 
 	// Setters
 	virtual void setEmitterOrigin(const physx::PxVec3& emitterOrigin);

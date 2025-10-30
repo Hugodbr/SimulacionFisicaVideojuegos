@@ -5,6 +5,8 @@
 #include "Particle.h"
 
 
+class ForceGenerator;
+
 class ParticleWithMass : public Particle
 {
 public:
@@ -49,9 +51,13 @@ public:
 	// Returns a new Particle that is a clone from this one
 	virtual std::unique_ptr<Particle> clone() const override;
 
-	virtual void addForce(const physx::PxVec3& force);
-	virtual void clearForces();
-	virtual physx::PxVec3 getResultingForce();
+	// // virtual void addForce(const physx::PxVec3& force); // TODO
+	// virtual void clearForces();
+	// virtual physx::PxVec3 getResultingForce();
+
+	// virtual void registerToForce(ForceGenerator& fg);
+	// virtual void unregisterFromForce(ForceGenerator& fg);
+	// virtual void unregisterFromAllForces();
 
 	virtual double getInverseMass() const;
 	virtual void changeMass(double newMass);
@@ -77,7 +83,7 @@ protected:
 	double _massReal;
 	double _inverseMass;
 
-	std::list<physx::PxVec3> _forces = {};
-	physx::PxVec3 _resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+	// std::vector<ForceGenerator&> _forceGenerators = {};
+	// physx::PxVec3 _resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
 };
 

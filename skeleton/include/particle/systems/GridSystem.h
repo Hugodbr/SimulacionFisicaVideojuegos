@@ -1,6 +1,10 @@
 #pragma once
 
 #include "ParticleSystem.h"
+#include "ParticlePool.h"
+
+class StaticParticle; 
+class ConstantParticleGenerator;
 
 
 class GridSystem : public ParticleSystem
@@ -18,10 +22,10 @@ protected:
 	// Returns the reserve count per generator for this system
 	virtual uint64_t getReserveCountPerGenerator() const override;
 
-    // Only one generator for this system.
-    void createParticleGenerators() override;
+    void initParticleGeneratorAndPool();
 
     void createParticlesInGrid();
+
 
 protected:
 
@@ -31,4 +35,13 @@ protected:
     Vector4 _color;
 
     bool _visible = true;
+
+private:
+    std::vector<
+        std::pair<
+            std::unique_ptr<ConstantParticleGenerator>,
+            std::unique_ptr<ParticlePool<StaticParticle>>
+            >
+        > _generatorsAndPools;
+
 };

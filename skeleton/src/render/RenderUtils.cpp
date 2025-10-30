@@ -190,6 +190,11 @@ PxShape* CreateShape(const PxGeometry& geo, const PxMaterial* mat)
 
 void RenderItem::setColor(const Vector4 &newColor)
 {
+	// color.x = newColor.x;
+	// color.y = newColor.y;
+	// color.z = newColor.z;
+	// color.w = newColor.w;
+
 	color = newColor;
 }
 

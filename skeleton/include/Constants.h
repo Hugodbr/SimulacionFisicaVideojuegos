@@ -75,10 +75,10 @@ namespace Constants
 
 	namespace System {
 		namespace Grid {
-			static constexpr uint64_t ReserveCountPerGenerator = 125000;
+			static constexpr uint64_t ReserveCountPerGenerator = 10000;
 		};
 		namespace Rain {
-			static constexpr uint64_t ReserveCountPerGenerator = 2000;
+			static constexpr uint64_t ReserveCountPerGenerator = 10000;
 		};
 	};
 

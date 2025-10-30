@@ -56,13 +56,15 @@ public:
 	virtual void setOrigin(const physx::PxTransform &origin);
 	virtual void setVelocity(const physx::PxVec3 &velocity);
 	virtual void setAge(double age);
+	virtual void setAcceleration(const physx::PxVec3 &acceleration);
 
 	virtual double getAge() const;
 	virtual physx::PxVec3 getPosition() const;
 	virtual physx::PxVec3 getVelocity() const;
-	virtual bool isAlive() const;
+	virtual bool isActive() const;
 
-	virtual void kill();
+	virtual void activate();
+	virtual void deactivate();
 
 	virtual void update(double dt);
 

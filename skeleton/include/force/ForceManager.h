@@ -1,51 +1,61 @@
-#pragma once
+// #pragma once
 
-#include <iostream>
-#include <unordered_map>
-#include <vector>
-#include <memory>
-
-
-#include <PxPhysicsAPI.h>
+// #include <iostream>
+// #include <unordered_map>
+// #include <vector>
+// #include <memory>
 
 
-class ForceGenerator;
+// #include <PxPhysicsAPI.h>
 
-using pSysId = std::uint64_t;
-using ForceCollectionPointers = std::vector<std::unique_ptr<ForceGenerator>>;
 
-class ForceManager
-{
-public:
+// class ForceGenerator;
 
-    inline static ForceManager& getInstance() {
-        static ForceManager instance;
-        return instance;
-    }
+// using pSysId = std::uint64_t;
+// using ForceCollectionPointers = std::vector<std::unique_ptr<ForceGenerator>>;
 
-    // Adds a force generator to the specified particle system indexed by systemId
-    void registerForceGenerator(pSysId systemId, std::unique_ptr<ForceGenerator> forceGen);
+// class ForceManager
+// {
+// public:
 
-    void deregisterForceGenerator(pSysId systemId, uint64_t forceGenId);
+//     inline static ForceManager& getInstance() {
+//         static ForceManager instance;
+//         return instance;
+//     }
 
-    // Caution: returns a pointer to internal data structure. Objects can be modified but not deleted(vector is const).
-    // If no force generators for that system, returns nullptr.
-    const ForceCollectionPointers* getForceGenerators(pSysId systemId) const;
+//     void addGlobalForce(std::unique_ptr<ForceGenerator>& forceGen);
+//     void clearGlobalForces();
 
-    void update(double deltaTime);
+//     // Adds a force generator to the specified particle system indexed by systemId
+//     void registerForceGenerator(pSysId systemId, std::unique_ptr<ForceGenerator>& forceGen);
+//     // Removes a force generator from the specified particle system indexed by systemId
+//     void deregisterForceGenerator(pSysId systemId, uint64_t forceGenId);
 
-private:
-    ForceManager() = default;
-    ~ForceManager() = default;
+//     // Caution: returns a pointer to internal data structure. Objects can be modified but not deleted(vector is const).
+//     // If no force generators for that system, returns nullptr.
+//     const ForceCollectionPointers* getForceGenerators(pSysId systemId) const;
 
-    ForceManager(const ForceManager&) = delete;
-    ForceManager& operator=(const ForceManager&) = delete;
+//     void update(double deltaTime);
 
-    void applyAllForces(double deltaTime);
-    void applyForcesToParticleSystem(pSysId systemId, double deltaTime);
-private:
-    // physx::PxVec3 _globalForces = physx::PxVec3(0.0f, 0.0f, 0.0f);
+//     // Applies all forces registered for a particle system to its particles to all particle systems
+//     void applyAllForces(double deltaTime);
+//     // Applies all 
 
-    std::unordered_map<pSysId, ForceCollectionPointers> _particleSysForcesMap; // Map of particle system IDs to their associated force generators
+//     void applyGlobalForcesToParticleSystem(pSysId systemId, double deltaTime);
+//     physx::PxVec3 getGlobalResultingForce() const;
 
-};
+// private:
+//     ForceManager() = default;
+//     ~ForceManager() = default;
+
+//     ForceManager(const ForceManager&) = delete;
+//     ForceManager& operator=(const ForceManager&) = delete;
+
+//     void computeGlobalForces(double deltaTime);
+
+// private:
+//     std::vector<std::unique_ptr<ForceGenerator>> _globalForces = {}; // List of global forces applied to all particle systems
+//     physx::PxVec3 _globalResultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+
+//     std::unordered_map<pSysId, ForceCollectionPointers> _particleSysForcesMap; // Map of particle system IDs to their associated force generators
+// };

@@ -6,9 +6,12 @@
 #include "ParticleGenerator.h"
 
 
+// Initialize static member
+uint64_t Particle::_nextId = 0;
+
 Particle::Particle()
 {
-	_transform = physx::PxTransform();
+	_transform = physx::PxTransform(0, 0, 0, physx::PxQuat::PxQuat());
 	_velocity = physx::PxVec3();
 	_acceleration = physx::PxVec3();
 	_damping = Constants::Physics::Damping;
@@ -18,9 +21,10 @@ Particle::Particle()
 	_velocityPrevious = _velocity;
 	_size = Constants::Particle::Size;
 	_age = 0.0;
-	_firstIntegration = true;
 
 	init();
+
+	deactivate();
 }
 
 Particle::Particle(
@@ -42,6 +46,8 @@ Particle::Particle(
       _age(0.0)
 {
 	init();
+
+	deactivate();
 }
 
 Particle::Particle(const physx::PxTransform& initTransform, const physx::PxVec3& initVelocity, const physx::PxVec3& initAcceleration, Constants::Integration_Method integrationMethod)
@@ -119,7 +125,9 @@ std::unique_ptr<Particle> Particle::clone() const
 
 void Particle::setOrigin(const physx::PxTransform& origin)
 {
-	_transform.p = _transformPrevious.p = origin.p;	
+	_transform.p.x = _transformPrevious.p.x = origin.p.x;
+	_transform.p.y = _transformPrevious.p.y = origin.p.y;
+	_transform.p.z = _transformPrevious.p.z = origin.p.z;
 }
 
 void Particle::setVelocity(const physx::PxVec3& velocity)
@@ -145,18 +153,28 @@ physx::PxVec3 Particle::getVelocity() const {
 	return _velocity;
 }
 
-bool Particle::isAlive() const {
+bool Particle::isActive() const {
     return _alive;
 }
 
-void Particle::kill() {
-	_alive = false;
+void Particle::activate()
+{
+	_alive = true;
+	RegisterRenderItem(_renderItem);
+}
+
+void Particle::deactivate()
+{
+    _alive = false;
+	DeregisterRenderItem(_renderItem);
 }
 
 void Particle::update(double dt) 
 {
 	integrate(dt);
 	updateAge(dt);
+
+	// _acceleration = physx::PxVec3(); // Reset acceleration at the end of the update (forces will be applied again before next update)
 }
 
 void Particle::setColor(const physx::PxVec4 &color)
@@ -176,6 +194,10 @@ uint64_t Particle::getId() const {
 
 void Particle::setAge(double age) {
 	_age = age;
+}
+
+void Particle::setAcceleration(const physx::PxVec3 &acceleration) {
+	_acceleration = acceleration;
 }
 
 void Particle::integrate(double dt)
@@ -249,7 +271,7 @@ void Particle::verletIntegration(double dt)
 	// si
 	// 
 
-	//std::cout << "Particle -> verletIntegration -> position: (" << _transform.p.x << "," << _transform.p.y << "," << _transform.p.z << ")" << std::endl;
+	// std::cout << "Particle -> verletIntegration -> position: (" << _transform.p.x << "," << _transform.p.y << "," << _transform.p.z << ")" << std::endl;
 
 	physx::PxTransform a_posPrevious = _transform;
 
