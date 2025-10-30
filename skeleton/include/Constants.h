@@ -6,8 +6,16 @@
 
 namespace Constants
 {
+	namespace Math {
+		static constexpr float epsilon = 1e-6f;
+	}
+
 	namespace Physics {
 		static const physx::PxVec3 Gravity = physx::PxVec3(0, -9.8f, 0);
+		static const double GravitationalConstant = 6.67430e-11; // in m^3 kg^-1 s^-2
+		static constexpr float EarthMass = 5.972e24f; // in kg
+		static constexpr float EarthRadius = 6.371e6f; // in meters
+
 		static constexpr float Damping = 0.98f;
 	};
 
@@ -64,7 +72,7 @@ namespace Constants
 				static const ParticleType type = RAIN;
 				static constexpr float Size = 0.1f;
 				static constexpr float Speed = 0.0f;
-				static constexpr float Mass = 0.0f;
+				static constexpr float Mass = 1.0f;
 				static constexpr double gFactor = 0;
 				static constexpr double vFactor = 0;
 			};

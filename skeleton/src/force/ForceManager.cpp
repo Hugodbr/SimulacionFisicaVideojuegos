@@ -1,6 +1,6 @@
-// #include "ForceManager.h"
+#include "ForceManager.h"
 
-// #include "ForceGenerator.h"
+#include "ForceField.h"
 
 // void ForceManager::addGlobalForce(std::unique_ptr<ForceGenerator> &forceGen)
 // {
@@ -51,13 +51,44 @@
     
 // }
 
-// void ForceManager::computeGlobalForces(double deltaTime)
-// {
-//     for (auto& globalForce : _globalForces) {
-//         // _globalResultingForce += globalForce;
-//     }
-// }
-
 // physx::PxVec3 ForceManager::getGlobalResultingForce() const {
 //     return _globalResultingForce;
 // }
+
+const physx::PxVec3 &ForceManager::getGlobalResultingForce() const
+{
+    return _globalResultingForce;
+}
+
+void ForceManager::registerGlobalForce(std::unique_ptr<ForceField> forceGen)
+{
+    _globalForces.push_back(std::move(forceGen));
+}
+
+void ForceManager::update(double deltaTime)
+{
+    updateGlobalForces(deltaTime);
+    computeGlobalForces(deltaTime);
+}
+
+void ForceManager::resetGlobalForces()
+{
+    _globalForces.clear();
+    _globalResultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+}
+
+void ForceManager::computeGlobalForces(double deltaTime)
+{
+    _globalResultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+
+    for (const auto& globalForce : _globalForces) {
+        _globalResultingForce += globalForce->getForce();
+    }
+}
+
+void ForceManager::updateGlobalForces(double deltaTime)
+{
+    for (auto& globalForce : _globalForces) {
+        globalForce->updateForce(deltaTime);
+    }
+}

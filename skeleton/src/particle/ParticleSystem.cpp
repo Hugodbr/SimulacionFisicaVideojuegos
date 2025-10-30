@@ -3,16 +3,17 @@
 #include "ParticleGenerator.h"
 // #include "ForceGenerator.h"
 #include "ParticleWithMass.h"
+#include "ForceManager.h"
 
 
-// // Initialize static member
-// uint64_t ParticleSystem::_nextId = 0;
+// Initialize static member
+uint64_t ParticleSystem::_nextId = 0;
 
 ParticleSystem::ParticleSystem()
-    // : _id(_nextId++)
-    : _modelParticle(nullptr)
+    : _id(_nextId++)
     // , _generatorAndChildParticlesList()
     , _emitterOrigin(physx::PxVec3(0, 0, 0))
+    , _forceManager(ForceManager::getInstance())
 {
     // _generatorAndChildParticlesList.reserve(1); // Default reserve for one generator
 }
@@ -44,7 +45,7 @@ ParticleSystem::ParticleSystem()
 //     }
 // }
 
-bool ParticleSystem::mustDeleteParticle(const Particle &p, const ParticleGenerator &generator) const
+bool ParticleSystem::mustKillParticle(const Particle &p, const ParticleGenerator &generator) const
 {
     return generator.getLifetimePolicy().shouldDelete(generator.getDistribution(), p);
 }
@@ -140,13 +141,3 @@ bool ParticleSystem::mustDeleteParticle(const Particle &p, const ParticleGenerat
 // {
 //     ForceManager::getInstance().deregisterForceGenerator(_id, forceGenId);
 // }
-
-// uint64_t ParticleSystem::getId() const
-// {
-//     return _id;
-// }
-
-uint64_t ParticleSystem::getReserveCountPerGenerator() const
-{
-    return 0;
-}

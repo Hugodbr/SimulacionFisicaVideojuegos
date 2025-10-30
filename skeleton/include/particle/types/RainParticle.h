@@ -13,6 +13,4 @@ public:
 
 	~RainParticle() = default;
 
-	// Returns a new Particle that is a clone from this one
-	std::unique_ptr<Particle> clone() const override;
 };

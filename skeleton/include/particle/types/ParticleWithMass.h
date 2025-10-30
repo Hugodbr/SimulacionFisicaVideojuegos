@@ -4,7 +4,6 @@
 
 #include "Particle.h"
 
-
 class ForceGenerator;
 
 class ParticleWithMass : public Particle
@@ -16,22 +15,22 @@ public:
 		const physx::PxVec3& realVelocity,
 		const physx::PxVec3& initAcceleration,
 		const physx::PxVec3& realGravity,
-		double realMass,
-		double damping,
+		float realMass,
+		float damping,
 		Constants::Integration_Method integrationMethod,
 		float size = Constants::Particle::Size,
-		double gravityFactor = Constants::Particle::Default::gFactor,
-		double velocityFactor = Constants::Particle::Default::vFactor
+		float gravityFactor = Constants::Particle::Default::gFactor,
+		float velocityFactor = Constants::Particle::Default::vFactor
 	);
 
 	ParticleWithMass(
 		const physx::PxTransform& initTransform, 
 		const physx::PxVec3& realVelocity,
 		const physx::PxVec3& initAcceleration,
-		double realMass,
+		float realMass,
 		float size,
-		double gravityFactor,
-		double velocityFactor,
+		float gravityFactor,
+		float velocityFactor,
 		Constants::Integration_Method integrationMethod
 	);
 
@@ -39,7 +38,7 @@ public:
 		const physx::PxTransform& initTransform, 
 		const physx::PxVec3& realVelocity,
 		const physx::PxVec3& initAcceleration,
-		double realMass,
+		float realMass,
 		Constants::Integration_Method integrationMethod
 	);
 
@@ -48,42 +47,42 @@ public:
 
 	virtual ~ParticleWithMass() = default;
 
-	// Returns a new Particle that is a clone from this one
-	virtual std::unique_ptr<Particle> clone() const override;
+	virtual void clearForces();
+	virtual void applyGlobalForces(const physx::PxVec3& globalResultingForce);
+	virtual void applyRegisteredForces();
 
-	// // virtual void addForce(const physx::PxVec3& force); // TODO
-	// virtual void clearForces();
-	// virtual physx::PxVec3 getResultingForce();
+	virtual physx::PxVec3 getResultingForce() const { return _resultingForce; }
 
-	// virtual void registerToForce(ForceGenerator& fg);
-	// virtual void unregisterFromForce(ForceGenerator& fg);
-	// virtual void unregisterFromAllForces();
+	virtual void registerToForce(ForceGenerator& fg);
+	virtual void unregisterFromForce(ForceGenerator& fg);
+	virtual void unregisterFromAllForces();
 
-	virtual double getInverseMass() const;
-	virtual void changeMass(double newMass);
+	virtual float getInverseMass() const { return _inverseMass; }
+	virtual void changeMass(float newMass);
 
 	virtual void update(double dt) override;
 
 protected:
 
 	virtual void setSimulatedVelocity();
-	virtual void setSimulatedGravity();
-	virtual void setSimulatedAcceleration();
+	// virtual void setSimulatedGravity();
+	// virtual void setSimulatedAcceleration();
 	virtual void setSimulatedMass();
 
-	double _gravityFactor;
-	double _velocityFactor;
+	float _gravityFactor;
+	float _velocityFactor;
 
 	physx::PxVec3 _gravity;
 	physx::PxVec3 _gravityReal;
 
 	physx::PxVec3 _velocityReal;
 
-	double _mass;
-	double _massReal;
-	double _inverseMass;
+	float _mass;
+	float _massReal;
+	float _inverseMass;
 
-	// std::vector<ForceGenerator&> _forceGenerators = {};
-	// physx::PxVec3 _resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+	physx::PxVec3 _resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+
+	std::vector<ForceGenerator*> _registeredForces;
 };
 

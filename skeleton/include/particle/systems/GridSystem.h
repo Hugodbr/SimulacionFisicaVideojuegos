@@ -20,7 +20,9 @@ public:
 
 protected:
 	// Returns the reserve count per generator for this system
-	virtual uint64_t getReserveCountPerGenerator() const override;
+	virtual uint64_t getReserveCountPerGenerator() const override { 
+        return Constants::System::Grid::ReserveCountPerGenerator;
+    }
 
     void initParticleGeneratorAndPool();
 
@@ -34,7 +36,7 @@ protected:
     double _scale;
     Vector4 _color;
 
-    bool _visible = true;
+    bool _visible;
 
 private:
     std::vector<

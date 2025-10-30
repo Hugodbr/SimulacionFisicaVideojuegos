@@ -10,6 +10,7 @@ GridSystem::GridSystem(const physx::PxBounds3 &region, float pointSize, double s
     , _pointSize(pointSize)
     , _scale(scale)
     , _color(color)
+    , _visible(true)
 {
 }
 
@@ -17,19 +18,7 @@ void GridSystem::init()
 {
     _emitterOrigin = physx::PxVec3(0, 0, 0);
 
-    _modelParticle = std::make_unique<Particle>(
-        physx::PxTransform(_emitterOrigin), 
-        physx::PxVec3(0, 0, 0),
-        physx::PxVec3(0, 0, 0), 
-        Constants::Integration_Method::NONE, 
-        _pointSize, 1.0, _color
-    );
-
     // std::vector<std::pair<ConstantParticleGenerator, ParticlePool<StaticParticle>>> _generatorsAndPools;
-
-
-    // Hide the model particle
-    _modelParticle->setVisibility(false);
 
     // // Create the particle generator
     // ConstantParticleGenerator generator = createParticleGenerator();
@@ -48,18 +37,13 @@ void GridSystem::toggleVisibility()
 {
     _visible = !_visible;
 
-    // for (auto& genAndPool : _generatorsAndPools) 
-    // {
-    //     for (int i = 0; i < genAndPool.second->getActiveCount(); ++i) 
-    //     {
-    //         genAndPool.second->particles()[i]->setVisibility(_visible);
-    //     }
-    // }
-}
-
-uint64_t GridSystem::getReserveCountPerGenerator() const
-{
-    return Constants::System::Grid::ReserveCountPerGenerator;
+    for (auto& genAndPool : _generatorsAndPools) 
+    {
+        for (int i = 0; i < genAndPool.second->getActiveCount(); ++i) 
+        {
+            genAndPool.second->particles()[i]->setVisibility(_visible);
+        }
+    }
 }
 
 void GridSystem::initParticleGeneratorAndPool()
@@ -72,7 +56,6 @@ void GridSystem::initParticleGeneratorAndPool()
     auto& generator = _generatorsAndPools[0].first;
 
     generator->init(
-        *_modelParticle,
         _emitterOrigin,
         Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0)) // velocity = 0
     );
@@ -85,42 +68,6 @@ void GridSystem::initParticleGeneratorAndPool()
     ParticleLifetimePolicy lifePolicy = ParticleLifetimePolicy();
     generator->setLifetimePolicy(lifePolicy);
 }
-
-// ConstantParticleGenerator GridSystem::createParticleGenerator()
-// {
-//     // Create the generator
-// 	ConstantParticleGenerator generator = ConstantParticleGenerator();
-
-//     generator.init(
-//         *_modelParticle,
-//         _emitterOrigin,
-//         Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0)) // velocity = 0
-//     );
-
-//     // Create generation policy
-// 	ParticleGenerationPolicy genPolicy = ParticleGenerationPolicy();
-//     generator.setGenerationPolicy(genPolicy);
-
-//     // Create lifetime policy
-//     ParticleLifetimePolicy lifePolicy = ParticleLifetimePolicy();
-//     generator.setLifetimePolicy(lifePolicy);
-
-//     return generator;
-// }
-
-// void GridSystem::initParticlePools()
-// {
-//     // Create particle pool for StaticParticle
-//     ParticlePool<StaticParticle> particlePool(getReserveCountPerGenerator());
-
-//     // Store generator and pool pair
-//     _generatorsAndPools.emplace_back(
-//         std::make_pair(
-//             ConstantParticleGenerator(), // Placeholder, actual generator should be created and initialized
-//             std::move(particlePool)
-//         )
-//     );
-// }
 
 void GridSystem::createParticlesInGrid()
 {
@@ -160,9 +107,6 @@ void GridSystem::createParticlesInGrid()
             for (float z = a_minZ; z <= a_maxZ; z += _scale) 
             {
                 physx::PxTransform particleTransform(physx::PxVec3(x, y, z));
-                // std::unique_ptr<Particle> newParticle = _modelParticle->clone();
-                // newParticle->setOrigin(particleTransform);
-                // newParticle->setColor(Constants::Color::White);
 
                 for (auto& _generatorsAndPools_it = _generatorsAndPools.begin(); _generatorsAndPools_it != _generatorsAndPools.end(); ++_generatorsAndPools_it)
                 {

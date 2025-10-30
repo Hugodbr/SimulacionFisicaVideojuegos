@@ -50,18 +50,16 @@ public:
 
 	virtual ~Particle(); 
 
-	// Returns a new Particle that is a clone from this one
-	virtual std::unique_ptr<Particle> clone() const;
-
 	virtual void setOrigin(const physx::PxTransform &origin);
 	virtual void setVelocity(const physx::PxVec3 &velocity);
 	virtual void setAge(double age);
 	virtual void setAcceleration(const physx::PxVec3 &acceleration);
 
-	virtual double getAge() const;
-	virtual physx::PxVec3 getPosition() const;
-	virtual physx::PxVec3 getVelocity() const;
-	virtual bool isActive() const;
+	virtual double getAge() const { return _age; }
+	virtual physx::PxVec3 getPosition() const { return _transform.p; }
+	virtual physx::PxVec3 getVelocity() const { return _velocity; }
+	virtual bool isActive() const { return _alive; }
+	uint64_t getId() const { return _id; }
 
 	virtual void activate();
 	virtual void deactivate();
@@ -71,7 +69,6 @@ public:
 	virtual void setColor(const physx::PxVec4& color);
 	virtual void setVisibility(bool visibility);
 
-	uint64_t getId() const;
 
 protected:
 

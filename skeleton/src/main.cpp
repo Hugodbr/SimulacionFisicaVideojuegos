@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <chrono>
 #include <thread>
+#include <memory>
 #include <iostream>
 
 #include <PxPhysicsAPI.h>
@@ -16,6 +17,7 @@
 
 
 #include "ForceManager.h"
+#include "GravitationalForce.h"
 
 #include "CoordAxis.h"
 #include "Particle.h"
@@ -50,6 +52,7 @@ ContactReportCallback gContactReportCallback;
 
 Camera* cam = nullptr;
 std::vector<ParticleSystem*> particleSystems;
+ForceManager& forceManager = ForceManager::getInstance();
 
 GridSystem* gridSystem = nullptr;
 
@@ -126,10 +129,13 @@ void initPhysics(bool interactive)
 	cam = GetCamera();
 	//shootParticle();
 
-	RainSystem* rs = new RainSystem(physx::PxVec3(0, 60, 0));
+	physx::PxBounds3 rainRegion(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100));
+	physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.maximum.y, 0.0f);
+	RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
 	rs->init();
 	particleSystems.push_back(rs);
 
+	// // Grid System. Starting invisible
 	// gridSystem = new GridSystem(
 	// 	physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100)), 
 	// 	1.0f, 
@@ -137,7 +143,12 @@ void initPhysics(bool interactive)
 	// 	Constants::Color::White
 	// );
 	// gridSystem->init();
+	// gridSystem->toggleVisibility(); // Start invisible
 	// particleSystems.push_back(gridSystem);
+
+	ForceManager::getInstance().registerGlobalForce(
+		std::make_unique<GravitationalForce>()
+	);
 	
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
 	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));
@@ -154,7 +165,7 @@ void stepPhysics(bool interactive, double dt)
 {
 	PX_UNUSED(interactive);
 
-	// ForceManager& fm = ForceManager::getInstance();
+	forceManager.update(dt);
 
 	for (auto& ps : particleSystems) {
 		ps->update(dt);

@@ -1,17 +1,19 @@
 #include "ParticleWithMass.h"
 
+#include "ForceGenerator.h"
+
 
 ParticleWithMass::ParticleWithMass(
 	const physx::PxTransform& initTransform,
 	const physx::PxVec3&      realVelocity,
 	const physx::PxVec3&      initAcceleration,
 	const physx::PxVec3&      realGravity,
-	double realMass,
-	double damping,
+	float realMass,
+	float damping,
 	Constants::Integration_Method integrationMethod,
 	float size,
-	double gravityFactor,
-	double velocityFactor
+	float gravityFactor,
+	float velocityFactor
 )
 	: Particle(initTransform, realVelocity, initAcceleration, damping, integrationMethod, size)
 {
@@ -22,18 +24,20 @@ ParticleWithMass::ParticleWithMass(
 	_gravityFactor = gravityFactor;
 	_velocityFactor = velocityFactor;
 
+	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+
 	setSimulatedVelocity();
-	setSimulatedGravity();
-	setSimulatedAcceleration();
+	// setSimulatedGravity();
+	// setSimulatedAcceleration();
 	setSimulatedMass();
 }
 
-ParticleWithMass::ParticleWithMass(const physx::PxTransform& initTransform, const physx::PxVec3& realVelocity, const physx::PxVec3& initAcceleration, double realMass, float size, double gravityFactor, double velocityFactor, Constants::Integration_Method integrationMethod)
+ParticleWithMass::ParticleWithMass(const physx::PxTransform& initTransform, const physx::PxVec3& realVelocity, const physx::PxVec3& initAcceleration, float realMass, float size, float gravityFactor, float velocityFactor, Constants::Integration_Method integrationMethod)
 	: ParticleWithMass(initTransform, realVelocity, initAcceleration, Constants::Physics::Gravity, realMass, Constants::Physics::Damping, integrationMethod, size, gravityFactor, velocityFactor)
 {
 }
 
-ParticleWithMass::ParticleWithMass(const physx::PxTransform& initTransform, const physx::PxVec3& realVelocity, const physx::PxVec3& initAcceleration, double realMass, Constants::Integration_Method integrationMethod)
+ParticleWithMass::ParticleWithMass(const physx::PxTransform& initTransform, const physx::PxVec3& realVelocity, const physx::PxVec3& initAcceleration, float realMass, Constants::Integration_Method integrationMethod)
 	: ParticleWithMass(initTransform, realVelocity, initAcceleration, Constants::Physics::Gravity, realMass, Constants::Physics::Damping, integrationMethod)
 {
 }
@@ -51,49 +55,64 @@ ParticleWithMass::ParticleWithMass(const ParticleWithMass& other)
 
 	_mass = other._mass;
 	_massReal = other._massReal;
+
+	_resultingForce = other._resultingForce;
+	_inverseMass = other._inverseMass;
+	_registeredForces = other._registeredForces;
 }
 
-std::unique_ptr<Particle> ParticleWithMass::clone() const
+void ParticleWithMass::clearForces()
 {
-	return std::make_unique<ParticleWithMass>(*this);
+	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
 }
 
-// void ParticleWithMass::addForce(const physx::PxVec3 &force)
-// {
-// 	_forces.push_back(force);
-// }
-
-// void ParticleWithMass::clearForces()
-// {
-// 	_forces.clear();
-// 	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
-// }
-
-// physx::PxVec3 ParticleWithMass::getResultingForce()
-// {
-// 	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
-// 	for (const auto& force : _forces) {
-// 		_resultingForce += force;
-// 	}
-
-// 	return _resultingForce;
-// }
-
-double ParticleWithMass::getInverseMass() const {
-    return _inverseMass;
-}
-
-void ParticleWithMass::changeMass(double newMass)
+void ParticleWithMass::applyGlobalForces(const physx::PxVec3 &globalResultingForce)
 {
+	_resultingForce += globalResultingForce;
+}
+
+void ParticleWithMass::applyRegisteredForces()
+{
+	for (ForceGenerator* fg : _registeredForces) {
+		if (fg) {
+			_resultingForce += fg->getForce();
+		}
+	}
+}
+
+void ParticleWithMass::registerToForce(ForceGenerator &fg)
+{
+	_registeredForces.push_back(&fg);
+}
+
+void ParticleWithMass::unregisterFromForce(ForceGenerator &fg)
+{
+	_registeredForces.erase(
+		std::remove(
+			_registeredForces.begin(),
+			_registeredForces.end(),
+			&fg
+		),
+		_registeredForces.end()
+	);
+}
+
+void ParticleWithMass::unregisterFromAllForces()
+{
+	_registeredForces.clear();
+}
+
+void ParticleWithMass::changeMass(float newMass) {
 	_massReal = newMass;
 	setSimulatedMass();
 }
 
 void ParticleWithMass::update(double dt)
 {
-	Particle::update(dt);
+	_acceleration = physx::PxVec3(0.0f, 0.0f, 0.0f);
+	_acceleration += getResultingForce() * _inverseMass;
 
-	// _acceleration += getResultingForce() * static_cast<float>(_inverseMass);
+	Particle::update(dt);
 }
 
 void ParticleWithMass::setSimulatedVelocity()
@@ -101,19 +120,23 @@ void ParticleWithMass::setSimulatedVelocity()
 	_velocity = _velocityReal * _velocityFactor;
 }
 
-void ParticleWithMass::setSimulatedGravity()
-{
-	_gravity = _gravityReal * _gravityFactor;
-}
+// void ParticleWithMass::setSimulatedGravity()
+// {
+// 	_gravity = _gravityReal * _gravityFactor;
+// }
 
-void ParticleWithMass::setSimulatedAcceleration()
-{
-	_acceleration = _acceleration + _gravity;
-}
+// void ParticleWithMass::setSimulatedAcceleration()
+// {
+// 	_acceleration = _acceleration + _gravity;
+// }
 
 // Se calcula con base en la Energ�a Cin�tica que debe ser igual la real y la simulada
 void ParticleWithMass::setSimulatedMass()
 {
-	_mass = _massReal * pow((_velocityReal.magnitude() / _velocity.magnitude()), 2);
+	if (_velocity.magnitude() < Constants::Math::epsilon) {
+		_mass = _massReal;
+	} else {
+		_mass = _massReal * pow((_velocityReal.magnitude() / _velocity.magnitude()), 2);
+	}
 	_inverseMass = (_mass != 0.0) ? 1.0 / _mass : 0.0;
 }

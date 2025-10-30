@@ -7,6 +7,8 @@
 
 #include "Policies.h"
 
+class ForceManager;
+
 
 // class Particle;
 // using pID = std::uint64_t;
@@ -23,17 +25,17 @@ class ParticleGenerator;
 class ParticleSystem
 {
 private:
-	// static uint64_t _nextId; // Static counter for generating unique IDs
+	static uint64_t _nextId; // Static counter for generating unique IDs
 
 protected:
-	// uint64_t _id; // Protected to allow derived classes access
+	uint64_t _id; // Protected to allow derived classes access
 
 protected:
 	// std::vector<GeneratorAndParticlePool> _generatorAndChildParticlesList;
 
-	std::shared_ptr<Particle> _modelParticle;
-
 	physx::PxVec3 _emitterOrigin;
+
+	ForceManager& _forceManager;
 
 	// std::vector<uint64_t> _attachedForceGeneratorsIds;
 
@@ -51,13 +53,14 @@ public:
 	// Create new particles -> calls generator that returns a list to be incorporated by this system
 	virtual void update(double deltaTime) = 0;
 
-	uint64_t getId() const;
+	uint64_t getId() const { return _id; }
 
 
 protected:
+
 	// virtual void initParticlePools() {};
 	// Returns the reserve count per generator for this system
-	virtual uint64_t getReserveCountPerGenerator() const;
+	virtual uint64_t getReserveCountPerGenerator() const = 0;
 	// // Creates and registers a particle generator to this system. Don't forget to register it!
 	// virtual void createParticleGenerators() = 0;
 	// // Registers a particle generator to this system
@@ -65,7 +68,7 @@ protected:
 	// // Adds a particle to this system and associates it to the given generator
 	// virtual void addParticles(std::vector<Particle*>& particles, std::unique_ptr<ParticleGenerator>& generator);
 	// Determines if a particle must be deleted according to the generator lifetime policies
-	virtual bool mustDeleteParticle(const Particle& p, const ParticleGenerator& generator) const;
+	virtual bool mustKillParticle(const Particle& p, const ParticleGenerator& generator) const;
 	// // Removes a particle from this system and from the given generator
 	// virtual void removeDeadParticles(std::vector<GeneratorAndChildParticles>::iterator itPG);
 

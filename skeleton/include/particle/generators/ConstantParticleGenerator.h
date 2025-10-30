@@ -10,7 +10,8 @@ public:
     ConstantParticleGenerator() = default;
     ~ConstantParticleGenerator() = default;
 
-    std::vector<std::unique_ptr<Particle>> generateParticles(double deltaTime) override;
-
-    double getDistribution() const override;
+    double getDistribution() const override {
+        return 1.0;
+    }
+    
 };

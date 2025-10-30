@@ -21,13 +21,9 @@ public:
 	virtual ~ParticleGenerator() = default;
 
 	virtual void init(
-		const Particle& modelParticle,
 		const physx::PxVec3& emitterOrigin,
 		const Vector3Stats& velocity
 	);
-
-
-	virtual std::vector<std::unique_ptr<Particle>> generateParticles(double deltaTime);
 
 	virtual int numberOfGenerations();
 	virtual physx::PxVec3 getGeneratedPosition();
@@ -37,24 +33,19 @@ public:
 
 	virtual void setMeanVelocity(const physx::PxVec3& meanVel);
 	virtual void setVelocityDeviation(const physx::PxVec3& velDeviation);
-
-	virtual void setModelParticle(const Particle& model);
-
+	
 	virtual void setGenerationPolicy(const ParticleGenerationPolicy& genPolicy);
 	virtual void setLifetimePolicy(const ParticleLifetimePolicy& lifePolicy);
 
 	// Getters
 	virtual double getDistribution() const = 0;
 
-	virtual physx::PxVec3 getEmitterOrigin() const;
+	virtual physx::PxVec3 getEmitterOrigin() const { return _emitterOrigin; }
+	virtual physx::PxVec3 getMeanVelocity() const { return _meanVelocity; }
+	virtual physx::PxVec3 getVelocityDeviation() const { return _velocityDeviation; }
 
-	virtual physx::PxVec3 getMeanVelocity() const;
-	virtual physx::PxVec3 getVelocityDeviation() const;
-
-	virtual const Particle& getModelParticle() const;
-
-	virtual ParticleGenerationPolicy& getGenerationPolicy() const;
-	virtual ParticleLifetimePolicy& getLifetimePolicy() const;
+	virtual ParticleGenerationPolicy& getGenerationPolicy() const { return *_generationPolicy; }
+	virtual ParticleLifetimePolicy& getLifetimePolicy() const { return *_lifetimePolicy; }
 
 
 protected:
@@ -65,8 +56,6 @@ protected:
 
 	physx::PxVec3 _meanVelocity;
 	physx::PxVec3 _velocityDeviation;
-
-	std::unique_ptr<Particle> _modelParticle;
 
 	std::unique_ptr<ParticleGenerationPolicy>  _generationPolicy;
 	std::unique_ptr<ParticleLifetimePolicy> _lifetimePolicy;

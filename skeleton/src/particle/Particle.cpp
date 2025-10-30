@@ -12,12 +12,13 @@ uint64_t Particle::_nextId = 0;
 Particle::Particle()
 {
 	_transform = physx::PxTransform(0, 0, 0, physx::PxQuat::PxQuat());
-	_velocity = physx::PxVec3();
-	_acceleration = physx::PxVec3();
+	_velocity = physx::PxVec3(0, 0, 0);
+	_acceleration = physx::PxVec3(0, 0, 0);
 	_damping = Constants::Physics::Damping;
 	_integrationMethod = Constants::Integration_Method::VERLET;
 	_color = Constants::Color::White;
-	_transformPrevious = _transform;
+	_transformPrevious.p = _transform.p;
+	_transformPrevious.q = _transform.q;
 	_velocityPrevious = _velocity;
 	_size = Constants::Particle::Size;
 	_age = 0.0;
@@ -34,50 +35,58 @@ Particle::Particle(
     double damping,
     Constants::Integration_Method integrationMethod,
     float size)
-    : _transform(initTransform),
-      _velocity(initVelocity),
+    :_velocity(initVelocity),
       _acceleration(initAcceleration),
       _damping(damping),
       _integrationMethod(integrationMethod),
       _color(Constants::Color::White),
-      _transformPrevious(initTransform),
       _velocityPrevious(initVelocity),
       _size(size),
       _age(0.0)
 {
-	init();
+	_transform.p = initTransform.p;
+	_transform.q = initTransform.q;
+	_transformPrevious.p = initTransform.p;
+	_transformPrevious.q = initTransform.q;
 
-	deactivate();
+	init();
 }
 
 Particle::Particle(const physx::PxTransform& initTransform, const physx::PxVec3& initVelocity, const physx::PxVec3& initAcceleration, Constants::Integration_Method integrationMethod)
 	: Particle(initTransform, initVelocity, initAcceleration, Constants::Physics::Damping, integrationMethod)
-{ }
+{
+	init();
+}
 
 Particle::Particle(const physx::PxTransform &initTransform, const physx::PxVec3 &initVelocity, const physx::PxVec3 &initAcceleration, Constants::Integration_Method integrationMethod, float size, double damping, const physx::PxVec4 &color)
-	: _transform(initTransform),
-	  _velocity(initVelocity),
+	: _velocity(initVelocity),
 	  _acceleration(initAcceleration),
 	  _damping(damping),
 	  _integrationMethod(integrationMethod),
 	  _color(color),
-	  _transformPrevious(initTransform),
 	  _velocityPrevious(initVelocity),
 	  _size(size),
 	  _age(0.0)
 {
+	_transform.p = initTransform.p;
+	_transform.q = initTransform.q;
+	_transformPrevious.p = initTransform.p;
+	_transformPrevious.q = initTransform.q;
+
 	init();
 }
 
 Particle::Particle(const Particle& other)
 {
-	_transform = other._transform;
+	_transform.p = other._transform.p;
+	_transform.q = other._transform.q;
 	_velocity = other._velocity;
 	_acceleration = other._acceleration;
 	_damping = other._damping;
 	_integrationMethod = other._integrationMethod;
 	_color = other._color;
-	_transformPrevious = other._transformPrevious;
+	_transformPrevious.p = other._transformPrevious.p;
+	_transformPrevious.q = other._transformPrevious.q;
 	_velocityPrevious = other._velocityPrevious;
 	_size = other._size;
 	_age = other._age;
@@ -96,10 +105,10 @@ void Particle::init()
 {
 	_id = _nextId++;
 
-	_alive = true;
-	_firstIntegration = true;
-
 	createRenderItem();
+
+	_alive = false;
+	_firstIntegration = true;
 
 	switch (_integrationMethod)
 	{
@@ -109,7 +118,8 @@ void Particle::init()
 		break;
 	case Constants::Integration_Method::VERLET:
 		_velocityPrevious = _velocity;
-		_transformPrevious = _transform;
+		_transformPrevious.p = _transform.p;
+		_transformPrevious.q = _transform.q;
 		break;
 	case Constants::Integration_Method::NONE:
 		_velocity = _velocityPrevious = physx::PxVec3(0, 0, 0);
@@ -118,16 +128,13 @@ void Particle::init()
 	}
 }
 
-std::unique_ptr<Particle> Particle::clone() const
-{
-	return std::make_unique<Particle>(*this);
-}
-
 void Particle::setOrigin(const physx::PxTransform& origin)
 {
 	_transform.p.x = _transformPrevious.p.x = origin.p.x;
 	_transform.p.y = _transformPrevious.p.y = origin.p.y;
 	_transform.p.z = _transformPrevious.p.z = origin.p.z;
+
+	_transform.q = _transformPrevious.q = origin.q;
 }
 
 void Particle::setVelocity(const physx::PxVec3& velocity)
@@ -139,22 +146,6 @@ void Particle::createRenderItem()
 {
 	_shape = CreateShape(physx::PxSphereGeometry(_size));
 	_renderItem = new RenderItem(_shape, &_transform, _color);
-}
-
-double Particle::getAge() const {
-	return _age;
-}
-
-physx::PxVec3 Particle::getPosition() const {
-	return _transform.p;
-}
-
-physx::PxVec3 Particle::getVelocity() const {
-	return _velocity;
-}
-
-bool Particle::isActive() const {
-    return _alive;
 }
 
 void Particle::activate()
@@ -173,8 +164,6 @@ void Particle::update(double dt)
 {
 	integrate(dt);
 	updateAge(dt);
-
-	// _acceleration = physx::PxVec3(); // Reset acceleration at the end of the update (forces will be applied again before next update)
 }
 
 void Particle::setColor(const physx::PxVec4 &color)
@@ -186,10 +175,6 @@ void Particle::setColor(const physx::PxVec4 &color)
 void Particle::setVisibility(bool visibility)
 {
 	_renderItem->setVisibility(visibility);
-}
-
-uint64_t Particle::getId() const { 
-	return _id; 
 }
 
 void Particle::setAge(double age) {
@@ -273,11 +258,11 @@ void Particle::verletIntegration(double dt)
 
 	// std::cout << "Particle -> verletIntegration -> position: (" << _transform.p.x << "," << _transform.p.y << "," << _transform.p.z << ")" << std::endl;
 
-	physx::PxTransform a_posPrevious = _transform;
+	physx::PxVec3 a_posPrevious = _transform.p;
 
 	_transform.p = 2 * _transform.p - _transformPrevious.p + _acceleration * pow(dt, 2);
 
-	_transformPrevious = a_posPrevious;
+	_transformPrevious.p = a_posPrevious;
 
 	// The velocity is not calculated like other integrations do nor used in the position update
 	// To get the velocity use getter.

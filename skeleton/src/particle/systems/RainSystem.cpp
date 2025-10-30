@@ -1,79 +1,24 @@
 #include "RainSystem.h"
 
-// #include "ForceManager.h"
+#include "ForceManager.h"
 #include "UniformParticleGenerator.h"
 #include "Particle.h"
 #include "RainParticle.h"
 #include "MeshData.h"
 
 
-RainSystem::RainSystem(const physx::PxVec3& origin)
+RainSystem::RainSystem(const physx::PxVec3& origin, const physx::PxBounds3& region)
 	: ParticleSystem()
+	, _generatorsAndPools()
+	, _region(region)
+	, _intensityLevel(IntensityLevel::LIGHT_RAIN)
 {
 	_emitterOrigin = origin;
 }
 
 void RainSystem::init()
 {
-	// Create the model particle
-	physx::PxTransform initTransform = physx::PxTransform(0, 0, 0);
-	physx::PxVec3 initDirection = physx::PxVec3(0, -1, 0);
-
-	_modelParticle = std::make_unique<RainParticle>(physx::PxTransform(_emitterOrigin), initDirection);
-	_modelParticle->setVelocity(physx::PxVec3(0, 0, 0));
-
-	// Create particle generators
-	// createParticleGenerators();
-
 	initParticleGeneratorAndPool();
-}
-
-// void RainSystem::update(double deltaTime)
-// {
-// 	// for (auto itG = _generatorAndChildParticlesList.begin(); itG != _generatorAndChildParticlesList.end(); ++itG)
-// 	// {
-// 	// 	// Existing particles
-// 	// 	for (auto& p : itG->second) { // for each particle of this generator father
-// 	// 		p->update(deltaTime); // update particle
-// 	// 	}
-// 	// 	// Particle generation => generate and add to list
-// 	// 	for (auto& p : (itG->first)->generateParticles(deltaTime)) {
-// 	// 		itG->second.push_back(std::move(p));
-// 	// 	}
-// 	// 	// Cleanup dead particles
-// 	// 	removeDeadParticles(itG);
-// 	// }
-// }
-
-void RainSystem::update(double deltaTime)
-{
-	auto& gen = _generatorsAndPools.begin()->first;
-	auto& pool = _generatorsAndPools.begin()->second;
-
-	int numgen = gen->numberOfGenerations();
-
-	for (int i = 0; i < numgen; ++i) {
-		auto* p = pool->activate();
-		if (p) {
-			physx::PxTransform t = physx::PxTransform(0, 0, 0, physx::PxQuat(0));
-			t.p = gen->getGeneratedPosition();
-			p->setOrigin(t);
-			// p->setVelocity(physx::PxVec3(0, -5, 0));
-		}
-		else break;
-
-	}
-
-	auto& particles = pool->particles();
-	for (int i = 0; i < pool->getActiveCount(); ++i) {
-		particles[i]->update(deltaTime);
-	}
-
-}
-
-uint64_t RainSystem::getReserveCountPerGenerator() const
-{
-    return Constants::System::Rain::ReserveCountPerGenerator;
 }
 
 void RainSystem::initParticleGeneratorAndPool()
@@ -81,24 +26,23 @@ void RainSystem::initParticleGeneratorAndPool()
 	_generatorsAndPools.push_back({
         std::make_unique<UniformParticleGenerator>(),
         std::make_unique<ParticlePool<RainParticle>>(
-			getReserveCountPerGenerator(), 
-			physx::PxTransform(0, 0, 0, physx::PxQuat(0)), 
-			physx::PxVec3(0, 0, 0)
+			getReserveCountPerGenerator(),  // Pool size
+			physx::PxTransform(0, 0, 0, physx::PxQuat(0)), // Initial transform particle
+			physx::PxVec3(0, 0, 0) // Initial velocity particle
 		)
     });
 
     auto& generator = _generatorsAndPools[0].first;
 
     generator->init(
-        *_modelParticle,
         _emitterOrigin,
         Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0)) // velocity = 0
     );
 
     // Create generation policy
 	ParticleGenerationPolicy genPolicy = ParticleGenerationPolicy(
-		true, ScalarStats(30.0, 1.0),
-		true, ScalarStats(1.0, 1.0)
+		true, ScalarStats(10.0, 5.0),
+		true, ScalarStats(0.0, 0.0)
 	);
 
 	// Create the region shape for the policy
@@ -114,20 +58,84 @@ void RainSystem::initParticleGeneratorAndPool()
 	// genPolicy.setRegion(SpawnRegionType::SPHERE, sphereShape);
 	// genPolicy.setRegion(SpawnRegionType::POINT, pointShape);
 
-	ParticleGenerationPolicy::volumeShape meshShape;
-	MeshData meshData; 
-	// meshData.loadMesh("../resources/cone.obj");
-	meshData.loadMesh("../resources/monkey.obj");
-	new (&meshShape.mesh) MeshData(meshData);
-	genPolicy.setRegion(SpawnRegionType::MESH, meshShape);
+	// ParticleGenerationPolicy::volumeShape meshShape;
+	// MeshData meshData; 
+	// // meshData.loadMesh("../resources/cone.obj");
+	// meshData.loadMesh("../resources/monkey.obj");
+	// new (&meshShape.mesh) MeshData(meshData);
+	// genPolicy.setRegion(SpawnRegionType::MESH, meshShape);
 
+	ParticleGenerationPolicy::volumeShape boxShape;
+	new (&boxShape.box) physx::PxBounds3(
+		physx::PxVec3(
+			_region.minimum.x,
+			_region.maximum.y - 1.0f,
+			_region.minimum.z
+		),
+		physx::PxVec3(
+			_region.maximum.x,
+			_region.maximum.y,
+			_region.maximum.z
+		)
+	);
+	genPolicy.setRegion(SpawnRegionType::BOX, boxShape);
 
     generator->setGenerationPolicy(genPolicy);
 
     // Create lifetime policy
-	Vector3Stats sphere = Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(50, 50, 50));
-    ParticleLifetimePolicy lifePolicy = ParticleLifetimePolicy();
-    generator->setLifetimePolicy(lifePolicy);
+	// Vector3Stats sphere = Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(50, 50, 50));
+	// ParticleLifetimePolicy::volumeShape boxShape;
+	// new (&boxShape.box) physx::PxBounds3(_region);
+    ParticleLifetimePolicy lifePolicy = ParticleLifetimePolicy(_region, BoundType::SOLID);
+
+	// lifePolicy.setRegion(SpawnRegionType::BOX, boxShape);
+    
+	generator->setLifetimePolicy(lifePolicy);
+}
+
+void RainSystem::update(double deltaTime)
+{
+	physx::PxVec3 globalForce = _forceManager.getGlobalResultingForce();
+
+	for (auto& [gen, pool] : _generatorsAndPools) 
+	{
+		int numToSpawn = 0;
+
+		// Check if should spawn particles this frame
+		if (gen->getGenerationPolicy().shouldSpawn(gen->getDistribution(), deltaTime)) {
+			numToSpawn = gen->getGenerationPolicy().spawnNumber(gen->getDistribution());
+		}
+
+		// Spawn "new" particles (getting from the pool)
+		for (int i = 0; i < numToSpawn; ++i) 
+		{
+			auto* p = pool->activate();
+			if (p) {
+				physx::PxTransform t = physx::PxTransform(0, 0, 0, physx::PxQuat(0));
+				t.p = gen->getGeneratedPosition();
+				p->setOrigin(t);
+				p->setAcceleration(physx::PxVec3(0.0f, 0.0f, 0.0f));
+			}
+			else break;
+		}
+
+		// Update active particles and deactivate if needed
+		auto& particles = pool->particles();
+		for (int i = 0; i < pool->getActiveCount(); ++i) 
+		{
+			// std::cout << "Active Rain Particles: " << pool->getActiveCount() << std::endl;
+			particles[i]->clearForces();
+			particles[i]->applyGlobalForces(globalForce);
+			particles[i]->applyRegisteredForces();
+			particles[i]->update(deltaTime);
+
+			if (gen->getLifetimePolicy().shouldDelete(gen->getDistribution(), *particles[i])) {
+				pool->deactivate(i);
+				--i; // Adjust index after deactivation
+			}
+		}
+	}
+
 }
 
 // void RainSystem::createParticleGenerators()
