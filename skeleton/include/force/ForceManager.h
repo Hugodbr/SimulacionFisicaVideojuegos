@@ -9,6 +9,7 @@
 #include <PxPhysicsAPI.h>
 
 #include "ForceField.h"
+#include "Particle.h"
 
 using pSysId = std::uint64_t;
 // using ForceCollectionPointers = std::vector<std::unique_ptr<ForceGenerator>>;
@@ -33,6 +34,8 @@ public:
     // void deregisterForceGenerator(pSysId systemId, uint64_t forceGenId);
 
     void registerGlobalForce(std::unique_ptr<ForceField> forceGen);
+    void registerGlobalForceOnParticle(std::unique_ptr<ForceField> forceGen);
+    physx::PxVec3 applyGlobalForceOnParticle(Particle& particle, double deltaTime);
 
     // // Caution: returns a pointer to internal data structure. Objects can be modified but not deleted(vector is const).
     // // If no force generators for that system, returns nullptr.
@@ -60,6 +63,7 @@ private:
 
 private:
     std::vector<std::unique_ptr<ForceField>> _globalForces = {}; // List of global forces applied to all particle systems
+    std::vector<std::unique_ptr<ForceField>> _globalForcesOnParticles = {}; // List of global forces applied to all particles
     physx::PxVec3 _globalResultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
 
     // std::unordered_map<pSysId, ForceCollectionPointers> _particleSysForcesMap; // Map of particle system IDs to their associated force generators

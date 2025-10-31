@@ -1,6 +1,7 @@
 #include "ForceManager.h"
 
 #include "ForceField.h"
+#include "Particle.h"
 
 // void ForceManager::addGlobalForce(std::unique_ptr<ForceGenerator> &forceGen)
 // {
@@ -63,6 +64,22 @@ const physx::PxVec3 &ForceManager::getGlobalResultingForce() const
 void ForceManager::registerGlobalForce(std::unique_ptr<ForceField> forceGen)
 {
     _globalForces.push_back(std::move(forceGen));
+}
+
+void ForceManager::registerGlobalForceOnParticle(std::unique_ptr<ForceField> forceGen)
+{
+    _globalForcesOnParticles.push_back(std::move(forceGen));
+}
+
+physx::PxVec3 ForceManager::applyGlobalForceOnParticle(Particle &particle, double deltaTime)
+{
+    physx::PxVec3 totalForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+
+    for (auto& globalForceOnParticle : _globalForcesOnParticles) {
+        totalForce += globalForceOnParticle->computeForceOnParticle(particle);
+    }
+
+    return totalForce;
 }
 
 void ForceManager::update(double deltaTime)

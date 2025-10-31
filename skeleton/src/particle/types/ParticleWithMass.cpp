@@ -66,7 +66,7 @@ void ParticleWithMass::clearForces()
 	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
 }
 
-void ParticleWithMass::applyGlobalForces(const physx::PxVec3 &globalResultingForce)
+void ParticleWithMass::applyForce(const physx::PxVec3 &globalResultingForce)
 {
 	_resultingForce += globalResultingForce;
 }

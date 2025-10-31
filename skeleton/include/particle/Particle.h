@@ -50,7 +50,9 @@ public:
 
 	virtual ~Particle(); 
 
-	virtual void setOrigin(const physx::PxTransform &origin);
+	virtual void setTransform(const physx::PxTransform &origin);
+	virtual void setOriginalTransform(const physx::PxTransform &transform);
+	virtual void setTransformRelative(const physx::PxTransform &transform);
 	virtual void setVelocity(const physx::PxVec3 &velocity);
 	virtual void setAge(double age);
 	virtual void setAcceleration(const physx::PxVec3 &acceleration);
@@ -58,6 +60,10 @@ public:
 	virtual double getAge() const { return _age; }
 	virtual physx::PxVec3 getPosition() const { return _transform.p; }
 	virtual physx::PxVec3 getVelocity() const { return _velocity; }
+	virtual physx::PxTransform getTransform() const { return _transform; }
+	virtual physx::PxTransform getOriginalTransform() const { return _transformOriginal; }
+	virtual physx::PxTransform getRelativeTransform() const { return _relativeTransform; }
+
 	virtual bool isActive() const { return _alive; }
 	uint64_t getId() const { return _id; }
 
@@ -99,7 +105,8 @@ protected:
 
 	physx::PxTransform _transform; // position and direction
 	physx::PxTransform _transformPrevious; // position and direction
-
+	physx::PxTransform _transformOriginal; // position and direction
+	physx::PxTransform _relativeTransform; // position and direction
 
 	Constants::Integration_Method _integrationMethod;
 

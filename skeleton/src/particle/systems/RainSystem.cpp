@@ -113,19 +113,20 @@ void RainSystem::update(double deltaTime)
 			if (p) {
 				physx::PxTransform t = physx::PxTransform(0, 0, 0, physx::PxQuat(0));
 				t.p = gen->getGeneratedPosition();
-				p->setOrigin(t);
+				p->setTransform(t);
 				p->setAcceleration(physx::PxVec3(0.0f, 0.0f, 0.0f));
 			}
 			else break;
 		}
 
 		// Update active particles and deactivate if needed
-		auto& particles = pool->particles();
+		auto& particles = pool->accessParticlePool();
 		for (int i = 0; i < pool->getActiveCount(); ++i) 
 		{
 			// std::cout << "Active Rain Particles: " << pool->getActiveCount() << std::endl;
 			particles[i]->clearForces();
-			particles[i]->applyGlobalForces(globalForce);
+			particles[i]->applyForce(globalForce);
+			particles[i]->applyForce(_forceManager.applyGlobalForceOnParticle(*particles[i], deltaTime));
 			particles[i]->applyRegisteredForces();
 			particles[i]->update(deltaTime);
 
@@ -137,55 +138,3 @@ void RainSystem::update(double deltaTime)
 	}
 
 }
-
-// void RainSystem::createParticleGenerators()
-// {
-// 	// Create the generator
-// 	std::unique_ptr<ParticleGenerator> generator = std::make_unique<UniformParticleGenerator>();
-
-// 	generator->init(
-// 		*_modelParticle,
-// 		_emitterOrigin,
-// 		Vector3Stats(physx::PxVec3(0.0f, -100.0f, 0.0f), physx::PxVec3(0.0f, -1.0f, 0.0f)) // velocity
-// 	);
-
-// 	// Create generation policy
-// 	ParticleGenerationPolicy genPolicy = ParticleGenerationPolicy(
-// 		true, ScalarStats(30.0, 1.0),
-// 		true, ScalarStats(1.0, 1.0)
-// 	);
-// 	// Create the region shape for the policy
-// 	// ParticleGenerationPolicy::volumeShape boxShape;
-// 	// new (&boxShape.box) physx::PxBounds3(physx::PxVec3(-100.0f, -100.0f, -100.0f), physx::PxVec3(100.0f, 100.0f, 100.0f));
-// 	//ParticleGenerationPolicy::volumeShape sphereShape;
-// 	//new (&sphereShape.sphere) Vector3Stats(physx::PxVec3(0.0f, 0.0f, 0.0f), physx::PxVec3(10.0f, 10.0f, 10.0f));
-// 	//ParticleGenerationPolicy::volumeShape pointShape;
-// 	//new (&pointShape.point) Vector3Stats();
-
-// 	// Set the region of generation: region type and shape
-// 	// genPolicy.setRegion(SpawnRegionType::BOX, boxShape);
-// 	//genPolicy.setRegion(SpawnRegionType::SPHERE, sphereShape);
-// 	//genPolicy.setRegion(SpawnRegionType::POINT, pointShape);
-
-// 	ParticleGenerationPolicy::volumeShape meshShape;
-// 	MeshData meshData; 
-// 	// meshData.loadMesh("../resources/cone.obj");
-// 	meshData.loadMesh("../resources/circle.obj");
-// 	new (&meshShape.mesh) MeshData(meshData);
-// 	genPolicy.setRegion(SpawnRegionType::MESH, meshShape);
-	
-// 	// Assign generator policy to the generator
-// 	generator->setGenerationPolicy(genPolicy);
-
-// 	// 
-// 	//=========================================================================
-// 	// Create lifetime policy
-// 	ParticleLifetimePolicy lifePolicy = ParticleLifetimePolicy(
-// 		ScalarStats(100, 0.1)
-// 	);
-
-// 	generator->setLifetimePolicy(lifePolicy);
-
-// 	// Register the generator to this system
-// 	registerParticleGenerator(generator);
-// }

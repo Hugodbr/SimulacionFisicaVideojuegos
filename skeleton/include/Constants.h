@@ -86,7 +86,11 @@ namespace Constants
 			static constexpr uint64_t ReserveCountPerGenerator = 10000;
 		};
 		namespace Rain {
-			static constexpr uint64_t ReserveCountPerGenerator = 10000;
+			static constexpr uint64_t ReserveCountPerGenerator = 15000;
+		};
+
+		namespace Gun {
+			static constexpr uint64_t ReserveCountPerGenerator = 100;
 		};
 	};
 

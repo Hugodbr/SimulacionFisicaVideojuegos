@@ -37,11 +37,11 @@ void GridSystem::toggleVisibility()
 {
     _visible = !_visible;
 
-    for (auto& genAndPool : _generatorsAndPools) 
+    for (auto& [generator, pool] : _generatorsAndPools) 
     {
-        for (int i = 0; i < genAndPool.second->getActiveCount(); ++i) 
+        for (int i = 0; i < pool->getActiveCount(); ++i) 
         {
-            genAndPool.second->particles()[i]->setVisibility(_visible);
+            pool->accessParticlePool()[i]->setVisibility(_visible);
         }
     }
 }
@@ -77,13 +77,13 @@ void GridSystem::createParticlesInGrid()
     // originParticle->setOrigin(particleTransform);
     // originParticle->setColor(Constants::Color::Red);
 
-    auto a = _generatorsAndPools.begin()->second->particles();
+    auto a = _generatorsAndPools.begin()->second->accessParticlePool();
 
     for (auto& _generatorsAndPools_it = _generatorsAndPools.begin(); _generatorsAndPools_it != _generatorsAndPools.end(); ++_generatorsAndPools_it)
     {
         auto* particle = _generatorsAndPools_it->second->activate();
         if (particle) {
-            particle->setOrigin(particleTransform);
+            particle->setTransform(particleTransform);
             particle->setColor(Constants::Color::Red);
         }
     }
@@ -112,7 +112,7 @@ void GridSystem::createParticlesInGrid()
                 {
                     auto* particle = _generatorsAndPools_it->second->activate();
                     if (particle) {
-                        particle->setOrigin(particleTransform);
+                        particle->setTransform(particleTransform);
                         particle->setColor(Constants::Color::Green);
                     }
                 }

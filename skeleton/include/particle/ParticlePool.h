@@ -11,6 +11,7 @@ template<typename ParticleType>
 class ParticlePool 
 {
 private:
+    std::vector<std::byte> m_Buffer;
     std::pmr::monotonic_buffer_resource m_Arena;
     std::pmr::vector<ParticleType*> m_Particles;
     int m_ActiveCount = 0;
@@ -19,13 +20,13 @@ private:
 public:
     template<typename... Args>
     explicit ParticlePool(int maxParticles, Args&&... args)
-        : m_Arena(maxParticles * sizeof(ParticleType)),
+        : m_Buffer(maxParticles * sizeof(ParticleType)),
+          m_Arena(m_Buffer.data(), m_Buffer.size()),
           m_Particles(&m_Arena),
           m_MaxParticles(maxParticles)
     {
         m_Particles.reserve(maxParticles);
 
-        // Construct all particles up-front
         for (int i = 0; i < maxParticles; ++i) {
             void* mem = m_Arena.allocate(sizeof(ParticleType), alignof(ParticleType));
             ParticleType* p = new (mem) ParticleType(std::forward<Args>(args)...);
@@ -33,7 +34,7 @@ public:
         }
     }
 
-    ~ParticlePool() {
+    ~ParticlePool() noexcept {
         for (auto* p : m_Particles)
             p->~ParticleType();
     }
@@ -54,7 +55,7 @@ public:
         std::swap(m_Particles[idx], m_Particles[--m_ActiveCount]);
     }
 
-    std::pmr::vector<ParticleType*>& particles() {
+    std::pmr::vector<ParticleType*>& accessParticlePool() {
         return m_Particles;
     }
 

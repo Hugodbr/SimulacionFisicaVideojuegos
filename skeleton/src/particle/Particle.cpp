@@ -12,6 +12,7 @@ uint64_t Particle::_nextId = 0;
 Particle::Particle()
 {
 	_transform = physx::PxTransform(0, 0, 0, physx::PxQuat::PxQuat());
+	_transformOriginal = physx::PxTransform(0, 0, 0, physx::PxQuat::PxQuat());
 	_velocity = physx::PxVec3(0, 0, 0);
 	_acceleration = physx::PxVec3(0, 0, 0);
 	_damping = Constants::Physics::Damping;
@@ -48,6 +49,8 @@ Particle::Particle(
 	_transform.q = initTransform.q;
 	_transformPrevious.p = initTransform.p;
 	_transformPrevious.q = initTransform.q;
+	_transformOriginal.p = initTransform.p;
+	_transformOriginal.q = initTransform.q;
 
 	init();
 }
@@ -72,6 +75,8 @@ Particle::Particle(const physx::PxTransform &initTransform, const physx::PxVec3 
 	_transform.q = initTransform.q;
 	_transformPrevious.p = initTransform.p;
 	_transformPrevious.q = initTransform.q;
+	_transformOriginal.p = initTransform.p;
+	_transformOriginal.q = initTransform.q;
 
 	init();
 }
@@ -80,6 +85,8 @@ Particle::Particle(const Particle& other)
 {
 	_transform.p = other._transform.p;
 	_transform.q = other._transform.q;
+	_transformOriginal.p = other._transformOriginal.p;
+	_transformOriginal.q = other._transformOriginal.q;
 	_velocity = other._velocity;
 	_acceleration = other._acceleration;
 	_damping = other._damping;
@@ -120,6 +127,8 @@ void Particle::init()
 		_velocityPrevious = _velocity;
 		_transformPrevious.p = _transform.p;
 		_transformPrevious.q = _transform.q;
+		_transformOriginal.p = _transform.p;
+		_transformOriginal.q = _transform.q;
 		break;
 	case Constants::Integration_Method::NONE:
 		_velocity = _velocityPrevious = physx::PxVec3(0, 0, 0);
@@ -128,13 +137,25 @@ void Particle::init()
 	}
 }
 
-void Particle::setOrigin(const physx::PxTransform& origin)
+void Particle::setTransform(const physx::PxTransform& origin)
 {
 	_transform.p.x = _transformPrevious.p.x = origin.p.x;
 	_transform.p.y = _transformPrevious.p.y = origin.p.y;
 	_transform.p.z = _transformPrevious.p.z = origin.p.z;
 
 	_transform.q = _transformPrevious.q = origin.q;
+}
+
+void Particle::setOriginalTransform(const physx::PxTransform &transform)
+{
+	_transformOriginal.p = transform.p;
+	_transformOriginal.q = transform.q;
+}
+
+void Particle::setTransformRelative(const physx::PxTransform &transform)
+{
+	_relativeTransform.p = transform.p;
+	_relativeTransform.q = transform.q;
 }
 
 void Particle::setVelocity(const physx::PxVec3& velocity)

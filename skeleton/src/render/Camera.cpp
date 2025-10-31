@@ -117,6 +117,15 @@ PxVec3 Camera::getDir() const
 	return mDir; 
 }
 
+PxTransform Camera::getTransformRelativeToCamera(float forwardDist, float sideOffset, float upOffset) const
+{
+    PxTransform cam = getTransform();
+    // Local offset from camera (right, up, forward)
+    PxVec3 localOffset(sideOffset, upOffset, -forwardDist); // negative z is forward in PhysX
+    PxVec3 pos = cam.p + cam.q.rotate(localOffset);
+    PxQuat rot = cam.q;
+    return PxTransform(pos, rot);
+}
 
 }
 

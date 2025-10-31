@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.15...3.30)
 # Proyecto en C++
 project(SIM_3_GDV VERSION 1.0 LANGUAGES CXX)
 
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Checked;Profile" CACHE STRING "" FORCE)
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Checked;Profile;RelWithDebInfo" CACHE STRING "" FORCE)
 
 # Selecciona la versión C++17 del estándar (sin extensiones)
 set(CMAKE_CXX_STANDARD 17)
@@ -65,6 +65,7 @@ function(add_multiconfig_lib base_path target_name lib_base_name lib_suffix)
         IMPORTED_LOCATION_DEBUG    "${base_path}/${lib_base_name}DEBUG${lib_suffix}.lib"
         IMPORTED_LOCATION_CHECKED  "${base_path}/${lib_base_name}CHECKED${lib_suffix}.lib"
         IMPORTED_LOCATION_PROFILE  "${base_path}/${lib_base_name}PROFILE${lib_suffix}.lib"
+        IMPORTED_LOCATION_RELWITHDEBINFO "${base_path}/${lib_base_name}${lib_suffix}.lib"
     )
 endfunction()
 

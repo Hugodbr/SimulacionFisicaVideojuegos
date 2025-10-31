@@ -48,7 +48,7 @@ public:
 	virtual ~ParticleWithMass() = default;
 
 	virtual void clearForces();
-	virtual void applyGlobalForces(const physx::PxVec3& globalResultingForce);
+	virtual void applyForce(const physx::PxVec3& globalResultingForce);
 	virtual void applyRegisteredForces();
 
 	virtual physx::PxVec3 getResultingForce() const { return _resultingForce; }

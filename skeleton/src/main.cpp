@@ -18,6 +18,8 @@
 
 #include "ForceManager.h"
 #include "GravitationalForce.h"
+#include "WindForce.h"
+#include "HurricaneForce.h"
 
 #include "CoordAxis.h"
 #include "Particle.h"
@@ -26,6 +28,7 @@
 
 #include "RainSystem.h"
 #include "GridSystem.h"
+#include "GunSystem.h"
 
 
 std::string display_text = "This is a test";
@@ -49,9 +52,11 @@ PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
 //RenderItem* sphere = nullptr;
+std::vector<Particle*> particles;
 
 Camera* cam = nullptr;
 std::vector<ParticleSystem*> particleSystems;
+
 ForceManager& forceManager = ForceManager::getInstance();
 
 GridSystem* gridSystem = nullptr;
@@ -78,24 +83,6 @@ void shootBullet() {
 	////std::cout << initDirection.x << " " << initDirection.y << " " << initDirection.z;
 
 	//particles.push_back(new CannonBall(initTransform, initDirection, Constants::Integration_Method::VERLET));
-}
-
-void createParticles(Constants::ParticleType particleType)
-{
-	//switch (particleType) {
-	//	case Constants::DEFAULT: {
-
-	//		break;
-	//	}
-	//	case Constants::BULLET: {
-
-	//		break;
-	//	}
-	//	case Constants::CANNON_BALL: {
-
-	//		break;
-	//	}
-	//}
 }
 
 // Initialize physics engine
@@ -129,13 +116,40 @@ void initPhysics(bool interactive)
 	cam = GetCamera();
 	//shootParticle();
 
-	physx::PxBounds3 rainRegion(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100));
+	// =========================================================================================
+	// Global Forces
+	// =========================================================================================
+	ForceManager::getInstance().registerGlobalForce(
+		std::make_unique<GravitationalForce>()
+	);
+
+	// ForceManager::getInstance().registerGlobalForceOnParticle(
+	// 	std::make_unique<WindForce>(physx::PxVec3(10.0f, 0.0f, 0.0f))
+	// );
+
+	ForceManager::getInstance().registerGlobalForceOnParticle(
+		std::make_unique<HurricaneForce>(physx::PxVec3(0.0f, 0.0f, 0.0f), physx::PxVec3(0.0f, 0.0f, 0.0f))
+	);
+
+	// // =========================================================================================
+	// // Gun System
+	// // =========================================================================================
+	// GunSystem* gunSystem = new GunSystem(physx::PxVec3(30.0f, 2.0f, 0.0f), cam);
+	// gunSystem->init();
+	// particleSystems.push_back(gunSystem);
+
+	// =========================================================================================
+	// Rain System
+	// =========================================================================================
+	physx::PxBounds3 rainRegion(physx::PxVec3(-50, -50, -50), physx::PxVec3(50, 50, 50));
 	physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.maximum.y, 0.0f);
 	RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
 	rs->init();
 	particleSystems.push_back(rs);
 
-	// // Grid System. Starting invisible
+	// =========================================================================================
+	// Grid System
+	// =========================================================================================
 	// gridSystem = new GridSystem(
 	// 	physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100)), 
 	// 	1.0f, 
@@ -146,17 +160,45 @@ void initPhysics(bool interactive)
 	// gridSystem->toggleVisibility(); // Start invisible
 	// particleSystems.push_back(gridSystem);
 
-	ForceManager::getInstance().registerGlobalForce(
-		std::make_unique<GravitationalForce>()
-	);
 	
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
 	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));
 	//sphere = new RenderItem(shape, Vector4(255, 0, 0, 255));
 	//RegisterRenderItem(sphere);
 
-	}
+	// Create a particle in front of the camera with an offset that will move with the camera
+	// physx::PxVec3 eye = cam->getEye();
+	// physx::PxVec3 dir = cam->getDir();
 
+	// float distanceFromCamera = 1.0f; // meters
+	// PxVec3 gunPosition = eye + dir * distanceFromCamera;
+	// physx::PxTransform particleTransform = physx::PxTransform(
+	// 	gunPosition.x,
+	// 	gunPosition.y,
+	// 	gunPosition.z
+	// );
+
+	// PxVec3 worldUp(0, 1, 0);
+	// PxVec3 right = dir.cross(worldUp).getNormalized();
+	// PxVec3 up = right.cross(dir).getNormalized();
+
+	// // offsets in meters
+	// float distance = 1.0f;      // forward from camera
+	// float sideOffset = 0.3f;    // right offset
+	// float upOffset = -0.2f;     // downward offset
+
+	// PxVec3 gunPos = eye + dir * distance + right * sideOffset + up * upOffset;
+
+	// PxMat33 camOrientation(dir.cross(worldUp), worldUp, -dir);
+	// PxQuat gunOrientation(camOrientation);	
+
+	// PxTransform camTransform = cam->getTransform();
+	// gunPos = camTransform.p + camTransform.q.rotate(PxVec3(0.3f, -0.2f, -1.0f));
+	// PxQuat gunRot = camTransform.q;
+
+	// particles.push_back(new Particle(physx::PxTransform(physx::PxVec3(0, 0, 0), physx::PxQuat(0)), physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0), Constants::Integration_Method::VERLET, 3.0f, 0.98, Constants::Color::Red));
+
+}
 
 // Function to configure what happens in each step of physics
 // interactive: true if the game is rendering, false if it offline
@@ -235,7 +277,7 @@ void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
 int main(int, const char*const*)
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	// _CrtSetBreakAlloc(number); // Uncomment to break at specific memory allocation number
+	// _CrtSetBreakAlloc(524); // Uncomment to break at specific memory allocation number
 
 #ifndef OFFLINE_EXECUTION 
 	extern void renderLoop();
