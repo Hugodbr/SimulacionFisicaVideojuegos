@@ -60,8 +60,8 @@ void RainSystem::initParticleGeneratorAndPool()
 
 	// ParticleGenerationPolicy::volumeShape meshShape;
 	// MeshData meshData; 
-	// // meshData.loadMesh("../resources/cone.obj");
-	// meshData.loadMesh("../resources/monkey.obj");
+	// // meshData.loadMeshFromFile("../resources/cone.obj");
+	// meshData.loadMeshFromFile("../resources/monkey.obj");
 	// new (&meshShape.mesh) MeshData(meshData);
 	// genPolicy.setRegion(SpawnRegionType::MESH, meshShape);
 

@@ -39,7 +39,7 @@ void GunSystem::initParticleGeneratorAndPool()
 
     // Create generation policy
 	ParticleGenerationPolicy genPolicy;
-	_meshData.loadMesh("../resources/flashLight.obj");
+	_meshData.loadMeshFromFile("../resources/flashLight.obj");
 	genPolicy.setRegion(Region(_meshData));
     generator->setGenerationPolicy(genPolicy);
 

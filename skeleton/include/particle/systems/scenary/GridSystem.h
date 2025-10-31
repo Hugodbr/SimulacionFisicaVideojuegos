@@ -10,7 +10,7 @@ class ConstantParticleGenerator;
 class GridSystem : public ParticleSystem
 {
 public:
-    GridSystem(const physx::PxBounds3 &region, float pointSize = 1.0f, double scale = 10.0, const Vector4& color = Constants::Color::White);
+    GridSystem(const Region &region, float pointSize = 1.0f, double scale = 10.0, const Vector4& color = Constants::Color::White);
     ~GridSystem() = default;
 
     void init() override;
@@ -24,21 +24,20 @@ protected:
         return Constants::System::Grid::ReserveCountPerGenerator;
     }
 
-    void initParticleGeneratorAndPool();
+    virtual void initParticleGeneratorAndPool();
 
-    void createParticlesInGrid();
+    virtual void createParticlesInGrid();
 
 
 protected:
 
-    physx::PxBounds3 _region;
+    Region _region;
     float _pointSize;
     double _scale;
     Vector4 _color;
 
     bool _visible;
 
-private:
     std::vector<
         std::pair<
             std::unique_ptr<ConstantParticleGenerator>,

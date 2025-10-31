@@ -7,7 +7,7 @@
 #include <sstream>
 
 
-void MeshData::loadMesh(const std::string& filename) 
+void MeshData::loadMeshFromFile(const std::string& filename) 
 {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(

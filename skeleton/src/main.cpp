@@ -29,6 +29,8 @@
 #include "RainSystem.h"
 #include "GridSystem.h"
 #include "GunSystem.h"
+#include "BoxSystem.h"
+#include "MeshSystem.h"
 
 
 std::string display_text = "This is a test";
@@ -141,26 +143,49 @@ void initPhysics(bool interactive)
 	// =========================================================================================
 	// Rain System
 	// =========================================================================================
-	physx::PxBounds3 rainRegion(physx::PxVec3(-50, -50, -50), physx::PxVec3(50, 50, 50));
-	physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.maximum.y, 0.0f);
-	RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
-	rs->init();
-	particleSystems.push_back(rs);
+	// physx::PxBounds3 rainRegion(physx::PxVec3(-50, -50, -50), physx::PxVec3(50, 50, 50));
+	// physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.maximum.y, 0.0f);
+	// RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
+	// rs->init();
+	// particleSystems.push_back(rs);
 
 	// =========================================================================================
 	// Grid System
 	// =========================================================================================
-	gridSystem = new GridSystem(
-		physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100)), 
+	// gridSystem = new GridSystem(
+	// 	Region(physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100))), 
+	// 	1.0f, 
+	// 	20.0,
+	// 	Constants::Color::White
+	// );
+	// gridSystem->init();
+	// gridSystem->toggleVisibility(); // Start invisible
+	// particleSystems.push_back(gridSystem);
+
+	// =========================================================================================
+	// Box System
+	// =========================================================================================
+	BoxSystem* boxSystem = new BoxSystem(
+		Region(MeshData()), 
 		1.0f, 
-		20.0,
+		1.0,
 		Constants::Color::White
 	);
-	gridSystem->init();
-	gridSystem->toggleVisibility(); // Start invisible
-	particleSystems.push_back(gridSystem);
+	boxSystem->init();
+	particleSystems.push_back(boxSystem);
 
-	
+	// =========================================================================================
+	// Suzanne Mesh System
+	// =========================================================================================
+	MeshSystem* meshSystem = new MeshSystem(
+		"../resources/suzanneCenter.obj", 
+		1.0f, // point size
+		2.0, // scale
+		Constants::Color::White
+	);
+	meshSystem->init();
+	particleSystems.push_back(meshSystem);
+
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
 	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));
 	//sphere = new RenderItem(shape, Vector4(255, 0, 0, 255));

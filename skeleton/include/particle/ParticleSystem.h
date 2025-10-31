@@ -6,6 +6,7 @@
 #include "PxPhysicsAPI.h"
 
 #include "Policies.h"
+#include "ParticlePool.h"
 
 class ForceManager;
 

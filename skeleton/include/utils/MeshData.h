@@ -22,8 +22,11 @@ struct MeshData {
         vertices = other.vertices;
         indices = other.indices;
     }
+    MeshData(const std::string& filename) {
+        loadMeshFromFile(filename);
+    }
 
-    void loadMesh(const std::string& filename);
+    void loadMeshFromFile(const std::string& filename);
     void readUniqueVertices(const std::string& filename);
 
     physx::PxVec3 randomPointOnMesh(const std::function<double()>& distributionFunc);
@@ -32,6 +35,7 @@ struct MeshData {
     MeshData& operator =(const MeshData& other) {
         vertices = other.vertices;
         indices = other.indices;
+        uniqueVertices = other.uniqueVertices;
         return *this;
     }
 };

@@ -4,7 +4,7 @@
 #include "StaticParticle.h"
 
 
-GridSystem::GridSystem(const physx::PxBounds3 &region, float pointSize, double scale, const Vector4& color)
+GridSystem::GridSystem(const Region &region, float pointSize, double scale, const Vector4& color)
     : ParticleSystem()
     , _region(region)
     , _pointSize(pointSize)
@@ -68,7 +68,7 @@ void GridSystem::createParticlesInGrid()
     // Particle at origin
     auto particle = particlePool->activateParticle();
     physx::PxTransform particleTransform(physx::PxVec3(0, 0, 0), physx::PxQuat(0));
-    // particle->setSize(10.0f);
+    particle->setSize(10.0f);
 
     if (particle) {
         particle->setTransform(particleTransform);
@@ -84,12 +84,12 @@ void GridSystem::createParticlesInGrid()
         }
     }
 
-    float a_minX = _region.minimum.x;
-    float a_maxX = _region.maximum.x;
-    float a_minY = _region.minimum.y;
-    float a_maxY = _region.maximum.y;
-    float a_minZ = _region.minimum.z;
-    float a_maxZ = _region.maximum.z;
+    float a_minX = _region.shape.box.minimum.x;
+    float a_maxX = _region.shape.box.maximum.x;
+    float a_minY = _region.shape.box.minimum.y;
+    float a_maxY = _region.shape.box.maximum.y;
+    float a_minZ = _region.shape.box.minimum.z;
+    float a_maxZ = _region.shape.box.maximum.z;
 
     for (float x = a_minX; x <= a_maxX; x += _scale) 
     {

@@ -208,8 +208,10 @@ void Particle::setAcceleration(const physx::PxVec3 &acceleration) {
 
 void Particle::setSize(double size)
 {
+	DeregisterRenderItem(_renderItem);
 	_renderItem->release();
-	
+	_renderItem = nullptr;
+
 	_size = size;
 	createRenderItem();
 	if (_alive) {
@@ -219,7 +221,7 @@ void Particle::setSize(double size)
 
 void Particle::integrate(double dt)
 {
-	//std::cout << "Integrating: velX: " << _velocity.x << " velY: " << _velocity.y << " velZ: " << _velocity.z << '\n';
+	// std::cout << "Integrating: velX: " << _velocity.x << " velY: " << _velocity.y << " velZ: " << _velocity.z << '\n';
 
 	switch (_integrationMethod) 
 	{

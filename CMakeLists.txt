@@ -40,6 +40,7 @@ set(MY_INCLUDE_DIRECTORIES
     "${SKELETON_INCLUDE_DIR}/particle"
     "${SKELETON_INCLUDE_DIR}/particle/generators"
     "${SKELETON_INCLUDE_DIR}/particle/systems"
+    "${SKELETON_INCLUDE_DIR}/particle/systems/scenary"
     "${SKELETON_INCLUDE_DIR}/particle/types"
     "${SKELETON_INCLUDE_DIR}/particle/policies"
 

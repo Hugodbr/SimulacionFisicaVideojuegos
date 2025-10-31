@@ -42,6 +42,12 @@ public:
 		Constants::Integration_Method integrationMethod
 	);
 
+	ParticleWithMass(
+		float realMass,
+		float size,
+		const physx::PxVec4& color
+	);
+
 	// Copy constructor
 	ParticleWithMass(const ParticleWithMass& other);
 

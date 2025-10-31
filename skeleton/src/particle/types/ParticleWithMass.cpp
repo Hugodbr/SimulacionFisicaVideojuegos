@@ -42,6 +42,12 @@ ParticleWithMass::ParticleWithMass(const physx::PxTransform& initTransform, cons
 {
 }
 
+ParticleWithMass::ParticleWithMass(float realMass, float size, const physx::PxVec4 &color)
+	: Particle(physx::PxTransform(physx::PxVec3(0, 0, 0), physx::PxQuat(0)), physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0), Constants::Integration_Method::VERLET, size, Constants::Physics::Damping, color)
+	, _massReal(realMass)
+{
+}
+
 ParticleWithMass::ParticleWithMass(const ParticleWithMass& other)
 	: Particle(other)
 {
