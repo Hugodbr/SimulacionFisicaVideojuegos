@@ -206,6 +206,17 @@ void Particle::setAcceleration(const physx::PxVec3 &acceleration) {
 	_acceleration = acceleration;
 }
 
+void Particle::setSize(double size)
+{
+	_renderItem->release();
+	
+	_size = size;
+	createRenderItem();
+	if (_alive) {
+		RegisterRenderItem(_renderItem);
+	}
+}
+
 void Particle::integrate(double dt)
 {
 	//std::cout << "Integrating: velX: " << _velocity.x << " velY: " << _velocity.y << " velZ: " << _velocity.z << '\n';

@@ -65,20 +65,19 @@ void RainSystem::initParticleGeneratorAndPool()
 	// new (&meshShape.mesh) MeshData(meshData);
 	// genPolicy.setRegion(SpawnRegionType::MESH, meshShape);
 
-	ParticleGenerationPolicy::volumeShape boxShape;
-	new (&boxShape.box) physx::PxBounds3(
-		physx::PxVec3(
-			_region.minimum.x,
-			_region.maximum.y - 1.0f,
-			_region.minimum.z
-		),
-		physx::PxVec3(
-			_region.maximum.x,
-			_region.maximum.y,
-			_region.maximum.z
-		)
-	);
-	genPolicy.setRegion(SpawnRegionType::BOX, boxShape);
+
+	genPolicy.setRegion(Region(physx::PxBounds3(
+				physx::PxVec3(
+					_region.minimum.x,
+					_region.maximum.y - 1.0f,
+					_region.minimum.z
+				),
+				physx::PxVec3(
+					_region.maximum.x,
+					_region.maximum.y,
+					_region.maximum.z
+				)
+			)));
 
     generator->setGenerationPolicy(genPolicy);
 
@@ -109,7 +108,7 @@ void RainSystem::update(double deltaTime)
 		// Spawn "new" particles (getting from the pool)
 		for (int i = 0; i < numToSpawn; ++i) 
 		{
-			auto* p = pool->activate();
+			auto* p = pool->activateParticle();
 			if (p) {
 				physx::PxTransform t = physx::PxTransform(0, 0, 0, physx::PxQuat(0));
 				t.p = gen->getGeneratedPosition();

@@ -22,7 +22,7 @@ public:
 
 	virtual void init(
 		const physx::PxVec3& emitterOrigin,
-		const Vector3Stats& velocity
+		const Vector3Stats& velocity = Vector3Stats()
 	);
 
 	virtual int numberOfGenerations();

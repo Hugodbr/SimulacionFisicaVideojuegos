@@ -56,6 +56,7 @@ public:
 	virtual void setVelocity(const physx::PxVec3 &velocity);
 	virtual void setAge(double age);
 	virtual void setAcceleration(const physx::PxVec3 &acceleration);
+	virtual void setSize(double size);
 
 	virtual double getAge() const { return _age; }
 	virtual physx::PxVec3 getPosition() const { return _transform.p; }

@@ -39,7 +39,7 @@ public:
             p->~ParticleType();
     }
 
-    ParticleType* activate() {
+    ParticleType* activateParticle() {
         if (m_ActiveCount >= m_MaxParticles) {
             std::cerr << "Pool full.\n";
             return nullptr;

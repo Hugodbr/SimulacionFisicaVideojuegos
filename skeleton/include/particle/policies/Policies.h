@@ -4,41 +4,15 @@
 #include <functional>
 #include <assert.h>
 
-#include <PxPhysicsAPI.h>
+#include "Region.h"
 
 #include "Particle.h"
-#include "MeshData.h"
 
-
-struct Vector3Stats {
-    physx::PxVec3 mean;
-    physx::PxVec3 deviation;
-
-    Vector3Stats(): mean(physx::PxVec3(0, 0, 0)), deviation(physx::PxVec3(0, 0, 0)) {}
-    Vector3Stats(physx::PxVec3 mean, physx::PxVec3 deviation) : mean(mean), deviation(deviation) {}
-};
-
-struct ScalarStats {
-    double mean;
-    double deviation;
-
-    ScalarStats() : mean(0.0), deviation(0.0) {}
-    ScalarStats(double mean, double deviation) : mean(mean), deviation(deviation) {}
-};
-
-//=========================================================================================================
+//========================================================================================
 // PARTICLE GENERATION POLICY
-//=========================================================================================================
+//========================================================================================
 
 enum class SpawnMode { Count, Interval }; // for distinguishing constructors
-
-enum class SpawnRegionType {
-    POINT,
-    BOX,
-    SPHERE,
-    DISC,
-    MESH
-};
 
 struct ParticleGenerationPolicy
 {
@@ -48,18 +22,9 @@ struct ParticleGenerationPolicy
     bool useSpawnInterval;    // for effects like thunderm which has an interval between generation (not a constant generation each frame like rain)
     ScalarStats spawnInterval;     // 
 
-    SpawnRegionType regionType = SpawnRegionType::POINT;
     Vector3Stats position;    // mean = center, deviation = extents or radius
 
-    union volumeShape {
-        Vector3Stats point;  // mean=center, deviation.x = 0
-        physx::PxBounds3 box;
-        Vector3Stats sphere; // mean=center, deviation.x = radius (OBS: better with Gaussian distribution?)
-        Vector3Stats disc;   // mean=center, deviation.x = radius (OBS: define plane by vector components, i.e. XY plane)
-        MeshData mesh;
-        volumeShape() {}
-        ~volumeShape() {}
-    } shape;
+    Region region;
 
 private:
     double currentSpawnInterval = INT_MAX;
@@ -67,7 +32,7 @@ private:
 
 public:
 
-    // CONSTRUCTORS ------------------------------------------------------------------------------------
+    // CONSTRUCTORS --------------------------------------------------------------------------
     // No default constructor
     ParticleGenerationPolicy(); 
     // Spawn count and spawn interval
@@ -84,7 +49,7 @@ public:
     // METHODS -----------------------------------------------------------------------------------------
     void setSpawnCount(const ScalarStats& newSpawnCount);
     void setSpawnInterval(const ScalarStats& newSpawnInterval);
-    void setRegion(SpawnRegionType type, const volumeShape& shape);
+    void setRegion(const Region& r);
 
     physx::PxVec3 generatePosition(const std::function<double()>& distributionFunc); // generate a random spawn point
     

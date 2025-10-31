@@ -2,6 +2,9 @@
 
 #include <stdexcept>
 #include <random>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 
 void MeshData::loadMesh(const std::string& filename) 
@@ -27,6 +30,31 @@ void MeshData::loadMesh(const std::string& filename)
             indices.push_back(m->mFaces[i].mIndices[j]);
         }
     }
+
+    readUniqueVertices(filename);
+}
+
+void MeshData::readUniqueVertices(const std::string& filename) 
+{
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open file: " + filename);
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        // Skip lines that don't start with 'v ' (space is important!)
+        if (line.rfind("v ", 0) == 0) {
+            std::istringstream iss(line.substr(2)); // skip "v "
+            float x, y, z;
+            if (iss >> x >> y >> z) {
+                uniqueVertices.emplace_back(x, y, z);
+            }
+        }
+    }
+
+    file.close();
+    std::cout << "Loaded " << uniqueVertices.size() << " vertices from " << filename << std::endl;
 }
 
 physx::PxVec3 MeshData::randomPointOnMesh(const std::function<double()>& distributionFunc) 
@@ -50,4 +78,9 @@ physx::PxVec3 MeshData::randomPointOnMesh(const std::function<double()>& distrib
     }
 
     return a + (b - a) * u + (c - a) * v;
+}
+
+std::vector<physx::PxVec3> MeshData::getMeshVertices() const
+{
+    return uniqueVertices;
 }

@@ -11,14 +11,11 @@ ParticleGenerationPolicy::ParticleGenerationPolicy()
     spawnCount(ScalarStats(0.0, 0.0)),
     useSpawnInterval(false),
     spawnInterval(ScalarStats(0.0, 0.0)),
-    regionType(SpawnRegionType::POINT),
+    region(Region(POINT_3D, Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0)))),
     position(Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0))),
     currentSpawnInterval(INT_MAX),
     accumulator(0.0)
-{
-    // Initialize union with a default shape based on the region type
-    new (&shape.point) Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0));
-}
+{ }
 
 ParticleGenerationPolicy::ParticleGenerationPolicy(
     bool useSpawnCount,    ScalarStats spawnCount,
@@ -27,6 +24,7 @@ ParticleGenerationPolicy::ParticleGenerationPolicy(
     , spawnCount(spawnCount)
     , useSpawnInterval(useSpawnInterval)
     , spawnInterval(spawnInterval)
+    , region(Region(POINT_3D, Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0))))
 { }
 
 ParticleGenerationPolicy::ParticleGenerationPolicy(SpawnMode mode, ScalarStats spawnStats)
@@ -34,7 +32,7 @@ ParticleGenerationPolicy::ParticleGenerationPolicy(SpawnMode mode, ScalarStats s
     , spawnCount(mode == SpawnMode::Count ? spawnStats : ScalarStats(0, 0))
     , useSpawnInterval(mode == SpawnMode::Interval)
     , spawnInterval(mode == SpawnMode::Interval ? spawnStats : ScalarStats(0, 0))
-    , regionType(SpawnRegionType::POINT)
+    , region(Region(POINT_3D, Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0))))
     , position(Vector3Stats())
     , currentSpawnInterval(INT_MAX)
     , accumulator(0.0)
@@ -49,30 +47,11 @@ ParticleGenerationPolicy::ParticleGenerationPolicy(const ParticleGenerationPolic
     , spawnCount(other.spawnCount)
     , useSpawnInterval(other.useSpawnInterval)
     , spawnInterval(other.spawnInterval)
-    , regionType(other.regionType)
+    , region(other.region)
     , position(other.position)
     , currentSpawnInterval(other.currentSpawnInterval)
     , accumulator(other.accumulator)
-{
-    switch (regionType)
-    {
-    case SpawnRegionType::POINT:
-        new (&shape.point) Vector3Stats(other.shape.point);
-        break;
-    case SpawnRegionType::BOX:
-        new (&shape.box) physx::PxBounds3(other.shape.box);
-        break;
-    case SpawnRegionType::SPHERE:
-        new (&shape.sphere) Vector3Stats(other.shape.sphere);
-        break;
-    case SpawnRegionType::DISC:
-        new (&shape.disc) Vector3Stats(other.shape.disc);
-        break;
-    case SpawnRegionType::MESH:
-        new (&shape.mesh) MeshData(other.shape.mesh);
-        break;
-    }
-}
+{ }
 
 void ParticleGenerationPolicy::setSpawnCount(const ScalarStats& newSpawnCount)
 {
@@ -86,51 +65,34 @@ void ParticleGenerationPolicy::setSpawnInterval(const ScalarStats& newSpawnInter
     spawnInterval = newSpawnInterval;
 }
 
-void ParticleGenerationPolicy::setRegion(SpawnRegionType type, const volumeShape& shape)
+void ParticleGenerationPolicy::setRegion(const Region& r)
 {
-    regionType = type;
+    this->region = Region(r);
 
-    switch (type) 
+    switch (r.type) 
     {
-    case SpawnRegionType::POINT: {
-        this->shape.point = shape.point;
-
-        position.mean = shape.point.mean;
-        position.deviation = shape.point.deviation;
+    case POINT_3D: {
+        position.mean = this->region.shape.point.mean;
+        position.deviation = this->region.shape.point.deviation;
         break;
     }
-    case SpawnRegionType::BOX: {
-        this->shape.box = shape.box;
-
-        position.mean = shape.box.getCenter();
-        position.deviation = shape.box.getDimensions()/2.0;
-
-        // std::cout << "ParticleGenerationPolicy -> position.mean: (" << position.mean.x << "," << position.mean.y << "," << position.mean.z << ")" << std::endl;
-        // std::cout << "ParticleGenerationPolicy -> position.deviation: (" << position.deviation.x << "," << position.deviation.y << "," << position.deviation.z << ")" << std::endl;
+    case BOX: {
+        position.mean = this->region.shape.box.getCenter();
+        position.deviation = this->region.shape.box.getDimensions()/2.0;
         break;
     }
-    case SpawnRegionType::SPHERE: {
-        this->shape.sphere = shape.sphere;
-
-        position.mean = shape.sphere.mean;
-        position.deviation = shape.sphere.deviation;
+    case SPHERE: {
+        position.mean = this->region.shape.sphere.mean;
+        position.deviation = this->region.shape.sphere.deviation;
         break;
     }
-    case SpawnRegionType::DISC: {
-        this->shape.disc = shape.disc;
-
-        position.mean = shape.disc.mean;
-        position.deviation = shape.disc.deviation;
+    case DISC: {
+        position.mean = this->region.shape.disc.mean;
+        position.deviation = this->region.shape.disc.deviation;
         break;
     }
-    case SpawnRegionType::MESH: {
-        new (&this->shape.mesh) MeshData(shape.mesh);
-        // this->shape.mesh.indices = shape.mesh.indices;
-
-        // for (size_t i = 0; i < shape.mesh.vertices.size(); ++i)
-        //     this->shape.mesh.vertices[i] = shape.mesh.vertices[i];
-
-        position.mean = physx::PxVec3(0, 60, 0);
+    case MESH: {
+        position.mean = physx::PxVec3(0, 0, 0);
         position.deviation = physx::PxVec3(0, 0, 0);
         break;
     }
@@ -157,9 +119,9 @@ physx::PxVec3 ParticleGenerationPolicy::generatePosition(const std::function<dou
     //else if (regionType == SpawnRegionType::DISC) {
     //    return position.mean + position.deviation * distr;
     //}
-    if (regionType == SpawnRegionType::MESH) {
+    if (region.type == MESH) {
         // std::cout << "ParticleGenerationPolicy -> generatePosition: MESH region." << std::endl;
-        return shape.mesh.randomPointOnMesh(distributionFunc) + position.mean;
+        return region.shape.mesh.randomPointOnMesh(distributionFunc) + position.mean;
     }
 
     physx::PxVec3 generatedPosition;

@@ -33,6 +33,7 @@
 #include <ctype.h>
 #include "foundation/PxMat33.h"
 
+
 using namespace physx;
 
 namespace Snippets
@@ -60,12 +61,18 @@ bool Camera::handleKey(unsigned char key, int x, int y, float speed)
 	PX_UNUSED(y);
 
 	PxVec3 viewY = mDir.cross(PxVec3(0,1,0)).getNormalized();
+	PxVec3 forward = PxVec3(mDir.x, 0, mDir.z).getNormalized();
 	switch(toupper(key))
 	{
 	case 'W':	mEye += mDir*2.0f*speed;		break;
 	case 'S':	mEye -= mDir*2.0f*speed;		break;
 	case 'A':	mEye -= viewY*2.0f*speed;		break;
 	case 'D':	mEye += viewY*2.0f*speed;		break;
+	// Arrow keys
+	case 'T':	mEye += forward*2.0f*speed;		break; // Walk forward
+	case 'G':	mEye -= forward*2.0f*speed;		break; // Walk backward
+	case 'F':	mEye -= viewY*2.0f*speed;		break; // Strafe left
+	case 'H':	mEye += viewY*2.0f*speed;		break; // Strafe right
 	default:							return false;
 	}
 	return true;

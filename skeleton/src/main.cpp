@@ -131,10 +131,10 @@ void initPhysics(bool interactive)
 		std::make_unique<HurricaneForce>(physx::PxVec3(0.0f, 0.0f, 0.0f), physx::PxVec3(0.0f, 0.0f, 0.0f))
 	);
 
-	// // =========================================================================================
-	// // Gun System
-	// // =========================================================================================
-	// GunSystem* gunSystem = new GunSystem(physx::PxVec3(30.0f, 2.0f, 0.0f), cam);
+	// =========================================================================================
+	// Gun System
+	// =========================================================================================
+	// GunSystem* gunSystem = new GunSystem(physx::PxVec3(8.0f, 3.0f, 0.0f), cam);
 	// gunSystem->init();
 	// particleSystems.push_back(gunSystem);
 
@@ -150,15 +150,15 @@ void initPhysics(bool interactive)
 	// =========================================================================================
 	// Grid System
 	// =========================================================================================
-	// gridSystem = new GridSystem(
-	// 	physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100)), 
-	// 	1.0f, 
-	// 	10.0,
-	// 	Constants::Color::White
-	// );
-	// gridSystem->init();
-	// gridSystem->toggleVisibility(); // Start invisible
-	// particleSystems.push_back(gridSystem);
+	gridSystem = new GridSystem(
+		physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100)), 
+		1.0f, 
+		20.0,
+		Constants::Color::White
+	);
+	gridSystem->init();
+	gridSystem->toggleVisibility(); // Start invisible
+	particleSystems.push_back(gridSystem);
 
 	
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));

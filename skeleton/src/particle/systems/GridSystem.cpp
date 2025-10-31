@@ -18,11 +18,6 @@ void GridSystem::init()
 {
     _emitterOrigin = physx::PxVec3(0, 0, 0);
 
-    // std::vector<std::pair<ConstantParticleGenerator, ParticlePool<StaticParticle>>> _generatorsAndPools;
-
-    // // Create the particle generator
-    // ConstantParticleGenerator generator = createParticleGenerator();
-
     initParticleGeneratorAndPool();
 
     // Create particles in grid
@@ -55,43 +50,39 @@ void GridSystem::initParticleGeneratorAndPool()
 
     auto& generator = _generatorsAndPools[0].first;
 
-    generator->init(
-        _emitterOrigin,
-        Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0)) // velocity = 0
-    );
+    generator->init(_emitterOrigin);
 
     // Create generation policy
-	ParticleGenerationPolicy genPolicy = ParticleGenerationPolicy();
+	ParticleGenerationPolicy genPolicy;
     generator->setGenerationPolicy(genPolicy);
 
     // Create lifetime policy
-    ParticleLifetimePolicy lifePolicy = ParticleLifetimePolicy();
+    ParticleLifetimePolicy lifePolicy;
     generator->setLifetimePolicy(lifePolicy);
 }
 
 void GridSystem::createParticlesInGrid()
 {
+    auto& particlePool = _generatorsAndPools.begin()->second;
+    
     // Particle at origin
-    physx::PxTransform particleTransform(physx::PxVec3(0, 0, 0));
-    // std::unique_ptr<Particle> originParticle = _modelParticle->clone();
-    // originParticle->setOrigin(particleTransform);
-    // originParticle->setColor(Constants::Color::Red);
+    auto particle = particlePool->activateParticle();
+    physx::PxTransform particleTransform(physx::PxVec3(0, 0, 0), physx::PxQuat(0));
+    // particle->setSize(10.0f);
 
-    auto a = _generatorsAndPools.begin()->second->accessParticlePool();
+    if (particle) {
+        particle->setTransform(particleTransform);
+        particle->setColor(Constants::Color::Red);
+    }
 
     for (auto& _generatorsAndPools_it = _generatorsAndPools.begin(); _generatorsAndPools_it != _generatorsAndPools.end(); ++_generatorsAndPools_it)
     {
-        auto* particle = _generatorsAndPools_it->second->activate();
+        auto* particle = _generatorsAndPools_it->second->activateParticle();
         if (particle) {
             particle->setTransform(particleTransform);
             particle->setColor(Constants::Color::Red);
         }
     }
-
-    // // Assuming only one generator in the list
-    // _generatorAndChildParticlesList.begin()->second.push_back(
-    //     std::move(originParticle)
-    // );
 
     float a_minX = _region.minimum.x;
     float a_maxX = _region.maximum.x;
@@ -110,10 +101,15 @@ void GridSystem::createParticlesInGrid()
 
                 for (auto& _generatorsAndPools_it = _generatorsAndPools.begin(); _generatorsAndPools_it != _generatorsAndPools.end(); ++_generatorsAndPools_it)
                 {
-                    auto* particle = _generatorsAndPools_it->second->activate();
+                    auto* particle = _generatorsAndPools_it->second->activateParticle();
                     if (particle) {
                         particle->setTransform(particleTransform);
-                        particle->setColor(Constants::Color::Green);
+                        particle->setColor(Vector4(
+                            (x/a_maxX) * 255.0f,
+                            255.0f,
+                            0.0f,
+                            255.0f
+                        ));
                     }
                 }
             }

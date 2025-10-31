@@ -1,8 +1,9 @@
 #include "GunSystem.h"
 
-// #include "Camera.h"
+#include "MathUtils.h"
 #include "UniformParticleGenerator.h"
 #include "StaticParticle.h"
+
 
 
 GunSystem::GunSystem(const physx::PxVec3 &position, Camera* cam)
@@ -20,7 +21,7 @@ void GunSystem::init()
 
 void GunSystem::initParticleGeneratorAndPool()
 {
-    float size = 0.9f;
+    float size = 0.3f;
     physx::PxVec4 color = Constants::Color::White;
 
     _generatorsAndPools.push_back({
@@ -34,27 +35,19 @@ void GunSystem::initParticleGeneratorAndPool()
 
     auto& generator = _generatorsAndPools[0].first;
 
-    generator->init(
-        _emitterOrigin,
-        Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0)) // velocity = 0
-    );
+    generator->init(_emitterOrigin);
 
     // Create generation policy
-	ParticleGenerationPolicy genPolicy = ParticleGenerationPolicy(
-		true, ScalarStats(10.0, 5.0),
-		true, ScalarStats(0.0, 0.0)
-	);
-
-    ParticleGenerationPolicy::volumeShape meshShape;
-	MeshData meshData; 
-	meshData.loadMesh("../resources/flashLight.obj");
-	new (&meshShape.mesh) MeshData(meshData);
-	genPolicy.setRegion(SpawnRegionType::MESH, meshShape);
+	ParticleGenerationPolicy genPolicy;
+	_meshData.loadMesh("../resources/flashLight.obj");
+	genPolicy.setRegion(Region(_meshData));
     generator->setGenerationPolicy(genPolicy);
 
-    ParticleLifetimePolicy lifePolicy = ParticleLifetimePolicy();
+    // Create lifetime policy
+    ParticleLifetimePolicy lifePolicy;
 	generator->setLifetimePolicy(lifePolicy);
 
+    // Finally,
     createGun();
 }
 
@@ -62,15 +55,18 @@ void GunSystem::createGun()
 {
     for (auto& [gen, pool] : _generatorsAndPools) 
 	{
-		int numToSpawn = Constants::System::Gun::ReserveCountPerGenerator;
+		// int numToSpawn = Constants::System::Gun::ReserveCountPerGenerator;
+
+		auto& vertices = _meshData.getMeshVertices();
+        std::cout << "GunSystem::createGun -> vertices size: " << vertices.size() << std::endl;
 
 		// Spawn "new" particles (getting from the pool)
-		for (int i = 0; i < numToSpawn; ++i) 
+        for (const auto& v : vertices)
 		{
-			auto* p = pool->activate();
+			auto* p = pool->activateParticle();
 			if (p) {
-				physx::PxTransform t = physx::PxTransform(0, 0, 0, physx::PxQuat(0));
-				t.p = gen->getGeneratedPosition();
+				physx::PxTransform t = physx::PxTransform(v, physx::PxQuat(0));
+				// t.p = gen->getGeneratedPosition();
                 p->setTransformRelative(physx::PxTransform(_emitterOrigin - t.p, physx::PxQuat(0)));
 				p->setTransform(t); 
 				p->setAcceleration(physx::PxVec3(0.0f, 0.0f, 0.0f));
@@ -82,21 +78,31 @@ void GunSystem::createGun()
 
 void GunSystem::update(double deltaTime)
 {
-    physx::PxTransform camTransform = _camera->getTransformRelativeToCamera(30.0f, 0.0f, 0.0f);
+    physx::PxTransform gunTransform = _camera->getTransformRelativeToCamera(
+        _emitterOrigin.z, _emitterOrigin.x, _emitterOrigin.y
+    );
     
+    float stiffness = 10.0f; // how fast it catches up (try 5–15)
+    float t = 1.0f - expf(-stiffness * (float)deltaTime); // framerate-independent smoothing
 
     for (auto& [gen, pool] : _generatorsAndPools) 
-	{
-		auto& particles = pool->accessParticlePool();
-		for (int i = 0; i < pool->getActiveCount(); ++i) 
-		{
-            particles[i]->setTransform(
-                _camera->getTransformRelativeToCamera(
-                    30.0f, 0.0f, 0.0f
-                )
-            );
-		}
-	}
+    {
+        auto& particles = pool->accessParticlePool();
+        for (int i = 0; i < pool->getActiveCount(); ++i) 
+        {
+            physx::PxTransform current = particles[i]->getTransform();
+
+            // Target transform (camera-relative)
+            physx::PxVec3 targetPos = gunTransform.transform(particles[i]->getRelativeTransform().p);
+            physx::PxQuat targetRot = gunTransform.q;
+
+            // Smoothly interpolate position and rotation
+            physx::PxVec3 smoothedPos = lerp(current.p, targetPos, t);
+            physx::PxQuat smoothedRot = slerp(current.q, targetRot, t);
+
+            particles[i]->setTransform(physx::PxTransform(smoothedPos, smoothedRot));
+        }
+    }
 }
 
 void GunSystem::setTransform(const physx::PxTransform &t)

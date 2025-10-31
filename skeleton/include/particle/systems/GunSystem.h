@@ -5,7 +5,7 @@
 
 class UniformParticleGenerator;
 class StaticParticle;
-
+class MeshData;
 
 class GunSystem : public ParticleSystem
 {
@@ -33,6 +33,8 @@ protected:
     void createGun();
 
     Camera* _camera;
+
+	MeshData _meshData;
 
 	std::vector<
         std::pair<
