@@ -42,10 +42,24 @@ ParticleWithMass::ParticleWithMass(const physx::PxTransform& initTransform, cons
 {
 }
 
+ParticleWithMass::ParticleWithMass(float realMass, float size, const physx::PxVec4 &color, float speed)
+	: Particle(physx::PxTransform(physx::PxVec3(0, 0, 0), physx::PxQuat(0)), physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0), Constants::Integration_Method::VERLET, size, Constants::Physics::Damping, color)
+	, _massReal(realMass)
+{
+	_velocityReal = physx::PxVec3(1, 0, 0).getNormalized() * speed;
+
+	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+
+	setSimulatedMass();
+}
+
 ParticleWithMass::ParticleWithMass(float realMass, float size, const physx::PxVec4 &color)
 	: Particle(physx::PxTransform(physx::PxVec3(0, 0, 0), physx::PxQuat(0)), physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0), Constants::Integration_Method::VERLET, size, Constants::Physics::Damping, color)
 	, _massReal(realMass)
 {
+	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+
+	setSimulatedMass();
 }
 
 ParticleWithMass::ParticleWithMass(const ParticleWithMass& other)
@@ -65,6 +79,12 @@ ParticleWithMass::ParticleWithMass(const ParticleWithMass& other)
 	_resultingForce = other._resultingForce;
 	_inverseMass = other._inverseMass;
 	_registeredForces = other._registeredForces;
+}
+
+void ParticleWithMass::setRealVelocity(const physx::PxVec3 &realVelocity)
+{
+	_velocityReal = realVelocity;
+	setSimulatedVelocity();
 }
 
 void ParticleWithMass::clearForces()
@@ -124,6 +144,7 @@ void ParticleWithMass::update(double dt)
 void ParticleWithMass::setSimulatedVelocity()
 {
 	_velocity = _velocityReal * _velocityFactor;
+	_speed = _velocity.magnitude();
 }
 
 // void ParticleWithMass::setSimulatedGravity()

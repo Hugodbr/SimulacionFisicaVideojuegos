@@ -2,6 +2,7 @@
 
 #include "ParticleSystem.h"
 #include "ParticlePool.h"
+#include "Region.h"
 
 class UniformParticleGenerator;
 class RainParticle;
@@ -15,12 +16,12 @@ enum IntensityLevel {
 class RainSystem : public ParticleSystem
 {
 private:
-	physx::PxBounds3 _region;
+	Region _region;
 	IntensityLevel _intensityLevel;
 	
 public:
 
-	RainSystem(const physx::PxVec3 &origin, const physx::PxBounds3 &region);
+	RainSystem(const physx::PxVec3 &origin, const Region& region);
 	~RainSystem() = default;
 
 	void init() override;

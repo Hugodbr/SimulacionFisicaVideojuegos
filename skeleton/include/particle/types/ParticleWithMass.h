@@ -45,6 +45,13 @@ public:
 	ParticleWithMass(
 		float realMass,
 		float size,
+		const physx::PxVec4& color,
+		float speed
+	);
+
+	ParticleWithMass(
+		float realMass,
+		float size,
 		const physx::PxVec4& color
 	);
 
@@ -52,6 +59,8 @@ public:
 	ParticleWithMass(const ParticleWithMass& other);
 
 	virtual ~ParticleWithMass() = default;
+
+	virtual void setRealVelocity(const physx::PxVec3& realVelocity);
 
 	virtual void clearForces();
 	virtual void applyForce(const physx::PxVec3& globalResultingForce);

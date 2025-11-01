@@ -7,7 +7,7 @@
 #include "MeshData.h"
 
 
-RainSystem::RainSystem(const physx::PxVec3& origin, const physx::PxBounds3& region)
+RainSystem::RainSystem(const physx::PxVec3& origin, const Region& region)
 	: ParticleSystem()
 	, _generatorsAndPools()
 	, _region(region)
@@ -65,19 +65,13 @@ void RainSystem::initParticleGeneratorAndPool()
 	// new (&meshShape.mesh) MeshData(meshData);
 	// genPolicy.setRegion(SpawnRegionType::MESH, meshShape);
 
+	physx::PxBounds3 box = physx::PxBounds3(
+		physx::PxVec3(_region.shape.box.minimum.x, _region.shape.box.maximum.y - 1.0f, _region.shape.box.minimum.z),
+		physx::PxVec3(_region.shape.box.maximum.x, _region.shape.box.maximum.y, _region.shape.box.maximum.z)
+	);
+	Region generationRegion(box);
 
-	genPolicy.setRegion(Region(physx::PxBounds3(
-				physx::PxVec3(
-					_region.minimum.x,
-					_region.maximum.y - 1.0f,
-					_region.minimum.z
-				),
-				physx::PxVec3(
-					_region.maximum.x,
-					_region.maximum.y,
-					_region.maximum.z
-				)
-			)));
+	genPolicy.setRegion(generationRegion);
 
     generator->setGenerationPolicy(genPolicy);
 

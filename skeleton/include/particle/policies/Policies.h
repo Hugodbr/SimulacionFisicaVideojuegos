@@ -26,6 +26,8 @@ struct ParticleGenerationPolicy
 
     Region region;
 
+    std::function<bool(double, const Particle&)> customCallback; // custom callback to given particle
+
 private:
     double currentSpawnInterval = INT_MAX;
     double accumulator = 0.0; // auxiliar to interval evaluation
@@ -62,11 +64,6 @@ public:
 // PARTICLE LIFETIME POLICY
 //=========================================================================================================
 
-enum class VolumeType { 
-    NONE, 
-    BOX,   // box shape volume
-    SPHERE // center with a radius
-};
 enum class BoundType { 
     NONE, 
     SOLID, // particle can't live outside and is always alive inside
@@ -80,15 +77,9 @@ struct ParticleLifetimePolicy
     ScalarStats lifetime;    // statistics to determine lifetime (OBS: the particle has the information of its lifetime accumulation)
 
     bool useVolumeBounds;    // expire when out of region
-    VolumeType volumeType = VolumeType::NONE;   // shape type
     BoundType boundType   = BoundType::NONE;    // solid or fade
 
-    union volumeShape {
-        physx::PxBounds3 box;
-        Vector3Stats sphere; // mean=center, deviation.x = radius (OBS: better with Gaussian distribution)
-        volumeShape() {}
-        ~volumeShape() {}
-    } shape;
+    Region region;
 
     ScalarStats fade;
 
@@ -100,32 +91,35 @@ struct ParticleLifetimePolicy
     ParticleLifetimePolicy();
     // Lifetime only
     ParticleLifetimePolicy(const ScalarStats& lifetime);
-    // Box only (solid by default)
-    ParticleLifetimePolicy(const physx::PxBounds3& box, BoundType boundType = BoundType::SOLID);
-    // Sphere only (solid by default)
-    ParticleLifetimePolicy(const Vector3Stats& sphere, BoundType boundType = BoundType::SOLID);
+    ParticleLifetimePolicy(const Region& region, BoundType boundType = BoundType::SOLID);
+    // // Box only (solid by default)
+    // ParticleLifetimePolicy(const physx::PxBounds3& box, BoundType boundType = BoundType::SOLID);
+    // // Sphere only (solid by default)
+    // ParticleLifetimePolicy(const Vector3Stats& sphere, BoundType boundType = BoundType::SOLID);
     // Callback only
     ParticleLifetimePolicy(std::function<bool(double, const Particle&)> callback);
-    // Combined constructor (lifetime + bounds)
-    ParticleLifetimePolicy(
-        const ScalarStats& lifetime,
-        const physx::PxBounds3& box,
-        BoundType boundType = BoundType::SOLID);
-    // Combined constructor (lifetime + sphere + callback)
-    ParticleLifetimePolicy(
-        const ScalarStats& lifetime,
-        const Vector3Stats& sphere,
-        BoundType boundType,
-        std::function<bool(double, const Particle&)> callback);
+    // // Combined constructor (lifetime + bounds)
+    // ParticleLifetimePolicy(
+    //     const ScalarStats& lifetime,
+    //     const physx::PxBounds3& box,
+    //     BoundType boundType = BoundType::SOLID);
+    // // Combined constructor (lifetime + sphere + callback)
+    // ParticleLifetimePolicy(
+    //     const ScalarStats& lifetime,
+    //     const Vector3Stats& sphere,
+    //     BoundType boundType,
+    //     std::function<bool(double, const Particle&)> callback);
     // Copy constructor
     ParticleLifetimePolicy(const ParticleLifetimePolicy& other);
 
     // METHODS -----------------------------------------------------------------------------------------
     void setLifetime(const ScalarStats& newLifetime);
-    void setVolumeBoundsBox(const physx::PxBounds3& newBox);
-    void setVolumeBoundsSphere(const Vector3Stats& newSphere);
+    // void setVolumeBoundsBox(const physx::PxBounds3& newBox);
+    // void setVolumeBoundsSphere(const Vector3Stats& newSphere);
+    void setVolumeRegion(const Region& r);
     void setVolumeBoundsFadeSize(const ScalarStats& newFade);
     void setCustomCondition(std::function<bool(double, const Particle&)>& newCustomCallback);
+    // void setVolumeMeshRegion(const MeshData& mesh); // to be implemented
 
     void unsetLifetime();
     void unsetVolumeBounds();

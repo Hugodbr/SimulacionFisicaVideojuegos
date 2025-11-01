@@ -1,5 +1,7 @@
 #include "Policies.h"
 
+#include <algorithm>
+
 
 
 //=========================================================================================================
@@ -121,7 +123,7 @@ physx::PxVec3 ParticleGenerationPolicy::generatePosition(const std::function<dou
     //}
     if (region.type == MESH) {
         // std::cout << "ParticleGenerationPolicy -> generatePosition: MESH region." << std::endl;
-        return region.shape.mesh.randomPointOnMesh(distributionFunc) + position.mean;
+        return region.shape.mesh.randomPointOnMesh(distributionFunc);
     }
 
     physx::PxVec3 generatedPosition;
@@ -173,10 +175,10 @@ ParticleLifetimePolicy::ParticleLifetimePolicy()
     : useLifetime(false)
     , lifetime(ScalarStats())
     , useVolumeBounds(false)
-    , volumeType(VolumeType::NONE)
     , boundType(BoundType::NONE)
     , useCustomCondition(false)
     , customCallback(nullptr)
+    , region(Region(physx::PxBounds3( physx::PxVec3(-50, -50, -50), physx::PxVec3(50, 50, 50))))
 {
 }
 
@@ -186,23 +188,29 @@ ParticleLifetimePolicy::ParticleLifetimePolicy(const ScalarStats& lifetime)
     setLifetime(lifetime);
 }
 
-ParticleLifetimePolicy::ParticleLifetimePolicy(const physx::PxBounds3& box, BoundType boundType)
+ParticleLifetimePolicy::ParticleLifetimePolicy(const Region &region, BoundType boundType)
     : ParticleLifetimePolicy()
 {
     useVolumeBounds = true;
-    volumeType = VolumeType::BOX;
-    shape.box = box;
+    setVolumeRegion(region);
     this->boundType = boundType;
 }
 
-ParticleLifetimePolicy::ParticleLifetimePolicy(const Vector3Stats& sphere, BoundType boundType)
-    : ParticleLifetimePolicy()
-{
-    useVolumeBounds = true;
-    volumeType = VolumeType::SPHERE;
-    shape.sphere = sphere;
-    this->boundType = boundType;
-}
+// ParticleLifetimePolicy::ParticleLifetimePolicy(const physx::PxBounds3& box, BoundType boundType)
+//     : ParticleLifetimePolicy()
+// {
+//     useVolumeBounds = true;
+//     region.shape.box = box;
+//     this->boundType = boundType;
+// }
+
+// ParticleLifetimePolicy::ParticleLifetimePolicy(const Vector3Stats& sphere, BoundType boundType)
+//     : ParticleLifetimePolicy()
+// {
+//     useVolumeBounds = true;
+//     region.shape.sphere = sphere;
+//     this->boundType = boundType;
+// }
 
 ParticleLifetimePolicy::ParticleLifetimePolicy(std::function<bool(double, const Particle&)> callback)
     : ParticleLifetimePolicy()
@@ -211,50 +219,41 @@ ParticleLifetimePolicy::ParticleLifetimePolicy(std::function<bool(double, const 
     customCallback = callback;
 }
 
-ParticleLifetimePolicy::ParticleLifetimePolicy(
-    const ScalarStats& lifetime,
-    const physx::PxBounds3& box,
-    BoundType boundType)
-    : ParticleLifetimePolicy(box, boundType)
-{
-    useLifetime = true;
-    this->lifetime = lifetime;
-}
+// ParticleLifetimePolicy::ParticleLifetimePolicy(
+//     const ScalarStats& lifetime,
+//     const physx::PxBounds3& box,
+//     BoundType boundType)
+//     : ParticleLifetimePolicy(box, boundType)
+// {
+//     region.shape.box = box;
+//     useLifetime = true;
+//     this->lifetime = lifetime;
+// }
 
-ParticleLifetimePolicy::ParticleLifetimePolicy(
-    const ScalarStats& lifetime,
-    const Vector3Stats& sphere,
-    BoundType boundType,
-    std::function<bool(double, const Particle&)> callback)
-    : ParticleLifetimePolicy(sphere, boundType)
-{
-    useLifetime = true;
-    this->lifetime = lifetime;
-    useCustomCondition = true;
-    customCallback = callback;
-}
+// ParticleLifetimePolicy::ParticleLifetimePolicy(
+//     const ScalarStats& lifetime,
+//     const Vector3Stats& sphere,
+//     BoundType boundType,
+//     std::function<bool(double, const Particle&)> callback)
+//     : ParticleLifetimePolicy(sphere, boundType)
+// {
+//     region.shape.sphere = sphere;
+//     useLifetime = true;
+//     this->lifetime = lifetime;
+//     useCustomCondition = true;
+//     customCallback = callback;
+// }
 
 ParticleLifetimePolicy::ParticleLifetimePolicy(const ParticleLifetimePolicy& other)
     : useLifetime(other.useLifetime)
     , lifetime(other.lifetime)
     , useVolumeBounds(other.useVolumeBounds)
-    , volumeType(other.volumeType)
+    , region(other.region)
     , boundType(other.boundType)
     , fade(other.fade)
     , useCustomCondition(other.useCustomCondition)
     , customCallback(other.customCallback)
 {
-    switch (volumeType)
-    {
-    case VolumeType::BOX:
-        new (&shape.box) physx::PxBounds3(other.shape.box);
-        break;
-    case VolumeType::SPHERE:
-        new (&shape.sphere) Vector3Stats(other.shape.sphere);
-        break;
-    case VolumeType::NONE:
-        break;
-    }
 }
 
 void ParticleLifetimePolicy::setLifetime(const ScalarStats& newLifetime)
@@ -263,23 +262,50 @@ void ParticleLifetimePolicy::setLifetime(const ScalarStats& newLifetime)
     lifetime = newLifetime;
 }
 
-void ParticleLifetimePolicy::setVolumeBoundsBox(const physx::PxBounds3& newBox)
-{
-    assert(this->volumeType == VolumeType::BOX && "Lifetime volume not a box!");
+// void ParticleLifetimePolicy::setVolumeBoundsBox(const physx::PxBounds3& newBox)
+// {
+//     assert(this->region.type == VolumeType::BOX && "Lifetime volume not a box!");
 
+//     useVolumeBounds = true;
+//     shape.box = newBox;
+// }
+
+// void ParticleLifetimePolicy::setVolumeBoundsSphere(const Vector3Stats& newSphere)
+// {
+//     assert(this->volumeType == VolumeType::SPHERE && "Lifetime volume not a sphere!");
+
+//     useVolumeBounds = true;
+//     shape.sphere = newSphere;
+// }
+
+void ParticleLifetimePolicy::setVolumeRegion(const Region &r)
+{
     useVolumeBounds = true;
-    shape.box = newBox;
+
+    // For mesh constrain bounding box calculation
+    if (r.type == MESH) {
+        // this->region = Region()
+        physx::PxVec3 vmin;
+        physx::PxVec3 vmax;
+        for (int i = 0; i < r.shape.mesh.vertices.size(); ++i) {
+            vmin.x = min(vmin.x, r.shape.mesh.vertices[i].x);
+            vmin.y = min(vmin.y, r.shape.mesh.vertices[i].y);
+            vmin.z = min(vmin.z, r.shape.mesh.vertices[i].z);
+            vmax.x = max(vmax.x, r.shape.mesh.vertices[i].x);
+            vmax.y = max(vmax.y, r.shape.mesh.vertices[i].y);
+            vmax.z = max(vmax.z, r.shape.mesh.vertices[i].z);
+        }
+
+        physx::PxBounds3 box(vmin, vmax);
+        this->region = Region(box);
+        this->region.type = BOX;
+    }
+    else{
+        this->region = Region(r);
+    }
 }
 
-void ParticleLifetimePolicy::setVolumeBoundsSphere(const Vector3Stats& newSphere)
-{
-    assert(this->volumeType == VolumeType::SPHERE && "Lifetime volume not a sphere!");
-
-    useVolumeBounds = true;
-    shape.sphere = newSphere;
-}
-
-void ParticleLifetimePolicy::setVolumeBoundsFadeSize(const ScalarStats& newFade)
+void ParticleLifetimePolicy::setVolumeBoundsFadeSize(const ScalarStats &newFade)
 {
     assert(this->boundType == BoundType::FADE && "Lifetime bound type not fade!");
 
@@ -318,9 +344,9 @@ bool ParticleLifetimePolicy::hasLeftBounds(double distr, const Particle& p) cons
 
         const physx::PxVec3& pos = p.getPosition();
 
-        if (volumeType == VolumeType::BOX)
+        if (region.type == BOX)
         {
-            const auto& box = shape.box;
+            const auto& box = region.shape.box;
             bool inside =
                 pos.x >= box.minimum.x && pos.x <= box.maximum.x &&
                 pos.y >= box.minimum.y && pos.y <= box.maximum.y &&
@@ -351,9 +377,9 @@ bool ParticleLifetimePolicy::hasLeftBounds(double distr, const Particle& p) cons
                 return !inside; // outside outer box => immediate death
             }
         }
-        else if (volumeType == VolumeType::SPHERE)
+        else if (region.type == SPHERE)
         {
-            const auto& sphere = shape.sphere;
+            const auto& sphere = region.shape.sphere;
             physx::PxVec3 diff = pos - sphere.mean;
             float dist = diff.magnitude();
             float radius = sphere.deviation.x;

@@ -23,10 +23,9 @@ Particle::Particle()
 	_velocityPrevious = _velocity;
 	_size = Constants::Particle::Size;
 	_age = 0.0;
+	_speed = 0.0f;
 
-	init();
-
-	deactivate();
+	// init(); // ! NAO TEM INIT
 }
 
 Particle::Particle(
@@ -36,14 +35,15 @@ Particle::Particle(
     double damping,
     Constants::Integration_Method integrationMethod,
     float size)
-    :_velocity(initVelocity),
-      _acceleration(initAcceleration),
-      _damping(damping),
-      _integrationMethod(integrationMethod),
-      _color(Constants::Color::White),
-      _velocityPrevious(initVelocity),
-      _size(size),
-      _age(0.0)
+    : _velocity(initVelocity),
+	_speed(initVelocity.magnitude()),
+	_acceleration(initAcceleration),
+	_damping(damping),
+	_integrationMethod(integrationMethod),
+	_color(Constants::Color::White),
+	_velocityPrevious(initVelocity),
+	_size(size),
+	_age(0.0)
 {
 	_transform.p = initTransform.p;
 	_transform.q = initTransform.q;
@@ -63,6 +63,7 @@ Particle::Particle(const physx::PxTransform& initTransform, const physx::PxVec3&
 
 Particle::Particle(const physx::PxTransform &initTransform, const physx::PxVec3 &initVelocity, const physx::PxVec3 &initAcceleration, Constants::Integration_Method integrationMethod, float size, double damping, const physx::PxVec4 &color)
 	: _velocity(initVelocity),
+	  _speed(initVelocity.magnitude()),
 	  _acceleration(initAcceleration),
 	  _damping(damping),
 	  _integrationMethod(integrationMethod),
@@ -77,6 +78,18 @@ Particle::Particle(const physx::PxTransform &initTransform, const physx::PxVec3 
 	_transformPrevious.q = initTransform.q;
 	_transformOriginal.p = initTransform.p;
 	_transformOriginal.q = initTransform.q;
+
+	init();
+}
+
+Particle::Particle(float size, const physx::PxVec4 &color, float speed, Constants::Integration_Method integrationMethod)
+	: Particle()
+{
+	_size = size;
+	_color = color;
+	_speed = speed;
+	_velocity = physx::PxVec3(1, 0, 0).getNormalized() * _speed; // Default direction
+	_integrationMethod = integrationMethod;
 
 	init();
 }
@@ -110,11 +123,16 @@ Particle::~Particle()
 
 void Particle::init()
 {
+	if (_initialized) {
+		return;
+	}
+
 	_id = _nextId++;
 
 	createRenderItem();
 
-	_alive = false;
+	deactivate();
+
 	_firstIntegration = true;
 
 	switch (_integrationMethod)
@@ -131,6 +149,7 @@ void Particle::init()
 		_transformOriginal.q = _transform.q;
 		break;
 	case Constants::Integration_Method::NONE:
+		std::cout << "Particle initialized with NONE integration method. Setting velocity and acceleration to zero." << std::endl;
 		_velocity = _velocityPrevious = physx::PxVec3(0, 0, 0);
 		_acceleration = physx::PxVec3(0, 0, 0);
 		break;
@@ -163,6 +182,18 @@ void Particle::setVelocity(const physx::PxVec3& velocity)
 	_velocity = _velocityPrevious = velocity;
 }
 
+void Particle::setSpeed(float speed)
+{
+	_speed = speed;
+	_velocity = _velocity.getNormalized() * _speed;
+}
+
+void Particle::setVelocityDirection(const physx::PxVec3 &direction)
+{
+	_velocity = direction.getNormalized() * _speed;
+	_velocityPrevious = _velocity;
+}
+
 void Particle::createRenderItem()
 {
 	_shape = CreateShape(physx::PxSphereGeometry(_size));
@@ -172,6 +203,8 @@ void Particle::createRenderItem()
 void Particle::activate()
 {
 	_alive = true;
+	_age = 0.0;
+	_firstIntegration = true;
 	RegisterRenderItem(_renderItem);
 }
 
@@ -278,6 +311,7 @@ void Particle::verletIntegration(double dt)
 	if (_firstIntegration) {
 		eulerIntegration(dt);
 		_firstIntegration = false;
+		return;
 	}
 
 	// Se usa la velocidad en este m�todo?

@@ -45,6 +45,13 @@ public:
 		const physx::PxVec4 &color
 	);
 
+	Particle(
+		float size,
+		const physx::PxVec4 &color,
+		float speed,
+		Constants::Integration_Method integrationMethod = Constants::Integration_Method::EULER
+	);
+
 	// Copy constructor
 	Particle(const Particle& other);
 
@@ -54,6 +61,8 @@ public:
 	virtual void setOriginalTransform(const physx::PxTransform &transform);
 	virtual void setTransformRelative(const physx::PxTransform &transform);
 	virtual void setVelocity(const physx::PxVec3 &velocity);
+	virtual void setSpeed(float speed);
+	virtual void setVelocityDirection(const physx::PxVec3 &direction);
 	virtual void setAge(double age);
 	virtual void setAcceleration(const physx::PxVec3 &acceleration);
 	virtual void setSize(double size);
@@ -61,6 +70,9 @@ public:
 	virtual double getAge() const { return _age; }
 	virtual physx::PxVec3 getPosition() const { return _transform.p; }
 	virtual physx::PxVec3 getVelocity() const { return _velocity; }
+	virtual physx::PxVec3 getAcceleration() const { return _acceleration; }
+	virtual double getSize() const { return _size; }
+	virtual float getSpeed() const { return _speed; }
 	virtual physx::PxTransform getTransform() const { return _transform; }
 	virtual physx::PxTransform getOriginalTransform() const { return _transformOriginal; }
 	virtual physx::PxTransform getRelativeTransform() const { return _relativeTransform; }
@@ -101,6 +113,7 @@ protected:
 
 	physx::PxVec3 _velocity;
 	physx::PxVec3 _velocityPrevious;
+	float _speed;
 
 	double _damping;
 
@@ -118,6 +131,8 @@ protected:
 
 	double _age;
 	bool _alive;
+
+	bool _initialized = false;
 
 private:
 

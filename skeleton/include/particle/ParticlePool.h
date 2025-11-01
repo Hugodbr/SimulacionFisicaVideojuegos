@@ -11,53 +11,53 @@ template<typename ParticleType>
 class ParticlePool 
 {
 private:
-    std::vector<std::byte> m_Buffer;
-    std::pmr::monotonic_buffer_resource m_Arena;
-    std::pmr::vector<ParticleType*> m_Particles;
-    int m_ActiveCount = 0;
-    int m_MaxParticles;
+    std::vector<std::byte> _buffer;
+    std::pmr::monotonic_buffer_resource _arena;
+    std::pmr::vector<ParticleType*> _particles;
+    int _activeCount = 0;
+    int _maxParticles;
 
 public:
     template<typename... Args>
     explicit ParticlePool(int maxParticles, Args&&... args)
-        : m_Buffer(maxParticles * sizeof(ParticleType)),
-          m_Arena(m_Buffer.data(), m_Buffer.size()),
-          m_Particles(&m_Arena),
-          m_MaxParticles(maxParticles)
+        : _buffer(maxParticles * sizeof(ParticleType)),
+          _arena(_buffer.data(), _buffer.size()),
+          _particles(&_arena),
+          _maxParticles(maxParticles)
     {
-        m_Particles.reserve(maxParticles);
+        _particles.reserve(maxParticles);
 
         for (int i = 0; i < maxParticles; ++i) {
-            void* mem = m_Arena.allocate(sizeof(ParticleType), alignof(ParticleType));
+            void* mem = _arena.allocate(sizeof(ParticleType), alignof(ParticleType));
             ParticleType* p = new (mem) ParticleType(std::forward<Args>(args)...);
-            m_Particles.push_back(p);
+            _particles.push_back(p);
         }
     }
 
     ~ParticlePool() noexcept {
-        for (auto* p : m_Particles)
+        for (auto* p : _particles)
             p->~ParticleType();
     }
 
     ParticleType* activateParticle() {
-        if (m_ActiveCount >= m_MaxParticles) {
+        if (_activeCount >= _maxParticles) {
             std::cerr << "Pool full.\n";
             return nullptr;
         }
-        ParticleType* p = m_Particles[m_ActiveCount++];
+        ParticleType* p = _particles[_activeCount++];
         p->activate();
         return p;
     }
 
     void deactivate(int idx) {
-        if (idx < 0 || idx >= m_ActiveCount) return;
-        m_Particles[idx]->deactivate();
-        std::swap(m_Particles[idx], m_Particles[--m_ActiveCount]);
+        if (idx < 0 || idx >= _activeCount) return;
+        _particles[idx]->deactivate();
+        std::swap(_particles[idx], _particles[--_activeCount]);
     }
 
     std::pmr::vector<ParticleType*>& accessParticlePool() {
-        return m_Particles;
+        return _particles;
     }
 
-    int getActiveCount() const { return m_ActiveCount; }
+    int getActiveCount() const { return _activeCount; }
 };

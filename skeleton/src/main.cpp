@@ -33,7 +33,7 @@
 #include "MeshSystem.h"
 
 
-std::string display_text = "This is a test";
+std::string display_text = "Memorilics";
 
 
 using namespace physx;
@@ -62,6 +62,7 @@ std::vector<ParticleSystem*> particleSystems;
 ForceManager& forceManager = ForceManager::getInstance();
 
 GridSystem* gridSystem = nullptr;
+GunSystem* gunSystem = nullptr;
 
 
 void shootParticle() {
@@ -129,22 +130,23 @@ void initPhysics(bool interactive)
 	// 	std::make_unique<WindForce>(physx::PxVec3(10.0f, 0.0f, 0.0f))
 	// );
 
-	ForceManager::getInstance().registerGlobalForceOnParticle(
-		std::make_unique<HurricaneForce>(physx::PxVec3(0.0f, 0.0f, 0.0f), physx::PxVec3(0.0f, 0.0f, 0.0f))
-	);
+	// ForceManager::getInstance().registerGlobalForceOnParticle(
+	// 	std::make_unique<HurricaneForce>(physx::PxVec3(0.0f, 0.0f, 0.0f), physx::PxVec3(0.0f, 5.0f, 0.0f))
+	// );
 
 	// =========================================================================================
 	// Gun System
 	// =========================================================================================
-	// GunSystem* gunSystem = new GunSystem(physx::PxVec3(8.0f, 3.0f, 0.0f), cam);
-	// gunSystem->init();
-	// particleSystems.push_back(gunSystem);
+	physx::PxVec3 gunOrigin = physx::PxVec3(8.0f, 3.0f, 0.0f);
+	gunSystem = new GunSystem(gunOrigin, cam);
+	gunSystem->init();
+	particleSystems.push_back(gunSystem);
 
 	// =========================================================================================
 	// Rain System
 	// =========================================================================================
-	// physx::PxBounds3 rainRegion(physx::PxVec3(-50, -50, -50), physx::PxVec3(50, 50, 50));
-	// physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.maximum.y, 0.0f);
+	// Region rainRegion(physx::PxBounds3(physx::PxVec3(-50, -50, -50), physx::PxVec3(50, 50, 50)));
+	// physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.shape.box.minimum.y, 0.0f);
 	// RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
 	// rs->init();
 	// particleSystems.push_back(rs);
@@ -165,64 +167,31 @@ void initPhysics(bool interactive)
 	// =========================================================================================
 	// Box System
 	// =========================================================================================
-	BoxSystem* boxSystem = new BoxSystem(
-		Region(MeshData()), 
-		1.0f, 
-		1.0,
-		Constants::Color::White
-	);
-	boxSystem->init();
-	particleSystems.push_back(boxSystem);
+	// BoxSystem* boxSystem = new BoxSystem(
+	// 	Region(MeshData()), 
+	// 	1.0f, 
+	// 	1.0,
+	// 	Constants::Color::White
+	// );
+	// boxSystem->init();
+	// particleSystems.push_back(boxSystem);
 
 	// =========================================================================================
 	// Suzanne Mesh System
 	// =========================================================================================
-	MeshSystem* meshSystem = new MeshSystem(
-		"../resources/suzanneCenter.obj", 
-		1.0f, // point size
-		2.0, // scale
-		Constants::Color::White
-	);
-	meshSystem->init();
-	particleSystems.push_back(meshSystem);
+	// MeshSystem* meshSystem = new MeshSystem(
+	// 	"../resources/suzanneCenter.obj", 
+	// 	1.0f, // point size
+	// 	2.0, // scale
+	// 	Constants::Color::White
+	// );
+	// meshSystem->init();
+	// particleSystems.push_back(meshSystem);
 
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
 	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));
 	//sphere = new RenderItem(shape, Vector4(255, 0, 0, 255));
 	//RegisterRenderItem(sphere);
-
-	// Create a particle in front of the camera with an offset that will move with the camera
-	// physx::PxVec3 eye = cam->getEye();
-	// physx::PxVec3 dir = cam->getDir();
-
-	// float distanceFromCamera = 1.0f; // meters
-	// PxVec3 gunPosition = eye + dir * distanceFromCamera;
-	// physx::PxTransform particleTransform = physx::PxTransform(
-	// 	gunPosition.x,
-	// 	gunPosition.y,
-	// 	gunPosition.z
-	// );
-
-	// PxVec3 worldUp(0, 1, 0);
-	// PxVec3 right = dir.cross(worldUp).getNormalized();
-	// PxVec3 up = right.cross(dir).getNormalized();
-
-	// // offsets in meters
-	// float distance = 1.0f;      // forward from camera
-	// float sideOffset = 0.3f;    // right offset
-	// float upOffset = -0.2f;     // downward offset
-
-	// PxVec3 gunPos = eye + dir * distance + right * sideOffset + up * upOffset;
-
-	// PxMat33 camOrientation(dir.cross(worldUp), worldUp, -dir);
-	// PxQuat gunOrientation(camOrientation);	
-
-	// PxTransform camTransform = cam->getTransform();
-	// gunPos = camTransform.p + camTransform.q.rotate(PxVec3(0.3f, -0.2f, -1.0f));
-	// PxQuat gunRot = camTransform.q;
-
-	// particles.push_back(new Particle(physx::PxTransform(physx::PxVec3(0, 0, 0), physx::PxQuat(0)), physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0), Constants::Integration_Method::VERLET, 3.0f, 0.98, Constants::Color::Red));
-
 }
 
 // Function to configure what happens in each step of physics
@@ -237,7 +206,7 @@ void stepPhysics(bool interactive, double dt)
 	for (auto& ps : particleSystems) {
 		ps->update(dt);
 	}
-
+	// std::cout << "Step Physics -> dt: " << dt << " seconds." << std::endl;
 	gScene->simulate(dt);
 	gScene->fetchResults(true);
 	std::this_thread::sleep_for(std::chrono::microseconds(10));
@@ -277,17 +246,11 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	switch(toupper(key))
 	{
 	case 'B': 
-		std::cout << "shootBullet" << std::endl;
-		std::cout << cam->getDir().x << std::endl;
-		std::cout << cam->getDir().y << std::endl;
-		std::cout << cam->getDir().z << std::endl;
-		shootBullet();
+		gunSystem->shoot();
 		break;
 	case 'G':
-	{
 		gridSystem->toggleVisibility();
 		break;
-	}
 	default:
 		break;
 	}
