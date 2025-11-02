@@ -1,28 +1,19 @@
 #include "ForceGenerator.h"
 
-#include "ForceManager.h"
+#include "Constants.h"
+#include "ParticleSystem.h"
 
 // Initialize static member
 uint64_t ForceGenerator::_nextId = 0;
 
 ForceGenerator::ForceGenerator()
-    : _id(_nextId++)
-    , _direction(physx::PxVec3(0.0f, 0.0f, 0.0f))
-    , _magnitude(0.0f)
-    , _forceManager(ForceManager::getInstance())
-    , _force(physx::PxVec3(0.0f, 0.0f, 0.0f))
+    : _id(_nextId++), _active(true), _dead(false), _magnitude(0.0f), _force(physx::PxVec3(0.0f, 0.0f, 0.0f)), _particleSystem(nullptr)
 {
+    std::cout << "Creating ForceGenerator with no associated ParticleSystem! ID: " << _id << std::endl;
 }
 
-void ForceGenerator::setMagnitude(float magnitude) {
-    _magnitude = magnitude;
-}
-
-void ForceGenerator::setForce(const physx::PxVec3 &force) {
-    _force = force;
-}
-
-void ForceGenerator::setForceDirection(const physx::PxVec3 &direction) {
-    physx::PxVec3 dirNormalized = direction.getNormalized();
-    _force = dirNormalized * _magnitude;
+ForceGenerator::ForceGenerator(const ParticleSystem *particleSystem)
+    : _id(_nextId++), _active(true), _dead(false), _magnitude(0.0f), _force(physx::PxVec3(0.0f, 0.0f, 0.0f))
+{
+    initParticleSysForceGen(const_cast<ParticleSystem*>(particleSystem));
 }

@@ -4,6 +4,7 @@
 #include "UniformParticleGenerator.h"
 #include "GaussianParticleGenerator.h"
 #include "ConstantParticleGenerator.h"
+#include "ForceGenerator.h"
 #include "StaticParticle.h"
 #include "Bullet.h"
 
@@ -143,7 +144,7 @@ void GunSystem::createGun()
         auto& [gen, pool] = _gunMeshGeneratorAndPool[i];
 
         auto& vertices = _meshDataGun[i].getMeshVertices();
-        std::cout << "GunSystem::createGun -> vertices size: " << vertices.size() << std::endl;
+        // std::cout << "GunSystem::createGun -> vertices size: " << vertices.size() << std::endl;
 
         // Spawn "new" particles (getting from the pool)
         for (const auto& v : vertices)
@@ -210,7 +211,7 @@ void GunSystem::updateGunBullets(double deltaTime)
 
 void GunSystem::createMuzzleFlash(double deltaTime)
 {
-    std::cout << "GunSystem::createMuzzleFlash -> Creating muzzle flash!" << std::endl;
+    // std::cout << "GunSystem::createMuzzleFlash -> Creating muzzle flash!" << std::endl;
 
     for (int i = 0; i < _gunMuzzleGeneratorAndPool.size(); ++i) 
     {
@@ -276,8 +277,6 @@ void GunSystem::setTransform(const physx::PxTransform &t)
 void GunSystem::shoot()
 {
     isShooting = true;
-
-    std::cout << "GunSystem::shoot -> Shooting bullet!" << std::endl;
 
     physx::PxVec3 bulletDirection = _camera->getDir().getNormalized();
 

@@ -2,6 +2,7 @@
 
 #include "ConstantParticleGenerator.h"
 #include "StaticParticle.h"
+#include "ForceGenerator.h"
 
 
 GridSystem::GridSystem(const Region &region, float pointSize, double scale, const Vector4& color)

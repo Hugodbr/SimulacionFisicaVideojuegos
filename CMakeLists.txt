@@ -47,6 +47,7 @@ set(MY_INCLUDE_DIRECTORIES
     "${SKELETON_INCLUDE_DIR}/force"
     "${SKELETON_INCLUDE_DIR}/force/generators"
     "${SKELETON_INCLUDE_DIR}/force/types"
+    "${SKELETON_INCLUDE_DIR}/force/types/regional"
 
     "${SKELETON_INCLUDE_DIR}/utils"
 )

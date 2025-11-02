@@ -82,6 +82,12 @@ namespace Constants
 	};
 
 	namespace System {
+
+		static constexpr uint32_t MaxInsideForceGenerators = 10;
+		static constexpr uint32_t MaxSubSystems = 10;
+		namespace Default {
+			static constexpr uint64_t ReserveCountPerGenerator = 1000;
+		};
 		namespace Grid {
 			static constexpr uint64_t ReserveCountPerGenerator = 10000;
 		};

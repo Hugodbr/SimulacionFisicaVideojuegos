@@ -5,14 +5,14 @@
 #include <vector>
 #include <memory>
 
-
 #include <PxPhysicsAPI.h>
 
-#include "ForceField.h"
-#include "Particle.h"
+
+class ForceGenerator;
+class GlobalForce;
 
 using pSysId = std::uint64_t;
-// using ForceCollectionPointers = std::vector<std::unique_ptr<ForceGenerator>>;
+using fGenId = std::uint64_t;
 
 class ForceManager
 {
@@ -23,32 +23,27 @@ public:
         return instance;
     }
 
-    const physx::PxVec3& getGlobalResultingForce() const;
 
-    // void addGlobalForce(std::unique_ptr<ForceGenerator>& forceGen);
-    // void clearGlobalForces();
+    // ACTIVATE / DEACTIVATE 
+    bool setActiveForceGenAtForceManager(fGenId forceGenId, bool active);
 
-    // // Adds a force generator to the specified particle system indexed by systemId
-    // void registerForceGenerator(pSysId systemId, std::unique_ptr<ForceGenerator>& forceGen);
-    // // Removes a force generator from the specified particle system indexed by systemId
-    // void deregisterForceGenerator(pSysId systemId, uint64_t forceGenId);
+    // Register forces that aren't associated with a specific particle system
+    void registerGlobalForce(std::unique_ptr<GlobalForce>& forceGen);
 
-    void registerGlobalForce(std::unique_ptr<ForceField> forceGen);
-    void registerGlobalForceOnParticle(std::unique_ptr<ForceField> forceGen);
-    physx::PxVec3 applyGlobalForceOnParticle(Particle& particle, double deltaTime);
+    // Adds a force generator to the specified particle system indexed by systemId
+    void registerForceGenerator(pSysId systemId, std::unique_ptr<ForceGenerator>& forceGen);
+    // Removes a force generator from the specified particle system indexed by systemId
+    void deregisterForceGenerator(pSysId systemId, uint64_t forceGenId);
 
-    // // Caution: returns a pointer to internal data structure. Objects can be modified but not deleted(vector is const).
-    // // If no force generators for that system, returns nullptr.
-    // const ForceCollectionPointers* getForceGenerators(pSysId systemId) const;
+    // Getter for all force generators. The returned vector is valid until the next modification (addition/removal) of force generators.
+    // The cached vector is updated only at the manager update, so the construction is made only once per update cycle. Otherwise,
+    // systems that update first would have an advantage by making their generators available sooner.
+    const std::vector<ForceGenerator*>& getForceGenerators();
 
+    // Update all force generators managed by this manager
+    // Builds the cached vector if invalidated
     void update(double deltaTime);
 
-    // // Applies all forces registered for a particle system to its particles to all particle systems
-    // void applyAllForces(double deltaTime);
-    // // Applies all 
-
-    // void applyGlobalForcesToParticleSystem(pSysId systemId, double deltaTime);
-    // physx::PxVec3 getGlobalResultingForce() const;
 
 private:
     ForceManager() = default;
@@ -57,14 +52,15 @@ private:
     ForceManager(const ForceManager&) = delete;
     ForceManager& operator=(const ForceManager&) = delete;
 
-    void resetGlobalForces();
-    void computeGlobalForces(double deltaTime);
-    void updateGlobalForces(double deltaTime);
 
 private:
-    std::vector<std::unique_ptr<ForceField>> _globalForces = {}; // List of global forces applied to all particle systems
-    std::vector<std::unique_ptr<ForceField>> _globalForcesOnParticles = {}; // List of global forces applied to all particles
-    physx::PxVec3 _globalResultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
 
-    // std::unordered_map<pSysId, ForceCollectionPointers> _particleSysForcesMap; // Map of particle system IDs to their associated force generators
+    std::unordered_map<fGenId, std::unique_ptr<ForceGenerator>> _forceGenerators;
+
+    // Cached list of force generators for quick iteration during update. The map is not ideal for iteration, so the force manager
+    // at its update step builds a vector of pointers to the force generators to avoid repeated map lookups.
+    // If a new force generator is added or removed, the cache is invalidated and rebuilt at the next update.
+    bool _isCacheValid = false;
+    std::vector<ForceGenerator*> _cachedForceGenerators;
+
 };

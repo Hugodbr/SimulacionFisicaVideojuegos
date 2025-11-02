@@ -1,16 +1,20 @@
 #pragma once
 
-#include "ForceField.h"
+#include "GlobalForce.h"
 
 // Default for earth-like gravity
 // F = G * (m1 * m2) / r^2
 // For planetary body of mass gravity simulation
-class GravitationalForce : public ForceField
+class GravitationalForce : public GlobalForce
 {
 public:
     GravitationalForce();
     ~GravitationalForce() = default;
 
+    virtual void updateForce(double deltaTime) override;
+    virtual void applyForceOnParticle(ParticleWithMass& particle) override;
+
+    // Override to prevent external setting of force parameters
     virtual void setMagnitude(float magnitude) override {}
     virtual void setForce(const physx::PxVec3& force) override {}
     virtual void setForceDirection(const physx::PxVec3& direction) override;

@@ -4,7 +4,6 @@
 
 #include "Particle.h"
 
-class ForceGenerator;
 
 class ParticleWithMass : public Particle
 {
@@ -55,27 +54,26 @@ public:
 		const physx::PxVec4& color
 	);
 
-	// Copy constructor
+	// Copy constructor deep
 	ParticleWithMass(const ParticleWithMass& other);
 
 	virtual ~ParticleWithMass() = default;
 
+	// Sets acceleration to zero and resulting force to zero. Must be called at the beginning of each particle update cycle!
+	virtual void clearForces();
+	// Adds force to resulting force
+	virtual void applyForce(const physx::PxVec3& force);
+	// Compute acceleration with resulting force and inverse mass, then call base update. Last step of a particle after forces have been applied.
+	// Integrates position and velocity based on acceleration and integration method, and updates age.
+	virtual void update(double dt) override;
+
 	virtual void setRealVelocity(const physx::PxVec3& realVelocity);
 
-	virtual void clearForces();
-	virtual void applyForce(const physx::PxVec3& globalResultingForce);
-	virtual void applyRegisteredForces();
-
 	virtual physx::PxVec3 getResultingForce() const { return _resultingForce; }
-
-	virtual void registerToForce(ForceGenerator& fg);
-	virtual void unregisterFromForce(ForceGenerator& fg);
-	virtual void unregisterFromAllForces();
-
 	virtual float getInverseMass() const { return _inverseMass; }
+
 	virtual void changeMass(float newMass);
 
-	virtual void update(double dt) override;
 
 protected:
 
@@ -97,7 +95,5 @@ protected:
 	float _inverseMass;
 
 	physx::PxVec3 _resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
-
-	std::vector<ForceGenerator*> _registeredForces;
 };
 

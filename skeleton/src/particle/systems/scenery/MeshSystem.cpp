@@ -4,6 +4,7 @@
 #include "ConstantParticleGenerator.h"
 #include "ParticlePool.h"
 #include "ParticleWithMass.h"
+#include "ForceGenerator.h"
 
 
 MeshSystem::MeshSystem(const std::string &filename)

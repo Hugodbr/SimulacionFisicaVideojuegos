@@ -2,14 +2,23 @@
 
 #include "ForceGenerator.h"
 
-class Particle;
+class ParticleWithMass;
 
-class ForceField : public ForceGenerator
+class ForceField : virtual public ForceGenerator
 {
 public:
+    // For global forces, particleSystem can be nullptr
     ForceField();
+
+    ForceField(const ParticleSystem* particleSystem);
+    
     virtual ~ForceField() = default;
 
     virtual void updateForce(double deltaTime) override;
-    virtual physx::PxVec3 computeForceOnParticle(Particle& particle);
+    virtual void applyForceOnParticle(ParticleWithMass& particle) override;
+
+protected:
+
+    virtual physx::PxVec3 computeForceOnParticle(ParticleWithMass& particle);
+
 };

@@ -64,30 +64,6 @@ ForceManager& forceManager = ForceManager::getInstance();
 GridSystem* gridSystem = nullptr;
 GunSystem* gunSystem = nullptr;
 
-
-void shootParticle() {
-
-	//physx::PxTransform pose = physx::PxTransform(cam->getEye().x, cam->getEye().y, cam->getEye().z);
-	//float speed = 25.0f;
-	//physx::PxVec3 velocity = physx::PxVec3(cam->getDir().x, cam->getDir().y, cam->getDir().z).getNormalized() * speed;
-	//physx::PxVec3 gravity = physx::PxVec3(0, 0, 0);
-	//double damping = 0.98;
-	//Particle* particle = new Particle(pose, velocity, gravity, damping, Constants::Integration_Method::EULER_SEMI_IMPLICIT);
-
-	//particles.push_back(particle);
-}
-
-void shootBullet() {
-	//// ????
-	//// La bala no sale de donde esta la camara
-
-	//physx::PxTransform initTransform = physx::PxTransform(cam->getDir().x, cam->getDir().y, cam->getDir().z);
-	//physx::PxVec3      initDirection = physx::PxVec3(cam->getDir().x, cam->getDir().y, cam->getDir().z).getNormalized();
-	////std::cout << initDirection.x << " " << initDirection.y << " " << initDirection.z;
-
-	//particles.push_back(new CannonBall(initTransform, initDirection, Constants::Integration_Method::VERLET));
-}
-
 // Initialize physics engine
 void initPhysics(bool interactive)
 {
@@ -122,34 +98,26 @@ void initPhysics(bool interactive)
 	// =========================================================================================
 	// Global Forces
 	// =========================================================================================
-	ForceManager::getInstance().registerGlobalForce(
-		std::make_unique<GravitationalForce>()
-	);
-
-	// ForceManager::getInstance().registerGlobalForceOnParticle(
-	// 	std::make_unique<WindForce>(physx::PxVec3(10.0f, 0.0f, 0.0f))
-	// );
-
-	// ForceManager::getInstance().registerGlobalForceOnParticle(
-	// 	std::make_unique<HurricaneForce>(physx::PxVec3(0.0f, 0.0f, 0.0f), physx::PxVec3(0.0f, 5.0f, 0.0f))
-	// );
+	std::unique_ptr<GlobalForce> gravForce = std::make_unique<GravitationalForce>();
+	forceManager.registerGlobalForce(std::move(gravForce));
 
 	// =========================================================================================
 	// Gun System
 	// =========================================================================================
-	physx::PxVec3 gunOrigin = physx::PxVec3(8.0f, 3.0f, 0.0f);
-	gunSystem = new GunSystem(gunOrigin, cam);
-	gunSystem->init();
-	particleSystems.push_back(gunSystem);
+	// physx::PxVec3 gunOrigin = physx::PxVec3(8.0f, 3.0f, 0.0f);
+	// gunSystem = new GunSystem(gunOrigin, cam);
+	// gunSystem->init();
+	// particleSystems.push_back(gunSystem);
 
 	// =========================================================================================
 	// Rain System
 	// =========================================================================================
-	// Region rainRegion(physx::PxBounds3(physx::PxVec3(-50, -50, -50), physx::PxVec3(50, 50, 50)));
-	// physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.shape.box.minimum.y, 0.0f);
-	// RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
-	// rs->init();
-	// particleSystems.push_back(rs);
+	float halfRegionSize = 100.0f;
+	Region rainRegion(physx::PxBounds3(physx::PxVec3(-halfRegionSize, -halfRegionSize, -halfRegionSize), physx::PxVec3(halfRegionSize, halfRegionSize, halfRegionSize)));
+	physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.shape.box.minimum.y, 0.0f);
+	RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
+	rs->init();
+	particleSystems.push_back(rs);
 
 	// =========================================================================================
 	// Grid System
@@ -206,6 +174,7 @@ void stepPhysics(bool interactive, double dt)
 	for (auto& ps : particleSystems) {
 		ps->update(dt);
 	}
+	
 	// std::cout << "Step Physics -> dt: " << dt << " seconds." << std::endl;
 	gScene->simulate(dt);
 	gScene->fetchResults(true);
@@ -217,9 +186,6 @@ void stepPhysics(bool interactive, double dt)
 void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
-
-	//DeregisterRenderItem(sphere);
-	//delete axis;
 
 	for (auto* sys : particleSystems) {
 		delete sys;

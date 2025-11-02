@@ -1,7 +1,5 @@
 #include "ParticleWithMass.h"
 
-#include "ForceGenerator.h"
-
 
 ParticleWithMass::ParticleWithMass(
 	const physx::PxTransform& initTransform,
@@ -78,7 +76,6 @@ ParticleWithMass::ParticleWithMass(const ParticleWithMass& other)
 
 	_resultingForce = other._resultingForce;
 	_inverseMass = other._inverseMass;
-	_registeredForces = other._registeredForces;
 }
 
 void ParticleWithMass::setRealVelocity(const physx::PxVec3 &realVelocity)
@@ -90,53 +87,17 @@ void ParticleWithMass::setRealVelocity(const physx::PxVec3 &realVelocity)
 void ParticleWithMass::clearForces()
 {
 	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+	_acceleration = physx::PxVec3(0.0f, 0.0f, 0.0f);
 }
 
-void ParticleWithMass::applyForce(const physx::PxVec3 &globalResultingForce)
+void ParticleWithMass::applyForce(const physx::PxVec3 &force)
 {
-	_resultingForce += globalResultingForce;
-}
-
-void ParticleWithMass::applyRegisteredForces()
-{
-	for (ForceGenerator* fg : _registeredForces) {
-		if (fg) {
-			_resultingForce += fg->getForce();
-		}
-	}
-}
-
-void ParticleWithMass::registerToForce(ForceGenerator &fg)
-{
-	_registeredForces.push_back(&fg);
-}
-
-void ParticleWithMass::unregisterFromForce(ForceGenerator &fg)
-{
-	_registeredForces.erase(
-		std::remove(
-			_registeredForces.begin(),
-			_registeredForces.end(),
-			&fg
-		),
-		_registeredForces.end()
-	);
-}
-
-void ParticleWithMass::unregisterFromAllForces()
-{
-	_registeredForces.clear();
-}
-
-void ParticleWithMass::changeMass(float newMass) {
-	_massReal = newMass;
-	setSimulatedMass();
+	_resultingForce += force;
 }
 
 void ParticleWithMass::update(double dt)
 {
-	_acceleration = physx::PxVec3(0.0f, 0.0f, 0.0f);
-	_acceleration += getResultingForce() * _inverseMass;
+	_acceleration += _resultingForce * _inverseMass;
 
 	Particle::update(dt);
 }
@@ -145,6 +106,22 @@ void ParticleWithMass::setSimulatedVelocity()
 {
 	_velocity = _velocityReal * _velocityFactor;
 	_speed = _velocity.magnitude();
+}
+
+// Calculate simulated mass based on kyinetic energy equivalence
+void ParticleWithMass::setSimulatedMass()
+{
+	if (_velocity.magnitude() < Constants::Math::epsilon) {
+		_mass = _massReal;
+	} else {
+		_mass = _massReal * pow((_velocityReal.magnitude() / _velocity.magnitude()), 2);
+	}
+	_inverseMass = (_mass != 0.0) ? 1.0 / _mass : 0.0;
+}
+
+void ParticleWithMass::changeMass(float newMass) {
+	_massReal = newMass;
+	setSimulatedMass();
 }
 
 // void ParticleWithMass::setSimulatedGravity()
@@ -156,14 +133,3 @@ void ParticleWithMass::setSimulatedVelocity()
 // {
 // 	_acceleration = _acceleration + _gravity;
 // }
-
-// Se calcula con base en la Energ�a Cin�tica que debe ser igual la real y la simulada
-void ParticleWithMass::setSimulatedMass()
-{
-	if (_velocity.magnitude() < Constants::Math::epsilon) {
-		_mass = _massReal;
-	} else {
-		_mass = _massReal * pow((_velocityReal.magnitude() / _velocity.magnitude()), 2);
-	}
-	_inverseMass = (_mass != 0.0) ? 1.0 / _mass : 0.0;
-}

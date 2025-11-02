@@ -2,6 +2,8 @@
 
 #include "ConstantParticleGenerator.h"
 #include "StaticParticle.h"
+#include "ForceGenerator.h"
+
 
 BoxSystem::BoxSystem(const Region &region, float pointSize, double scale, const Vector4& color)
     : GridSystem(region, pointSize, scale, color)

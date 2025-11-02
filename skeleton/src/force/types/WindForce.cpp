@@ -1,13 +1,20 @@
 #include "WindForce.h"
 
 #include "Constants.h"
-#include "Particle.h"
+#include "ParticleWithMass.h"
 
 
 WindForce::WindForce(const physx::PxVec3 &velocity)
 {
     setVelocity(velocity);
-    setFrictionCoefficient(0.1f); // Default friction coefficient
+    setFrictionCoefficient(_frictionCoefficient); // Default friction coefficient
+}
+
+WindForce::WindForce(const ParticleSystem *particleSystem, const physx::PxVec3 &velocity)
+    : ForceField(particleSystem)
+{
+    setVelocity(velocity);
+    setFrictionCoefficient(_frictionCoefficient); // Default friction coefficient
 }
 
 void WindForce::setSpeed(float speed)
@@ -42,7 +49,7 @@ void WindForce::setFrictionCoefficient(float coefficient)
     _k2 = 0.5f * _frictionCoefficient;   // Turbulent drag
 }
 
-physx::PxVec3 WindForce::computeForceOnParticle(Particle& particle)
+physx::PxVec3 WindForce::computeForceOnParticle(ParticleWithMass& particle)
 {
     physx::PxVec3 particleVelocity = particle.getVelocity();
     _force = physx::PxVec3(0.0f, 0.0f, 0.0f);
@@ -59,7 +66,5 @@ physx::PxVec3 WindForce::computeForceOnParticle(Particle& particle)
 
 void WindForce::updateForce(double deltaTime)
 {
-    // float angle = 0.1f * deltaTime; // Small angle change per update
-    // physx::PxVec3 newWindDirection = _windDirection.rotate(physx::PxVec3(0.0f, 1.0f, 0.0f), angle);
-    // setDirection(newWindDirection);
+    // Constant over time.
 }

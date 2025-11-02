@@ -1,14 +1,21 @@
 #include "HurricaneForce.h"
 
-#include "Particle.h"
+#include "ParticleWithMass.h"
+#include "ParticleSystem.h"
 
-HurricaneForce::HurricaneForce(const physx::PxVec3 &eye, const physx::PxVec3 &velocity)
-    : WindForce(velocity)
+HurricaneForce::HurricaneForce(const Region& region, const physx::PxVec3 &eye, const physx::PxVec3 &velocity)
+    : WindRegionForce(region, velocity)
     , _eye(eye)
 {
 }
 
-physx::PxVec3 HurricaneForce::computeForceOnParticle(Particle &particle)
+HurricaneForce::HurricaneForce(const ParticleSystem *particleSystem, const Region& region, const physx::PxVec3 &eye, const physx::PxVec3 &velocity)
+    : WindRegionForce(particleSystem, region, velocity)
+    , _eye(eye)
+{
+}
+
+physx::PxVec3 HurricaneForce::computeForceOnParticle(ParticleWithMass &particle)
 {
     _windVelocity = getVelocityAtPosition(particle.getPosition());
 
@@ -17,6 +24,7 @@ physx::PxVec3 HurricaneForce::computeForceOnParticle(Particle &particle)
 
 void HurricaneForce::updateForce(double deltaTime)
 {
+    std::cout << "HurricaneForce ID " << _id << " updating force. No change over time." << std::endl;
 }
 
 physx::PxVec3 HurricaneForce::getVelocityAtPosition(const physx::PxVec3 &position)
@@ -37,6 +45,5 @@ physx::PxVec3 HurricaneForce::getVelocityAtPosition(const physx::PxVec3 &positio
     physx::PxVec3 rotatedVel = rotation.rotate(localVel);
 
     // Apply intensity and return
-    return _windSpeed * rotatedVel;
-    // return 1 * physx::PxVec3(-(position.z - _eye.z), (50 - (position.y - _eye.y)), (position.x - _eye.x));
+    return rotatedVel * _k1 * _windSpeed;
 }

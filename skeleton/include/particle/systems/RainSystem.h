@@ -6,6 +6,7 @@
 
 class UniformParticleGenerator;
 class RainParticle;
+class ForceGenerator;
 
 enum IntensityLevel {
 	LIGHT_RAIN,
@@ -36,7 +37,7 @@ protected:
 
     void initParticleGeneratorAndPool();
 
-	// void createParticleGenerators() override;
+	void createForceGenerator(std::unique_ptr<ForceGenerator>& forceGen);
 
 	std::vector<
         std::pair<

@@ -9,17 +9,13 @@
 #include "ParticlePool.h"
 
 class ForceManager;
-
-
-// class Particle;
-// using pID = std::uint64_t;
-// using ParticleCollectionPtrs = std::vector<std::unique_ptr<Particle>>;
-
+class ForceGenerator;
 class ParticleGenerator;
-// using GeneratorAndParticlePool = std::pair< std::unique_ptr<ParticleGenerator>, ParticlePool<Particle> >;
+class Particle;
+class ParticleWithMass;
 
 // class ForceGenerator;
-// using fGenId = std::uint64_t;
+using fGenId = std::uint64_t;
 
 // Abstract class
 // The System applies the generation rules during the update
@@ -32,16 +28,22 @@ protected:
 	uint64_t _id; // Protected to allow derived classes access
 
 protected:
-	// std::vector<GeneratorAndParticlePool> _generatorAndChildParticlesList;
-
 	physx::PxVec3 _emitterOrigin;
 
 	ForceManager& _forceManager;
 
-	// std::vector<uint64_t> _attachedForceGeneratorsIds;
+	std::vector<fGenId> _registeredForceGenIds; // IDs of force generators registered at ForceManager that originate from this system
 
-// private:
-// 	physx::PxVec3 _commonAcceleration; // e.g., gravity applied to all particles in the system
+	std::vector<std::unique_ptr<ForceGenerator>> _forceGensInsideSystem;
+	int _forceGenActiveCount;
+	uint16_t _maxInsideForceGenerators;
+
+	std::vector<std::unique_ptr<ParticleSystem>> _subSystems;
+	int _subSystemActiveCount;
+	uint16_t _maxSubSystems;
+
+	bool _isActive;
+	bool _isDead;
 
 public:
 	ParticleSystem();
@@ -49,55 +51,72 @@ public:
 
 	virtual void init() = 0;
 
-	// Calls integrate for each particle in list
-	// Verify if has to erase a particle (life, area of interest)
-	// Create new particles -> calls generator that returns a list to be incorporated by this system
-	virtual void update(double deltaTime) = 0;
+	virtual void update(double deltaTime);
 
 	uint64_t getId() const { return _id; }
 
+	// Active systems are updated and rendered
+	bool isActive() const { return _isActive; }
+	void setActive(bool active) { _isActive = active; }
+	// Dead systems are removed from the simulation
+	bool isDead() const { return _isDead; }
+	void setDead();
 
 protected:
-
-	// virtual void initParticlePools() {};
 	// Returns the reserve count per generator for this system
 	virtual uint64_t getReserveCountPerGenerator() const = 0;
-	// // Creates and registers a particle generator to this system. Don't forget to register it!
-	// virtual void createParticleGenerators() = 0;
-	// // Registers a particle generator to this system
-	// virtual void registerParticleGenerator(std::unique_ptr<ParticleGenerator>& generator);
-	// // Adds a particle to this system and associates it to the given generator
-	// virtual void addParticles(std::vector<Particle*>& particles, std::unique_ptr<ParticleGenerator>& generator);
+
 	// Determines if a particle must be deleted according to the generator lifetime policies
 	virtual bool mustKillParticle(const Particle& p, const ParticleGenerator& generator) const;
-	// // Removes a particle from this system and from the given generator
-	// virtual void removeDeadParticles(std::vector<GeneratorAndChildParticles>::iterator itPG);
 
-	// virtual void createForceGenerators();
-	// // Returns true if this system has any force generator attached
-	// bool areForceGeneratorsAttached() const;
-	// // Adds a force generator to this system and registers it at the ForceManager
-	// void addForceGeneratorToSystem(std::unique_ptr<ForceGenerator>& forceGen);
+	virtual bool mustSpawnParticle(double deltaTime, const ParticleGenerator& generator) const;
 
-	// // Applies all forces from attached force generators to this system
-	// void applyForcesFromGenerators(double deltaTime);
-	// // Applies all global forces to this system by updating common acceleration adding global forces times inverse mass
-	// void applyGlobalForcesToSystem(double deltaTime);
-	// // Applies all forces to all particles in this system
-	// void applyForcesToAllParticles(double deltaTime);
+	virtual void applyForceManagerForces(ParticleWithMass& particle, const std::vector<ForceGenerator*>& forceGenerators);
+	virtual void applyInsideForces(ParticleWithMass& particle);
 
-	// // Sets a common acceleration (e.g., gravity) applied to all particles in this system
-	// void setCommonAcceleration(const physx::PxVec3& force);
-	// physx::PxVec3 getCommonAcceleration() const;
+	// Updates all sub-systems registered inside this particle system.
+	// The method also removes dead sub-systems.
+	virtual void updateSubSystems(double deltaTime);
+	// Updates all force generators registered inside this particle system. Must be called before applying forces to particles.
+	// The method also removes dead force generators.
+	virtual void updateInsideForces(double deltaTime);
 
-	// // Removes a force generator from this system and deregisters it from the ForceManager
-	// void removeForceGenFromSystem(fGenId forceGenId);
-	// // Removes all force generators from this system and deregisters them from the ForceManager
-	// void removeAllForceGensFromSystem();
+	// ACTIVATE / DEACTIVATE METHODS for ForceGenerators. Can be any at ForceManager.
+	// Deactivate inside force generator
+	void setActivateInsideForceGen(int forceGenIdx, bool active);
+	// Deactivate a force generator registered at ForceManager
+	void setActivateForceGenAtForceManager(fGenId forceGenId, bool active);
 
-// private:
-	// // Register this system's force generator in the ForceManager
-	// void registerForceGenAtForceManager(std::unique_ptr<ForceGenerator>& forceGen);
-	// // Deregister this system's force generator from the ForceManager
-	// void deregisterForceGenAtForceManager(fGenId forceGenId);
+
+	// REGISTER METHODS
+	// Register a sub-system inside this particle system.
+	// The ownership of the sub-system is retained by the system.
+	void registerSubSystem(std::unique_ptr<ParticleSystem>& subSystem);
+	// Register a force generator to be used only inside this particle system.
+	// The ownership of the force generator is retained by the system.
+	void registerInsideForceGen(std::unique_ptr<ForceGenerator>& forceGen);
+	// Register this system's force generator in the ForceManager. The force is now seen by all systems.
+	// The ownership of the force generator is transferred to the ForceManager.
+	// The system only keeps the ID of the registered force generator.
+	void registerForceGenAtForceManager(std::unique_ptr<ForceGenerator>& forceGen);
+
+	// DEREGISTER METHODS - deregistration also deletes the object!
+	// Deregister a sub-system inside this particle system. 
+	// The sub-system is deleted.
+	void deregisterSubSystem(int subSystemIdx);
+	// Deregister a force generator used only inside this particle system. 
+	// The force generator is deleted.
+	void deregisterInsideForceGen(int forceGenIdx);
+	// Deregister all force generators used only inside this particle system. 
+	// Force generators will be deleted.
+	void deregisterAllInsideForceGens();
+	// Deregister this system's force generator from the ForceManager.
+	void deregisterForceGenAtForceManager(fGenId forceGenId);
+	// Deregister all force generators from the ForceManager that were registered by this system.
+	// Force generators will be deleted. This will clear the influence of this system's forces on all particle systems.
+	void deregisterAllForceGensAtForceManager();
+
+
+
+
 };
