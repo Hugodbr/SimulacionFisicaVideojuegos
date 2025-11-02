@@ -86,6 +86,8 @@ public:
 	virtual void update(double dt);
 
 	virtual void setColor(const physx::PxVec4& color);
+
+	virtual bool isVisible() const { return _renderItem->visible; }
 	virtual void setVisibility(bool visibility);
 
 

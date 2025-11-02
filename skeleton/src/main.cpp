@@ -33,7 +33,7 @@
 #include "MeshSystem.h"
 
 
-std::string display_text = "Memorilics";
+std::string display_text = "Nomemorilics";
 
 
 using namespace physx;
@@ -60,6 +60,8 @@ Camera* cam = nullptr;
 std::vector<ParticleSystem*> particleSystems;
 
 ForceManager& forceManager = ForceManager::getInstance();
+using sysIt = std::vector<ParticleSystem*>::iterator;
+sysIt RainSystemIt;
 
 GridSystem* gridSystem = nullptr;
 GunSystem* gunSystem = nullptr;
@@ -89,15 +91,12 @@ void initPhysics(bool interactive)
 	gScene = gPhysics->createScene(sceneDesc);
 
 
-	//CoordAxis* axis = new CoordAxis();
-
-	//createParticles(Constants::DEFAULT);
 	cam = GetCamera();
-	//shootParticle();
 
 	// =========================================================================================
 	// Global Forces
 	// =========================================================================================
+	// Create and register a gravitational force for all particle systems
 	std::unique_ptr<GlobalForce> gravForce = std::make_unique<GravitationalForce>();
 	forceManager.registerGlobalForce(std::move(gravForce));
 
@@ -118,6 +117,7 @@ void initPhysics(bool interactive)
 	RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
 	rs->init();
 	particleSystems.push_back(rs);
+	RainSystemIt = std::find(particleSystems.begin(), particleSystems.end(), rs);
 
 	// =========================================================================================
 	// Grid System
@@ -215,8 +215,18 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		gunSystem->shoot();
 		break;
 	case 'G':
-		gridSystem->toggleVisibility();
+		gridSystem->setRenderable(!gridSystem->isRenderable());
 		break;
+	case 'R': 
+		// Toggle rain system render state
+		if (RainSystemIt != particleSystems.end()) {
+			(*RainSystemIt)->setRenderable(!(*RainSystemIt)->isRenderable());
+		}
+		case 'E':
+		// Toggle rain system active state
+		if (RainSystemIt != particleSystems.end()) {
+			(*RainSystemIt)->setActive(!(*RainSystemIt)->isActive());
+		}
 	default:
 		break;
 	}

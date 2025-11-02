@@ -29,15 +29,16 @@ void GridSystem::update(double deltaTime)
 {
 }
 
-void GridSystem::toggleVisibility()
+void GridSystem::setRenderable(bool renderable)
 {
-    _visible = !_visible;
+    ParticleSystem::setRenderable(renderable);
 
+    // Update visibility of particles
     for (auto& [generator, pool] : _generatorsAndPools) 
     {
         for (int i = 0; i < pool->getActiveCount(); ++i) 
         {
-            pool->accessParticlePool()[i]->setVisibility(_visible);
+            pool->accessParticlePool()[i]->setVisibility(renderable);
         }
     }
 }

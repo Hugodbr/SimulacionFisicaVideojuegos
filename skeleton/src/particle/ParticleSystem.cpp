@@ -27,6 +27,11 @@ ParticleSystem::ParticleSystem()
 {
 }
 
+void ParticleSystem::setRenderable(bool renderable)
+{
+	_isRenderable = renderable;
+}
+
 void ParticleSystem::setDead()
 {
 	_isDead = true;

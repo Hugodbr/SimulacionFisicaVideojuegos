@@ -16,7 +16,7 @@ public:
     void init() override;
     void update(double deltaTime) override;
 
-    void toggleVisibility();
+    void setRenderable(bool renderable) override;
 
 protected:
 	// Returns the reserve count per generator for this system

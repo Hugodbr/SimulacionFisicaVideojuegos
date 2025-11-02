@@ -42,6 +42,7 @@ protected:
 	int _subSystemActiveCount;
 	uint16_t _maxSubSystems;
 
+	bool _isRenderable;
 	bool _isActive;
 	bool _isDead;
 
@@ -55,12 +56,17 @@ public:
 
 	uint64_t getId() const { return _id; }
 
+	// Check if the system is renderable
+	bool isRenderable() const { return _isRenderable; }
+	// Set if the system is renderable
+	virtual void setRenderable(bool renderable);
 	// Active systems are updated and rendered
 	bool isActive() const { return _isActive; }
 	void setActive(bool active) { _isActive = active; }
 	// Dead systems are removed from the simulation
 	bool isDead() const { return _isDead; }
 	void setDead();
+
 
 protected:
 	// Returns the reserve count per generator for this system
