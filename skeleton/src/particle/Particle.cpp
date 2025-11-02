@@ -203,15 +203,17 @@ void Particle::createRenderItem()
 void Particle::activate()
 {
 	_alive = true;
+	_renderItem->setVisibility(true);
 	_age = 0.0;
 	_firstIntegration = true;
-	RegisterRenderItem(_renderItem);
+	// RegisterRenderItem(_renderItem);
 }
 
 void Particle::deactivate()
 {
     _alive = false;
-	DeregisterRenderItem(_renderItem);
+	_renderItem->setVisibility(false);
+	// DeregisterRenderItem(_renderItem);
 }
 
 void Particle::update(double dt) 
@@ -241,15 +243,14 @@ void Particle::setAcceleration(const physx::PxVec3 &acceleration) {
 
 void Particle::setSize(double size)
 {
-	DeregisterRenderItem(_renderItem);
-	_renderItem->release();
-	_renderItem = nullptr;
-
 	_size = size;
-	createRenderItem();
-	if (_alive) {
-		RegisterRenderItem(_renderItem);
-	}
+	_renderItem->changeSize(static_cast<float>(size));
+	// createRenderItem();
+
+	// _renderItem->it
+	// if (_alive) {
+	// 	RegisterRenderItem(_renderItem);
+	// }
 }
 
 void Particle::integrate(double dt)

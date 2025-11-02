@@ -28,6 +28,7 @@ public:
 	void init() override;
 	void update(double deltaTime) override;
 
+	// Sets all active particles to renderable or not
 	void setRenderable(bool renderable) override;
 
 	// Returns the reserve count per generator for this system

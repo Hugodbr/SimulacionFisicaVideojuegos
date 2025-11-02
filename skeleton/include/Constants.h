@@ -82,7 +82,7 @@ namespace Constants
 	};
 
 	namespace System {
-
+		static constexpr uint32_t MaxParticleSystems = 50;
 		static constexpr uint32_t MaxInsideForceGenerators = 10;
 		static constexpr uint32_t MaxSubSystems = 10;
 		namespace Default {
@@ -92,7 +92,7 @@ namespace Constants
 			static constexpr uint64_t ReserveCountPerGenerator = 10000;
 		};
 		namespace Rain {
-			static constexpr uint64_t ReserveCountPerGenerator = 15000;
+			static constexpr uint64_t ReserveCountPerGenerator = 10000;
 		};
 
 		namespace Gun {

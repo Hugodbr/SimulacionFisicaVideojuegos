@@ -32,6 +32,16 @@ void ParticleSystem::setRenderable(bool renderable)
 	_isRenderable = renderable;
 }
 
+void ParticleSystem::setRenderableForParticle(Particle &particle)
+{
+    if (_isRenderable && !particle.isVisible()) {
+        particle.setVisibility(true);
+    }
+    else if (!_isRenderable) {
+        particle.setVisibility(false);
+    }
+}
+
 void ParticleSystem::setDead()
 {
 	_isDead = true;

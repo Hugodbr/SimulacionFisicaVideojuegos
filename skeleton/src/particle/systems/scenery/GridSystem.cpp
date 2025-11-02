@@ -27,6 +27,11 @@ void GridSystem::init()
 
 void GridSystem::update(double deltaTime)
 {
+    // ! IMPORTANT ! Must call base update to handle sub-systems and inside forces
+	ParticleSystem::update(deltaTime);
+	if (!isActive()) {
+		return;
+	}
 }
 
 void GridSystem::setRenderable(bool renderable)
@@ -70,20 +75,11 @@ void GridSystem::createParticlesInGrid()
     // Particle at origin
     auto particle = particlePool->activateParticle();
     physx::PxTransform particleTransform(physx::PxVec3(0, 0, 0), physx::PxQuat(0));
-    particle->setSize(10.0f);
 
     if (particle) {
         particle->setTransform(particleTransform);
         particle->setColor(Constants::Color::Red);
-    }
-
-    for (auto& _generatorsAndPools_it = _generatorsAndPools.begin(); _generatorsAndPools_it != _generatorsAndPools.end(); ++_generatorsAndPools_it)
-    {
-        auto* particle = _generatorsAndPools_it->second->activateParticle();
-        if (particle) {
-            particle->setTransform(particleTransform);
-            particle->setColor(Constants::Color::Red);
-        }
+        particle->setSize(10.0f);
     }
 
     float a_minX = _region.shape.box.minimum.x;

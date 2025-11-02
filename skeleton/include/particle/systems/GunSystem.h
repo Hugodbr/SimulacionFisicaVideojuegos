@@ -23,6 +23,8 @@ public:
 	void init() override;
 	void update(double deltaTime) override;
 
+	void setRenderable(bool renderable) override;
+
     void setTransform(const physx::PxTransform& t);
 
 	void shoot();

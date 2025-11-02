@@ -60,11 +60,13 @@ Camera* cam = nullptr;
 std::vector<ParticleSystem*> particleSystems;
 
 ForceManager& forceManager = ForceManager::getInstance();
+
 using sysIt = std::vector<ParticleSystem*>::iterator;
 sysIt RainSystemIt;
+sysIt GridSystemIt;
+// sysIt GunSystemIt;
 
-GridSystem* gridSystem = nullptr;
-GunSystem* gunSystem = nullptr;
+
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -91,6 +93,7 @@ void initPhysics(bool interactive)
 	gScene = gPhysics->createScene(sceneDesc);
 
 
+	particleSystems.reserve(Constants::System::MaxParticleSystems);
 	cam = GetCamera();
 
 	// =========================================================================================
@@ -114,6 +117,7 @@ void initPhysics(bool interactive)
 	float halfRegionSize = 100.0f;
 	Region rainRegion(physx::PxBounds3(physx::PxVec3(-halfRegionSize, -halfRegionSize, -halfRegionSize), physx::PxVec3(halfRegionSize, halfRegionSize, halfRegionSize)));
 	physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.shape.box.minimum.y, 0.0f);
+	
 	RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
 	rs->init();
 	particleSystems.push_back(rs);
@@ -122,15 +126,15 @@ void initPhysics(bool interactive)
 	// =========================================================================================
 	// Grid System
 	// =========================================================================================
-	// gridSystem = new GridSystem(
-	// 	Region(physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100))), 
-	// 	1.0f, 
-	// 	20.0,
-	// 	Constants::Color::White
-	// );
-	// gridSystem->init();
-	// gridSystem->toggleVisibility(); // Start invisible
-	// particleSystems.push_back(gridSystem);
+	GridSystem* gridSystem = new GridSystem(
+		Region(physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100))), 
+		1.0f, 
+		20.0,
+		Constants::Color::White
+	);
+	gridSystem->init();
+	particleSystems.push_back(gridSystem);
+	GridSystemIt = std::find(particleSystems.begin(), particleSystems.end(), gridSystem);
 
 	// =========================================================================================
 	// Box System
@@ -211,22 +215,31 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch(toupper(key))
 	{
-	case 'B': 
-		gunSystem->shoot();
+	case 'X': 
+		// dynamic_cast<GunSystem*>(*GunSystemIt)->shoot();
 		break;
-	case 'G':
-		gridSystem->setRenderable(!gridSystem->isRenderable());
+	case 'C':
+		if (GridSystemIt != particleSystems.end()) {
+			(*GridSystemIt)->setRenderable(!(*GridSystemIt)->isRenderable());
+		}
+		break;
+	case 'V':
+		if (GridSystemIt != particleSystems.end()) {
+			(*GridSystemIt)->setActive(!(*GridSystemIt)->isActive());
+		}
 		break;
 	case 'R': 
 		// Toggle rain system render state
 		if (RainSystemIt != particleSystems.end()) {
 			(*RainSystemIt)->setRenderable(!(*RainSystemIt)->isRenderable());
 		}
-		case 'E':
+		break;
+	case 'E':
 		// Toggle rain system active state
 		if (RainSystemIt != particleSystems.end()) {
 			(*RainSystemIt)->setActive(!(*RainSystemIt)->isActive());
 		}
+		break;
 	default:
 		break;
 	}

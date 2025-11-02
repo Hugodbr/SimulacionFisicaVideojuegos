@@ -92,12 +92,7 @@ void RainSystem::update(double deltaTime)
 		{
 			auto* p = pool->activateParticle();
 			if (p) {
-				if (_isRenderable && !p->isVisible()) {
-					p->setVisibility(true);
-				}
-				else if (!_isRenderable && p->isVisible()) {
-					p->setVisibility(false);
-				}
+				setRenderableForParticle(*p);
 				physx::PxTransform t = physx::PxTransform(0, 0, 0, physx::PxQuat(0));
 				t.p = gen->getGeneratedPosition();
 				p->setTransform(t);
@@ -138,7 +133,7 @@ void RainSystem::setRenderable(bool renderable)
 	{
 		for (int i = 0; i < pool->getActiveCount(); ++i)
 		{
-			pool->accessParticlePool()[i]->setVisibility(renderable);
+			setRenderableForParticle(*pool->accessParticlePool()[i]);
 		}
 	}
 }

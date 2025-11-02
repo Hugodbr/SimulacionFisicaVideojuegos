@@ -260,6 +260,12 @@ void GunSystem::updateMuzzleFlash(double deltaTime)
 
 void GunSystem::update(double deltaTime)
 {
+    // ! IMPORTANT ! Must call base update to handle sub-systems and inside forces
+	ParticleSystem::update(deltaTime);
+	if (!isActive()) {
+		return;
+	}
+
     updateGunMesh(deltaTime);
     updateGunBullets(deltaTime);
     if (isShooting) {
@@ -267,6 +273,23 @@ void GunSystem::update(double deltaTime)
         isShooting = false;
     }
     updateMuzzleFlash(deltaTime);
+}
+
+void GunSystem::setRenderable(bool renderable)
+{
+    ParticleSystem::setRenderable(renderable);
+
+    std::cout << "GunSystem setRenderable: " << renderable << std::endl;
+
+    // Update visibility of gun mesh particles
+    for (auto& [gen, pool] : _gunMeshGeneratorAndPool) 
+    {
+        auto& particles = pool->accessParticlePool();
+        for (int i = 0; i < pool->getActiveCount(); ++i) 
+        {
+            particles[i]->setVisibility(renderable);
+        }
+    }
 }
 
 void GunSystem::setTransform(const physx::PxTransform &t)

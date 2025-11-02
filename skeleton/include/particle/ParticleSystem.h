@@ -60,7 +60,10 @@ public:
 	bool isRenderable() const { return _isRenderable; }
 	// Set if the system is renderable
 	virtual void setRenderable(bool renderable);
-	// Active systems are updated and rendered
+	// If the system is renderable, set renderable state a particle
+	// Used when activating particles at the system.
+	virtual void setRenderableForParticle(Particle& particle);
+	// Active systems are updated. Inactive systems skip update, but remain in the simulation and can be re-activated. The system won't responde to set renderable calls while inactive!
 	bool isActive() const { return _isActive; }
 	void setActive(bool active) { _isActive = active; }
 	// Dead systems are removed from the simulation
