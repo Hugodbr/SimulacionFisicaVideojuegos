@@ -52,6 +52,7 @@ public:
 
 	void setColor(const Vector4& newColor);
 	void setVisibility(bool visibility);
+	void changeSize(float newSize);
 
 public:
 	physx::PxShape* shape;
@@ -61,7 +62,7 @@ public:
 
 	unsigned references;
 
-	bool visible;
+	bool visible = true;
 };
 
 double GetLastTime();

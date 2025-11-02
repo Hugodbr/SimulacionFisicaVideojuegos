@@ -101,6 +101,10 @@ void renderCallback()
 	for (auto it = gRenderItems.begin(); it != gRenderItems.end(); ++it)
 	{
 		const RenderItem* obj = (*it);
+
+		// New visibility check
+		if (!obj->visible) continue;
+
 		auto objTransform = obj->transform;
 		if (!objTransform)
 		{
@@ -158,6 +162,7 @@ void renderLoop()
 void RegisterRenderItem(const RenderItem* _item)
 {
 	gRenderItems.push_back(_item);
+	// _item->it = --gRenderItems.end();
 }
 
 void DeregisterRenderItem(const RenderItem* _item)
@@ -200,12 +205,12 @@ void RenderItem::setColor(const Vector4 &newColor)
 
 void RenderItem::setVisibility(bool visibility)
 {
-	if (visibility) {
-		visible = true;
-		RegisterRenderItem(this);
-	}
-	else {
-		visible = false;
-		DeregisterRenderItem(this);
-	}
+	visible = visibility;
+}
+
+void RenderItem::changeSize(float newSize)
+{
+	shape->release();
+	shape = CreateShape(physx::PxSphereGeometry(newSize));
+	shape->acquireReference();
 }
