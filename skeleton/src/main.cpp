@@ -64,7 +64,7 @@ ForceManager& forceManager = ForceManager::getInstance();
 using sysIt = std::vector<ParticleSystem*>::iterator;
 sysIt RainSystemIt;
 sysIt GridSystemIt;
-// sysIt GunSystemIt;
+sysIt GunSystemIt;
 
 
 
@@ -106,10 +106,11 @@ void initPhysics(bool interactive)
 	// =========================================================================================
 	// Gun System
 	// =========================================================================================
-	// physx::PxVec3 gunOrigin = physx::PxVec3(8.0f, 3.0f, 0.0f);
-	// gunSystem = new GunSystem(gunOrigin, cam);
-	// gunSystem->init();
-	// particleSystems.push_back(gunSystem);
+	physx::PxVec3 gunOrigin = physx::PxVec3(8.0f, 3.0f, 0.0f);
+	GunSystem* gunSystem = new GunSystem(gunOrigin, cam);
+	gunSystem->init();
+	particleSystems.push_back(gunSystem);
+	GunSystemIt = std::find(particleSystems.begin(), particleSystems.end(), gunSystem);
 
 	// =========================================================================================
 	// Rain System
@@ -215,8 +216,18 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch(toupper(key))
 	{
+	case 'Z': 
+		if (GunSystemIt != particleSystems.end()) {
+			(*GunSystemIt)->setRenderable(!(*GunSystemIt)->isRenderable());
+		}
+		break;
 	case 'X': 
-		// dynamic_cast<GunSystem*>(*GunSystemIt)->shoot();
+		if (GunSystemIt != particleSystems.end()) {
+			(*GunSystemIt)->setActive(!(*GunSystemIt)->isActive());
+		}
+		break;
+	case 'Q': 
+		dynamic_cast<GunSystem*>(*GunSystemIt)->shoot();
 		break;
 	case 'C':
 		if (GridSystemIt != particleSystems.end()) {
@@ -240,6 +251,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 			(*RainSystemIt)->setActive(!(*RainSystemIt)->isActive());
 		}
 		break;
+	
 	default:
 		break;
 	}
