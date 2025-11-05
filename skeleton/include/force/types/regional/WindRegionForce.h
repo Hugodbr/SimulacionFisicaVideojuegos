@@ -12,9 +12,15 @@ public:
     WindRegionForce(const ParticleSystem* particleSystem, const Region& region, const physx::PxVec3& velocity);
     ~WindRegionForce() = default;
 
+    virtual void updateForce(double deltaTime) override;
+    virtual physx::PxVec3 getForceOnParticle(ParticleWithMass& particle) override;
+
+protected:
     virtual void init(const Region& region, const physx::PxVec3& velocity);
 
-    virtual void updateForce(double deltaTime) override;
-    virtual void applyForceOnParticle(ParticleWithMass& particle) override;
+    // Return zero vector if outside region
+    virtual physx::PxVec3 computeForceOnParticle(ParticleWithMass& particle) override;
+
+    virtual void updateField(double deltaTime) override;
 
 };

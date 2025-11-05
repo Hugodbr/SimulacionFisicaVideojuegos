@@ -5,53 +5,70 @@
 #include "ParticleWithMass.h"
 
 
-ExplosionForce::ExplosionForce(const Region &region, const physx::PxVec3 &center, float maxRadius, float magnitude, float expansionVelocity)
-    :  RegionalForce(region)
-    , _center(center)
-    , _maxRadius(maxRadius)
-    , _radius(0.0f)
-    , _initialMagnitude(magnitude)
-    , _magnitude(magnitude)
-    , _timeConstant(3.0)
-    , _timeElapsed(0.0)
-    , _expansionVelocity(expansionVelocity)
-{   
+ExplosionForce::ExplosionForce(const physx::PxVec3 &center, float maxRadius, float magnitude, float expansionVelocity)
+    :  ForceField()
+{  
+    init(center, maxRadius, magnitude, expansionVelocity);
 }
 
-ExplosionForce::ExplosionForce(ParticleSystem *particleSystem, const Region &region, const physx::PxVec3 &center, float maxRadius, float magnitude, float expansionVelocity)
-    : RegionalForce(particleSystem, region)
-    , _center(center)
-    , _maxRadius(maxRadius)
-    , _radius(0.0f)
-    , _initialMagnitude(magnitude)
-    , _magnitude(magnitude)
-    , _timeConstant(3.0)
-    , _timeElapsed(0.0)
-    , _expansionVelocity(expansionVelocity)
+ExplosionForce::ExplosionForce(ParticleSystem *particleSystem, const physx::PxVec3 &center, float maxRadius, float magnitude, float expansionVelocity)
+    : ForceField(particleSystem)
 {
+    init(center, maxRadius, magnitude, expansionVelocity);
 }
 
-void ExplosionForce::updateForce(double deltaTime)
+void ExplosionForce::init(const physx::PxVec3 &center, float maxRadius, float magnitude, float expansionVelocity)
 {
-    _timeElapsed += deltaTime;
-    updateMagnitude(deltaTime);
-    updateRadius();
+    _center = center;
+    _maxRadius = maxRadius;
+    _initialMagnitude = magnitude;
+    _magnitude = magnitude;
+    _expansionVelocity = expansionVelocity;
 
-    // Mark as dead if magnitude is too low. The explosion has finished and the force can be removed.
-    if (_magnitude < 0.001f) {
-        this->setDead(true);
-    }
+    _timeConstant = 3.0;
+    _timeElapsed = 0.0;
+    _radius = 0.0f;
+    _timer = 5.0; // seconds before explosion occurs
 }
 
-void ExplosionForce::updateMagnitude(double deltaTime)
+void ExplosionForce::updateMagnitude()
 {
     _magnitude = exp(-1.0 * (_timeElapsed / _timeConstant)) * _initialMagnitude;
+
+    if (_magnitude < 1.0f) {
+        // Magnitude too low, mark as dead
+        this->setDead();
+    }
 }
 
 void ExplosionForce::updateRadius()
 {
     if (_radius < _maxRadius) {
-        _radius = _expansionVelocity.magnitude() * static_cast<float>(_timeElapsed);
+        _radius = _expansionVelocity * static_cast<float>(_timeElapsed);
+    }
+    else {
+        // Max radius reached, mark as dead
+        this->setDead();
+    }
+}
+
+void ExplosionForce::updateField(double deltaTime)
+{
+    _timeElapsed += deltaTime; // To update magnitude and radius over time
+
+    updateMagnitude();
+    updateRadius();
+}
+
+void ExplosionForce::updateForce(double deltaTime)
+{
+    if (_timer > 0.0) {
+        _timer -= deltaTime;
+    }
+    else {
+        std::cout << "ExplosionForce ID " << _id << " exploding." << std::endl;
+
+        ForceField::updateForce(deltaTime);
     }
 }
 
@@ -62,10 +79,9 @@ physx::PxVec3 ExplosionForce::computeForceAtPosition(const physx::PxVec3 &positi
 
     if (distance < _radius && distance > 0.0f) {
         direction = direction.getNormalized();
-        _force = (_magnitude * direction) / distance;
+        _force = (_magnitude * direction) / (distance * distance);
     }
-
-    if (distance >= _radius || distance == 0.0f || _magnitude < 0.001f) {
+    else {
         _force = physx::PxVec3(0.0f, 0.0f, 0.0f);
     }
 
@@ -75,13 +91,4 @@ physx::PxVec3 ExplosionForce::computeForceAtPosition(const physx::PxVec3 &positi
 physx::PxVec3 ExplosionForce::computeForceOnParticle(ParticleWithMass &particle)
 {
     return computeForceAtPosition(particle.getPosition());
-}
-
-void ExplosionForce::applyForceOnParticle(ParticleWithMass &particle)
-{
-    // Compute force at particle position
-    physx::PxVec3 force = computeForceOnParticle(particle);
-    
-    // Apply force only if inside region
-    RegionalForce::applyForceOnParticle(particle);
 }

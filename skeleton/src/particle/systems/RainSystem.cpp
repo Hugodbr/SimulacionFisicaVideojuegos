@@ -6,6 +6,8 @@
 #include "Particle.h"
 #include "RainParticle.h"
 #include "MeshData.h"
+#include "HurricaneForce.h"
+#include "ExplosionForce.h"
 
 
 RainSystem::RainSystem(const physx::PxVec3& origin, const Region& region)
@@ -20,6 +22,7 @@ RainSystem::RainSystem(const physx::PxVec3& origin, const Region& region)
 void RainSystem::init()
 {
 	initParticleGeneratorAndPool();
+	createForceGenerator();
 }
 
 void RainSystem::initParticleGeneratorAndPool()
@@ -42,7 +45,7 @@ void RainSystem::initParticleGeneratorAndPool()
 
     // Create generation policy
 	ParticleGenerationPolicy genPolicy = ParticleGenerationPolicy(
-		true, ScalarStats(10.0, 5.0),
+		true, ScalarStats(50.0, 5.0),
 		true, ScalarStats(0.0, 0.0)
 	);
 
@@ -63,8 +66,72 @@ void RainSystem::initParticleGeneratorAndPool()
 	generator->setLifetimePolicy(lifePolicy);
 }
 
-void RainSystem::createForceGenerator(std::unique_ptr<ForceGenerator> &forceGen)
+void RainSystem::createForceGenerator()
 {
+	// Region hurricaneRegion(
+	// 	physx::PxBounds3(
+	// 		physx::PxVec3(_region.shape.box.minimum.x, _region.shape.box.minimum.y, _region.shape.box.minimum.z),
+	// 		physx::PxVec3(_region.shape.box.maximum.x, _region.shape.box.maximum.y, _region.shape.box.maximum.z)
+	// 	)
+	// );
+
+	// // Center of the hurricane = rain region center
+	// physx::PxVec3 eye = physx::PxVec3(
+	// 	(_region.shape.box.minimum.x + _region.shape.box.maximum.x) / 2.0f,
+	// 	(_region.shape.box.minimum.y + _region.shape.box.maximum.y) / 2.0f,
+	// 	(_region.shape.box.minimum.z + _region.shape.box.maximum.z) / 2.0f
+	// );
+
+	// std::unique_ptr<ForceGenerator> forceGen = std::make_unique<HurricaneForce>(
+	// 	this,
+	// 	hurricaneRegion,
+	// 	eye,
+	// 	physx::PxVec3(0.0f, 10.0f, 0.0f) // downward wind velocity
+	// );
+	// forceGen->setGroup(Constants::Group::DynamicGroup::ENEMY);
+
+	// std::cout << "RainSystem::createForceGenerator -> HurricaneForce created." << std::endl;
+
+	// // forceGen->setGroup(Constants::Group::DynamicGroup::ENEMY);
+	// // registerForceGenAtForceManager(std::move(forceGen));
+	// // registerInsideForceGen(std::move(forceGen));
+
+	// // Explosion
+	// std::unique_ptr<ForceGenerator> explosionForceGen = std::make_unique<ExplosionForce>(
+	// 	this,
+	// 	eye,
+	// 	100000.0f,   // max radius
+	// 	1000000.0f, // magnitude
+	// 	300000.0f // expansion velocity
+	// );
+
+	// std::cout << "RainSystem::createForceGenerator -> ExplosionForce created." << std::endl;
+
+	// explosionForceGen->setGroup(Constants::Group::DynamicGroup::ENEMY);
+	// // registerInsideForceGen(std::move(explosionForceGen));
+	// // registerForceGenAtForceManager(std::move(explosionForceGen));
+}
+
+void RainSystem::applyForces()
+{
+	// Get all forces available from ForceManager
+	std::vector<ForceGenerator*> forceGenerators = _forceManager.getForceGenerators();
+
+	for (auto& [generator, pool] : _generatorsAndPools) // for each pool
+	{
+		for (auto& forceGen : forceGenerators) // for each force generator
+		{
+			if (forceGen->isActive() && doForceAffectsSystem(*forceGen)) {
+
+				for (int i = 0; i < pool->getActiveCount(); ++i) 
+				{
+					auto& particle = pool->accessParticlePool()[i];
+					particle->clearForces();
+					particle->applyForce(*forceGen);
+				}
+			}
+		}
+	}
 }
 
 void RainSystem::update(double deltaTime)
@@ -75,9 +142,10 @@ void RainSystem::update(double deltaTime)
 		return;
 	}
 
-	// Get all forces available from ForceManager
-	std::vector<ForceGenerator*> forceGenerators = _forceManager.getForceGenerators();
+	// Apply forces to all particles
+	applyForces();
 
+	// Update each generator and its pool
 	for (auto& [gen, pool] : _generatorsAndPools) 
 	{
 		int numToSpawn = 0;
@@ -96,7 +164,6 @@ void RainSystem::update(double deltaTime)
 				physx::PxTransform t = physx::PxTransform(0, 0, 0, physx::PxQuat(0));
 				t.p = gen->getGeneratedPosition();
 				p->setTransform(t);
-				p->setAcceleration(physx::PxVec3(0.0f, 0.0f, 0.0f));
 			}
 			else break;
 		}
@@ -106,10 +173,6 @@ void RainSystem::update(double deltaTime)
 		for (int i = 0; i < pool->getActiveCount(); ++i) 
 		{
 			// std::cout << "Active Rain Particles: " << pool->getActiveCount() << std::endl;
-			particles[i]->clearForces();
-			// Apply all forces to the particle (from ForceManager and inside system)
-			applyForceManagerForces(*particles[i], forceGenerators);
-			applyInsideForces(*particles[i]);
 			// Update particle
 			particles[i]->update(deltaTime);
 

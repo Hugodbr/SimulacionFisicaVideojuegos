@@ -11,6 +11,9 @@ template<typename ParticleType>
 class ParticlePool 
 {
 private:
+    inline static uint64_t total_allocated_bytes = 0;
+    inline static uint64_t total_active_particles = 0;
+
     std::vector<std::byte> _buffer;
     std::pmr::monotonic_buffer_resource _arena;
     std::pmr::vector<ParticleType*> _particles;
@@ -31,7 +34,12 @@ public:
             void* mem = _arena.allocate(sizeof(ParticleType), alignof(ParticleType));
             ParticleType* p = new (mem) ParticleType(std::forward<Args>(args)...);
             _particles.push_back(p);
+            total_active_particles++;
         }
+        total_allocated_bytes += maxParticles * sizeof(ParticleType);
+        std::cout << "ParticlePool created with " << maxParticles << " particles. Total allocated bytes: " << total_allocated_bytes << "\n";
+        std::cout << "Total active particles: " << total_active_particles << "\n";
+
     }
 
     ~ParticlePool() noexcept {

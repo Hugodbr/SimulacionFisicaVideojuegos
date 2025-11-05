@@ -1,13 +1,14 @@
 #include "GunSystem.h"
 
 #include "MathUtils.h"
+#include "ForceManager.h"
+#include "ForceGenerator.h"
+#include "WindRegionForce.h"
 #include "UniformParticleGenerator.h"
 #include "GaussianParticleGenerator.h"
 #include "ConstantParticleGenerator.h"
-#include "ForceGenerator.h"
 #include "StaticParticle.h"
 #include "Bullet.h"
-
 
 
 GunSystem::GunSystem(const physx::PxVec3 &position, Camera* cam)
@@ -26,6 +27,28 @@ void GunSystem::init()
     initParticleGeneratorAndPool();
 }
 
+void GunSystem::applyForces()
+{
+    // Get all forces available from ForceManager
+	std::vector<ForceGenerator*> forceGenerators = _forceManager.getForceGenerators();
+
+    // ONLY FOR BULLETS
+	for (auto& [generator, pool] : _gunBulletsGeneratorAndPool) // for each pool
+	{
+		for (auto& forceGen : forceGenerators) // for each force generator
+		{
+			if (forceGen->isActive() && doForceAffectsSystem(*forceGen)) {
+				for (int i = 0; i < pool->getActiveCount(); ++i) 
+				{
+					auto& particle = pool->accessParticlePool()[i];
+					particle->clearForces();
+					particle->applyForce(*forceGen);
+				}
+			}
+		}
+	}
+}
+
 void GunSystem::initParticleGeneratorAndPool()
 {
     initGunMesh(); 
@@ -38,7 +61,7 @@ void GunSystem::initGunMesh()
 {
     // ONE MESH  GUN -----------------------------------------------------
     // Gun mesh particle size
-    float size = 0.3f;
+    float size = 0.4f;
     // Gun color
     physx::PxVec4 color = Constants::Color::Green;
 
@@ -68,18 +91,20 @@ void GunSystem::initGunMesh()
     // ONE MESH END -----------------------------------------------------       
 
     // SECOND MESH -----------------------------------------------------
-    // Gun muzzle
+    // Gun muzzle1
         // Gun mesh particle size
-    float muzzleSize = 0.4f;
+    float muzzleSize = 0.5f;
     // Gun color
-    Vector4 muzzleColor = Constants::Color::Red;
+    physx::PxVec4 color1 = Constants::Color::Red;
+    physx::PxVec4 colorDeviation = physx::PxVec4(0.1f, 0.3f, 0.1f, 0.0f);
+    ColorStats muzzleColor(color1, colorDeviation);
 
     _gunMuzzleGeneratorAndPool.push_back({
         std::make_unique<GaussianParticleGenerator>(),
         std::make_unique<ParticlePool<Particle>>(
-            2000,  // Pool size
+            3000,  // Pool size
             muzzleSize, // size particle
-            muzzleColor,  // color particle
+            Constants::Color::Red,  // color particle
             1000.0f // initial speed
         )
     });
@@ -89,10 +114,11 @@ void GunSystem::initGunMesh()
     generator->init(_emitterOrigin);
 
     // Create generation policy
-	ParticleGenerationPolicy muzzleGenPolicy(SpawnMode::Count, ScalarStats(500, 100)); // 400 particles per shot
+	ParticleGenerationPolicy muzzleGenPolicy(SpawnMode::Count, ScalarStats(700, 100)); // 400 particles per shot
     _meshDataMuzzle.emplace_back();
 	_meshDataMuzzle.back().loadMeshFromFile("../resources/muzzle.obj");
 	muzzleGenPolicy.setRegion(Region(_meshDataMuzzle.back()));
+    muzzleGenPolicy.setColor(muzzleColor);
     muzzleGenerator->setGenerationPolicy(muzzleGenPolicy);
 
     // Create lifetime policy
@@ -108,9 +134,9 @@ void GunSystem::initGunBullets()
     // ONE BULLET TYPE -----------------------------------------------------
     
     // Bullet size
-    float size = 0.1f;
+    float size = 10.0f;
     // Bullet color
-    physx::PxVec4 color = Constants::Color::Red;
+    physx::PxVec4 color = Constants::Color::Purple;
 
     _gunBulletsGeneratorAndPool.push_back({
         std::make_unique<ConstantParticleGenerator>(),
@@ -129,6 +155,7 @@ void GunSystem::initGunBullets()
     ParticleGenerationPolicy genPolicy;
     Region bulletRegion(RegionType::POINT_3D, Vector3Stats()); // Default region at origin
     genPolicy.setRegion(bulletRegion);
+    genPolicy.setColor(ColorStats(color, physx::PxVec4(0.0f, 0.0f, 0.0f, 0.0f)));
     generator->setGenerationPolicy(genPolicy);
 
     // Create lifetime policy
@@ -199,7 +226,7 @@ void GunSystem::updateGunBullets(double deltaTime)
             auto* p = pool->accessParticlePool()[i];
             if (p) {
                 p->update(deltaTime);
-
+                // std::cout << "Bullet Position: " << p->getPosition().x << ", " << p->getPosition().y << ", " << p->getPosition().z << std::endl;
                 if (gen->getLifetimePolicy().shouldDelete(gen->getDistribution(), *p)) {
                     pool->deactivate(i);
                     --i; // Adjust index after deactivation
@@ -228,6 +255,7 @@ void GunSystem::createMuzzleFlash(double deltaTime)
                 physx::PxTransform t = physx::PxTransform(gen->getGeneratedPosition(), physx::PxQuat(0));
                 p->setTransformRelative(physx::PxTransform(_emitterOrigin - t.p, physx::PxQuat(0)));
 
+                p->setColor(gen->getGeneratedColor());
                 // Target transform (camera-relative)
                 physx::PxVec3 targetPos = _gunTransform.transform(p->getRelativeTransform().p);
                 physx::PxQuat targetRot = _gunTransform.q;
@@ -311,5 +339,27 @@ void GunSystem::shoot()
     if (p) {
         p->setTransform(_gunTransform);
         p->setVelocityDirection(bulletDirection);
+        p->setColor(gen->getGeneratedColor());
     }
+
+    float boxSize = 10.0f;
+    physx::PxVec3 regionMin = (p->getPosition() - physx::PxVec3(boxSize / 2.0f, boxSize / 2.0f, boxSize / 2.0f));
+    physx::PxVec3 regionMax = (p->getPosition() + physx::PxVec3(boxSize / 2.0f, boxSize / 2.0f, boxSize / 2.0f));
+
+    Region windRegion(physx::PxBounds3(regionMin, regionMax));
+
+    // Region center
+    physx::PxVec3 regionCenter = (regionMin + regionMax) / 2.0f;
+    regionCenter = windRegion.shape.box.getCenter();
+
+	std::unique_ptr<ForceGenerator> windGen = std::make_unique<WindRegionForce>(
+		this,
+		windRegion,
+		bulletDirection * Constants::Particle::WithMass::Bullet::Speed // wind velocity
+	);
+    dynamic_cast<RegionalForce*>(windGen.get())->setFollowParticle(true, *p);
+
+	windGen->setGroup(Constants::Group::DynamicGroup::ALL);
+    registerForceGenAtForceManager(std::move(windGen));
+
 }

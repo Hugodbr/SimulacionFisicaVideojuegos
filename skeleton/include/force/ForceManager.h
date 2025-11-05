@@ -31,7 +31,7 @@ public:
     void registerGlobalForce(std::unique_ptr<GlobalForce>& forceGen);
 
     // Adds a force generator to the specified particle system indexed by systemId
-    void registerForceGenerator(pSysId systemId, std::unique_ptr<ForceGenerator>& forceGen);
+    void registerForceGenerator(pSysId systemId, std::unique_ptr<ForceGenerator> forceGen);
     // Removes a force generator from the specified particle system indexed by systemId
     void deregisterForceGenerator(pSysId systemId, uint64_t forceGenId);
 
@@ -39,6 +39,8 @@ public:
     // The cached vector is updated only at the manager update, so the construction is made only once per update cycle. Otherwise,
     // systems that update first would have an advantage by making their generators available sooner.
     const std::vector<ForceGenerator*>& getForceGenerators();
+
+    void setWorldLimits(const physx::PxBounds3& worldLimits);
 
     // Update all force generators managed by this manager
     // Builds the cached vector if invalidated
@@ -52,7 +54,6 @@ private:
     ForceManager(const ForceManager&) = delete;
     ForceManager& operator=(const ForceManager&) = delete;
 
-
 private:
 
     std::unordered_map<fGenId, std::unique_ptr<ForceGenerator>> _forceGenerators;
@@ -63,4 +64,5 @@ private:
     bool _isCacheValid = false;
     std::vector<ForceGenerator*> _cachedForceGenerators;
 
+    physx::PxBounds3 _worldLimits;
 };

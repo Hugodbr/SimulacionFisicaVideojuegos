@@ -29,7 +29,6 @@
 #include "RainSystem.h"
 #include "GridSystem.h"
 #include "GunSystem.h"
-#include "BoxSystem.h"
 #include "MeshSystem.h"
 
 
@@ -65,8 +64,7 @@ using sysIt = std::vector<ParticleSystem*>::iterator;
 sysIt RainSystemIt;
 sysIt GridSystemIt;
 sysIt GunSystemIt;
-
-
+sysIt SuzanneMeshSystemIt;
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -100,8 +98,9 @@ void initPhysics(bool interactive)
 	// Global Forces
 	// =========================================================================================
 	// Create and register a gravitational force for all particle systems
-	std::unique_ptr<GlobalForce> gravForce = std::make_unique<GravitationalForce>();
-	forceManager.registerGlobalForce(std::move(gravForce));
+	// std::unique_ptr<GlobalForce> gravForce = std::make_unique<GravitationalForce>();
+	// gravForce->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
+	// forceManager.registerGlobalForce(std::move(gravForce));
 
 	// =========================================================================================
 	// Gun System
@@ -115,51 +114,54 @@ void initPhysics(bool interactive)
 	// =========================================================================================
 	// Rain System
 	// =========================================================================================
-	float halfRegionSize = 100.0f;
-	Region rainRegion(physx::PxBounds3(physx::PxVec3(-halfRegionSize, -halfRegionSize, -halfRegionSize), physx::PxVec3(halfRegionSize, halfRegionSize, halfRegionSize)));
-	physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.shape.box.minimum.y, 0.0f);
+	// float halfRegionSize = 100.0f;
+	// Region rainRegion(physx::PxBounds3(physx::PxVec3(-halfRegionSize, -halfRegionSize, -halfRegionSize), physx::PxVec3(halfRegionSize, halfRegionSize, halfRegionSize)));
+	// physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.shape.box.minimum.y, 0.0f);
 	
-	RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
-	rs->init();
-	particleSystems.push_back(rs);
-	RainSystemIt = std::find(particleSystems.begin(), particleSystems.end(), rs);
+	// RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
+	// rs->init();
+	// rs->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT, Constants::Group::DynamicGroup::ENEMY });
+	// particleSystems.push_back(rs);
+	// RainSystemIt = std::find(particleSystems.begin(), particleSystems.end(), rs);
 
 	// =========================================================================================
 	// Grid System
 	// =========================================================================================
-	GridSystem* gridSystem = new GridSystem(
-		Region(physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100))), 
-		1.0f, 
-		20.0,
-		Constants::Color::White
-	);
-	gridSystem->init();
-	particleSystems.push_back(gridSystem);
-	GridSystemIt = std::find(particleSystems.begin(), particleSystems.end(), gridSystem);
-
-	// =========================================================================================
-	// Box System
-	// =========================================================================================
-	// BoxSystem* boxSystem = new BoxSystem(
-	// 	Region(MeshData()), 
+	// GridSystem* gridSystem = new GridSystem(
+	// 	Region(physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100))), 
 	// 	1.0f, 
-	// 	1.0,
+	// 	20.0,
 	// 	Constants::Color::White
 	// );
-	// boxSystem->init();
-	// particleSystems.push_back(boxSystem);
+	// gridSystem->init();
+	// particleSystems.push_back(gridSystem);
+	// GridSystemIt = std::find(particleSystems.begin(), particleSystems.end(), gridSystem);
+
+	// =========================================================================================
+	// Cage System
+	// =========================================================================================
+	// MeshSystem* cageSystem = new MeshSystem(
+	// 	"../resources/cage.obj", 
+	// 	10.0f, // point size
+	// 	1.0, // scale
+	// 	Constants::Color::Gray // color
+	// );
+	// cageSystem->init();
+	// particleSystems.push_back(cageSystem);
 
 	// =========================================================================================
 	// Suzanne Mesh System
 	// =========================================================================================
-	// MeshSystem* meshSystem = new MeshSystem(
-	// 	"../resources/suzanneCenter.obj", 
-	// 	1.0f, // point size
-	// 	2.0, // scale
-	// 	Constants::Color::White
-	// );
-	// meshSystem->init();
-	// particleSystems.push_back(meshSystem);
+	MeshSystem* meshSystem = new MeshSystem(
+		"../resources/suzanne.obj", 
+		0.5f, // point size
+		1.0f, // scale
+		Constants::Color::Black // color
+	);
+	meshSystem->init();
+	meshSystem->setGroups({ Constants::Group::DynamicGroup::ENEMY });
+	particleSystems.push_back(meshSystem);
+	SuzanneMeshSystemIt = std::find(particleSystems.begin(), particleSystems.end(), meshSystem);
 
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
 	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));
@@ -251,7 +253,9 @@ void keyPress(unsigned char key, const PxTransform& camera)
 			(*RainSystemIt)->setActive(!(*RainSystemIt)->isActive());
 		}
 		break;
-	
+	case 'M':
+		(*SuzanneMeshSystemIt)->setGroups({ Constants::Group::DynamicGroup::ALL });
+		break;
 	default:
 		break;
 	}

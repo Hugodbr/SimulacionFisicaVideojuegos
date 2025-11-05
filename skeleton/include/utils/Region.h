@@ -40,7 +40,9 @@ struct Region
             new (&shape.disc) Vector3Stats(stats);
             break;
         }
+
     }
+
     explicit Region(physx::PxBounds3 box)
         : type(BOX)
     {
@@ -95,11 +97,11 @@ struct Region
         }
     }
 
-    Region& operator=(Region&& other) noexcept
+    Region& operator=(const Region& other)
     {
         if (this != &other) {
             this->~Region();
-            new (this) Region(std::move(other));
+            new (this) Region(other);
         }
         return *this;
     }
@@ -120,6 +122,27 @@ struct Region
             break;
         case MESH:
             shape.mesh.~MeshData();
+            break;
+        }
+    }
+
+    void moveRegionTo(const physx::PxVec3& position) {
+        switch (type) {
+        case POINT_3D:
+            shape.point.mean = position;
+            break;
+        case BOX:
+            shape.box.minimum = position - (shape.box.maximum - shape.box.minimum) / 2;
+            shape.box.maximum = position + (shape.box.maximum - shape.box.minimum) / 2;
+            break;
+        case SPHERE:
+            shape.sphere.mean = position;
+            break;
+        case DISC:
+            shape.disc.mean = position;
+            break;
+        case MESH:
+            shape.mesh.moveMeshTo(position);
             break;
         }
     }

@@ -47,3 +47,10 @@ physx::PxVec3 ParticleGenerator::getGeneratedPosition()
             return getDistribution();
             });
 }
+
+physx::PxVec4 ParticleGenerator::getGeneratedColor()
+{
+    return _generationPolicy->generateColor([this]() {
+            return getDistribution();
+            });
+}

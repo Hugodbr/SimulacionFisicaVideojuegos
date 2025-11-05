@@ -25,12 +25,17 @@ public:
 protected:
 	// Returns the reserve count per generator for this system
 	virtual uint64_t getReserveCountPerGenerator() const override { 
-        return _meshData.vertices.size();
+        return _meshData.uniqueVertices.size();
     }
 
     virtual void initParticleGeneratorAndPool();
 
     virtual void createParticlesAtMeshVertices();
+
+    virtual void applyForces() override;
+
+
+protected:
 
     MeshData _meshData;
 

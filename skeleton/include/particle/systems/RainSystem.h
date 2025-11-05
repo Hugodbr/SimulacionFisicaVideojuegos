@@ -40,7 +40,13 @@ protected:
 
     void initParticleGeneratorAndPool();
 
-	void createForceGenerator(std::unique_ptr<ForceGenerator>& forceGen);
+	// void createForceGenerator(std::unique_ptr<ForceGenerator>& forceGen);
+	void createForceGenerator();
+	
+	// Clear all forces from the particles and apply forces from ForceManager
+	virtual void applyForces() override;
+
+protected:
 
 	std::vector<
         std::pair<

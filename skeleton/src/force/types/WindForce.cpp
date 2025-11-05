@@ -5,6 +5,7 @@
 
 
 WindForce::WindForce(const physx::PxVec3 &velocity)
+    : ForceField()
 {
     setVelocity(velocity);
     setFrictionCoefficient(_frictionCoefficient); // Default friction coefficient
@@ -49,9 +50,19 @@ void WindForce::setFrictionCoefficient(float coefficient)
     _k2 = 0.5f * _frictionCoefficient;   // Turbulent drag
 }
 
+void WindForce::updateField(double deltaTime)
+{
+}
+
+void WindForce::updateForce(double deltaTime)
+{
+    ForceField::updateForce(deltaTime);
+}
+
 physx::PxVec3 WindForce::computeForceOnParticle(ParticleWithMass& particle)
 {
     physx::PxVec3 particleVelocity = particle.getVelocity();
+    // Reset force. Its different for each particle.
     _force = physx::PxVec3(0.0f, 0.0f, 0.0f);
 
     // Calculate relative velocity between wind and particle
@@ -62,9 +73,4 @@ physx::PxVec3 WindForce::computeForceOnParticle(ParticleWithMass& particle)
              _k2 * relativeVelocity.magnitude() * relativeVelocity;
 
     return _force;
-}
-
-void WindForce::updateForce(double deltaTime)
-{
-    // Constant over time.
 }

@@ -1,5 +1,6 @@
 #include "MeshSystem.h"
 
+#include "ForceManager.h"
 #include "ParticleGenerator.h"
 #include "ConstantParticleGenerator.h"
 #include "ParticlePool.h"
@@ -28,13 +29,43 @@ void MeshSystem::init()
     initParticleGeneratorAndPool();
 }
 
+void MeshSystem::applyForces()
+{
+	// Get all forces available from ForceManager
+	std::vector<ForceGenerator*> forceGenerators = _forceManager.getForceGenerators();
+
+	for (auto& [generator, pool] : _generatorsAndPools) // for each pool
+	{
+		for (auto& forceGen : forceGenerators) // for each force generator
+		{
+			if (forceGen->isActive() && doForceAffectsSystem(*forceGen)) {
+				for (int i = 0; i < pool->getActiveCount(); ++i) 
+				{
+					auto& particle = pool->accessParticlePool()[i];
+					particle->clearForces();
+					particle->applyForce(*forceGen);
+				}
+			}
+		}
+	}
+}
+
 void MeshSystem::update(double deltaTime)
 {
+    ParticleSystem::update(deltaTime);
+    if (!isActive()) {
+		return;
+	}
+
+    // Apply forces to all particles
+	applyForces();
+
     for (auto& [generator, pool] : _generatorsAndPools) 
     {
         for (int i = 0; i < pool->getActiveCount(); ++i) 
         {
-            pool->accessParticlePool()[i]->update(deltaTime);
+            auto& particle = pool->accessParticlePool()[i];
+            particle->update(deltaTime);
         }
     }
 }
@@ -46,7 +77,8 @@ void MeshSystem::initParticleGeneratorAndPool()
         std::make_unique<ParticlePool<ParticleWithMass>>(getReserveCountPerGenerator()
         , 2.0f // mass
         , _pointSize // size
-        , Constants::Color::Green)
+        , _color  // color
+        )
     });
 
     auto& generator = _generatorsAndPools[0].first;
@@ -75,7 +107,7 @@ void MeshSystem::createParticlesAtMeshVertices()
             // Set particle position to vertex position
             physx::PxVec3 pos = vertex * _scale + _emitterOrigin;
             p->setTransform(physx::PxTransform(pos, physx::PxQuat(0)));
-            p->setVelocity(physx::PxVec3(5.0f, 0, 0));
+            // p->setVelocity(physx::PxVec3(5.0f, 0, 0));
         }
     }
 }

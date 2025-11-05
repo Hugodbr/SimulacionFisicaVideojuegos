@@ -16,15 +16,15 @@ ParticleSystem::ParticleSystem()
     , _registeredForceGenIds()
     , _isActive(true)
     , _isDead(false)
-
-    , _forceGenActiveCount(0)
-    , _maxInsideForceGenerators(Constants::System::MaxInsideForceGenerators)
-    , _forceGensInsideSystem(_maxInsideForceGenerators)
-
+    , _isRenderable(true)
+    , _worldRegion(Region(physx::PxBounds3(
+        physx::PxVec3(-1000.0f, -1000.0f, -1000.0f),
+        physx::PxVec3(1000.0f, 1000.0f, 1000.0f)
+    )))
     , _subSystemActiveCount(0)
     , _maxSubSystems(Constants::System::MaxSubSystems)
-    , _subSystems(_maxSubSystems)
 {
+    _subSystems.reserve(_maxSubSystems);
 }
 
 void ParticleSystem::setRenderable(bool renderable)
@@ -53,8 +53,22 @@ void ParticleSystem::setDead()
         }
     }
 
-    deregisterAllInsideForceGens();
     deregisterAllForceGensAtForceManager();
+}
+
+bool ParticleSystem::doForceAffectsSystem(const ForceGenerator &forceGen) const
+{
+    for (const auto &group : _group) {
+        if (group == Constants::Group::DynamicGroup::NONE) {
+            return false;
+        }
+        if (forceGen.getGroup() == group 
+        || forceGen.getGroup() == Constants::Group::DynamicGroup::ALL 
+        || forceGen.getParticleSystem()->getId() == this->getId()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool ParticleSystem::mustKillParticle(const Particle &p, const ParticleGenerator &generator) const
@@ -67,29 +81,19 @@ bool ParticleSystem::mustSpawnParticle(double deltaTime, const ParticleGenerator
     return generator.getGenerationPolicy().shouldSpawn(generator.getDistribution(), deltaTime);
 }
 
-void ParticleSystem::applyForceManagerForces(ParticleWithMass &particle, const std::vector<ForceGenerator *> &forceGenerators)
-{
-    for (auto &forceGen : forceGenerators) {
-        forceGen->applyForceOnParticle(particle);
-    }
-}
-
-void ParticleSystem::applyInsideForces(ParticleWithMass &particle)
-{
-    for (int i = 0; i < _forceGenActiveCount; ++i) {
-        _forceGensInsideSystem[i]->applyForceOnParticle(particle);
-    }
-}
-
 void ParticleSystem::update(double deltaTime)
 {
     if (_isActive) {
-        updateInsideForces(deltaTime);
         updateSubSystems(deltaTime); 
     }
     else {
         std::cout << "ParticleSystem " << _id << " is inactive. Skipping update." << std::endl;
     }
+}
+
+void ParticleSystem::setWorldRegion(const Region &region)
+{
+	_worldRegion = Region(region);
 }
 
 void ParticleSystem::updateSubSystems(double deltaTime)
@@ -108,28 +112,6 @@ void ParticleSystem::updateSubSystems(double deltaTime)
     }
 }
 
-void ParticleSystem::updateInsideForces(double deltaTime)
-{
-        for (int i = 0; i < _forceGenActiveCount; ++i) 
-    {
-        assert(_forceGensInsideSystem[i] != nullptr && "Force generator inside particle system is null");
-
-        if (_forceGensInsideSystem[i]->isActive()) {
-            _forceGensInsideSystem[i]->updateForce(deltaTime);
-        }
-        else if (_forceGensInsideSystem[i]->isDead()) {
-            deregisterInsideForceGen(i);
-            --i; // Adjust index after deregistration
-        }
-    }
-}
-
-void ParticleSystem::setActivateInsideForceGen(int forceGenIdx, bool active)
-{
-    assert(forceGenIdx >= 0 && forceGenIdx < _forceGenActiveCount && "Force generator index out of range");
-    _forceGensInsideSystem[forceGenIdx]->setActive(active);
-}
-
 void ParticleSystem::setActivateForceGenAtForceManager(fGenId forceGenId, bool active)
 {
     bool result = _forceManager.setActiveForceGenAtForceManager(forceGenId, active);
@@ -138,19 +120,13 @@ void ParticleSystem::setActivateForceGenAtForceManager(fGenId forceGenId, bool a
     }
 }
 
-void ParticleSystem::registerSubSystem(std::unique_ptr<ParticleSystem> &subSystem)
+void ParticleSystem::registerSubSystem(std::unique_ptr<ParticleSystem> subSystem)
 {
     _subSystems.push_back(std::move(subSystem));
     _subSystemActiveCount++;
 }
 
-void ParticleSystem::registerInsideForceGen(std::unique_ptr<ForceGenerator> &forceGen)
-{
-    _forceGensInsideSystem.push_back(std::move(forceGen));
-    _forceGenActiveCount++;
-}
-
-void ParticleSystem::registerForceGenAtForceManager(std::unique_ptr<ForceGenerator> &forceGen)
+void ParticleSystem::registerForceGenAtForceManager(std::unique_ptr<ForceGenerator> forceGen)
 {
     _registeredForceGenIds.push_back(forceGen->getId());
     _forceManager.registerForceGenerator(_id, std::move(forceGen));
@@ -163,23 +139,6 @@ void ParticleSystem::deregisterSubSystem(int subSystemIdx)
     std::swap(_subSystems[subSystemIdx], _subSystems[_subSystemActiveCount - 1]);
     _subSystems[_subSystemActiveCount - 1] = nullptr; // Destroys the unique_ptr
     --_subSystemActiveCount;
-}
-
-void ParticleSystem::deregisterInsideForceGen(int forceGenIdx)
-{
-    assert(forceGenIdx >= 0 && forceGenIdx < _forceGenActiveCount && "Force generator index out of range");
-
-    std::swap(_forceGensInsideSystem[forceGenIdx], _forceGensInsideSystem[_forceGenActiveCount - 1]);
-    _forceGensInsideSystem[_forceGenActiveCount - 1] = nullptr; // Destroys the unique_ptr
-    --_forceGenActiveCount;
-}
-
-void ParticleSystem::deregisterAllInsideForceGens()
-{
-    for (int i = 0; i < _forceGenActiveCount; ++i) {
-        _forceGensInsideSystem[i] = nullptr; // Destroys the unique_ptr
-    }
-    _forceGenActiveCount = 0;
 }
 
 void ParticleSystem::deregisterForceGenAtForceManager(fGenId forceGenId)

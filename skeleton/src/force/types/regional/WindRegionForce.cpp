@@ -26,12 +26,25 @@ void WindRegionForce::init(const Region &region, const physx::PxVec3 &velocity)
     _windSpeed = _windVelocity.magnitude();
 }
 
-void WindRegionForce::updateForce(double deltaTime)
+void WindRegionForce::updateField(double deltaTime)
 {
-    WindForce::updateForce(deltaTime);
+    RegionalForce::updateField(deltaTime);
 }
 
-void WindRegionForce::applyForceOnParticle(ParticleWithMass& particle)
+void WindRegionForce::updateForce(double deltaTime)
 {
-    RegionalForce::applyForceOnParticle(particle);
+    ForceField::updateForce(deltaTime);
+}
+
+physx::PxVec3 WindRegionForce::getForceOnParticle(ParticleWithMass &particle)
+{
+    return computeForceOnParticle(particle);
+}
+
+physx::PxVec3 WindRegionForce::computeForceOnParticle(ParticleWithMass &particle)
+{
+    if (isParticleInsideRegion(particle)) {
+        return WindForce::computeForceOnParticle(particle);
+    }
+    return physx::PxVec3(0.0f, 0.0f, 0.0f);
 }

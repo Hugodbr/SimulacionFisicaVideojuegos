@@ -53,6 +53,7 @@ ParticleGenerationPolicy::ParticleGenerationPolicy(const ParticleGenerationPolic
     , position(other.position)
     , currentSpawnInterval(other.currentSpawnInterval)
     , accumulator(other.accumulator)
+    , color(other.color)
 { }
 
 void ParticleGenerationPolicy::setSpawnCount(const ScalarStats& newSpawnCount)
@@ -101,6 +102,11 @@ void ParticleGenerationPolicy::setRegion(const Region& r)
     }
 }
 
+void ParticleGenerationPolicy::setColor(const ColorStats &newColor)
+{
+    color = newColor;
+}
+
 // Redundancy for further implementation if needed
 physx::PxVec3 ParticleGenerationPolicy::generatePosition(const std::function<double()>& distributionFunc)
 {
@@ -135,6 +141,16 @@ physx::PxVec3 ParticleGenerationPolicy::generatePosition(const std::function<dou
 
 
     //return position.mean + position.deviation * distr;
+}
+
+physx::PxVec4 ParticleGenerationPolicy::generateColor(const std::function<double()> &distributionFunc)
+{
+    physx::PxVec4 generatedColor;
+    generatedColor.x = color.mean.x + color.deviation.x * static_cast<float>(distributionFunc());
+    generatedColor.y = color.mean.y + color.deviation.y * static_cast<float>(distributionFunc());
+    generatedColor.z = color.mean.z + color.deviation.z * static_cast<float>(distributionFunc());
+    generatedColor.w = color.mean.w + color.deviation.w * static_cast<float>(distributionFunc());
+    return generatedColor;
 }
 
 bool ParticleGenerationPolicy::shouldSpawn(double distr, double deltaTime)

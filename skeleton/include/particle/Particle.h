@@ -68,14 +68,14 @@ public:
 	virtual void setSize(double size);
 
 	virtual double getAge() const { return _age; }
-	virtual physx::PxVec3 getPosition() const { return _transform.p; }
-	virtual physx::PxVec3 getVelocity() const { return _velocity; }
-	virtual physx::PxVec3 getAcceleration() const { return _acceleration; }
+	virtual const physx::PxVec3& getPosition() const { return _transform.p; }
+	virtual const physx::PxVec3& getVelocity() const { return _velocity; }
+	virtual const physx::PxVec3& getAcceleration() const { return _acceleration; }
 	virtual double getSize() const { return _size; }
 	virtual float getSpeed() const { return _speed; }
-	virtual physx::PxTransform getTransform() const { return _transform; }
-	virtual physx::PxTransform getOriginalTransform() const { return _transformOriginal; }
-	virtual physx::PxTransform getRelativeTransform() const { return _relativeTransform; }
+	virtual const physx::PxTransform& getTransform() const { return _transform; }
+	virtual const physx::PxTransform& getOriginalTransform() const { return _transformOriginal; }
+	virtual const physx::PxTransform& getRelativeTransform() const { return _relativeTransform; }
 
 	virtual bool isActive() const { return _alive; }
 	uint64_t getId() const { return _id; }

@@ -4,6 +4,7 @@
 
 #include "Particle.h"
 
+class ForceGenerator;
 
 class ParticleWithMass : public Particle
 {
@@ -62,7 +63,7 @@ public:
 	// Sets acceleration to zero and resulting force to zero. Must be called at the beginning of each particle update cycle!
 	virtual void clearForces();
 	// Adds force to resulting force
-	virtual void applyForce(const physx::PxVec3& force);
+	virtual void applyForce(ForceGenerator& forceGenerator);
 	// Compute acceleration with resulting force and inverse mass, then call base update. Last step of a particle after forces have been applied.
 	// Integrates position and velocity based on acceleration and integration method, and updates age.
 	virtual void update(double dt) override;
@@ -71,6 +72,7 @@ public:
 
 	virtual physx::PxVec3 getResultingForce() const { return _resultingForce; }
 	virtual float getInverseMass() const { return _inverseMass; }
+	virtual float getMass() const { return _mass; }
 
 	virtual void changeMass(float newMass);
 

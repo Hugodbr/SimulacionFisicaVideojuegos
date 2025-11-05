@@ -23,6 +23,7 @@ struct ParticleGenerationPolicy
     ScalarStats spawnInterval;     // 
 
     Vector3Stats position;    // mean = center, deviation = extents or radius
+    ColorStats color;
 
     Region region;
 
@@ -52,8 +53,10 @@ public:
     void setSpawnCount(const ScalarStats& newSpawnCount);
     void setSpawnInterval(const ScalarStats& newSpawnInterval);
     void setRegion(const Region& r);
+    void setColor(const ColorStats& newColor);
 
     physx::PxVec3 generatePosition(const std::function<double()>& distributionFunc); // generate a random spawn point
+    physx::PxVec4 generateColor(const std::function<double()>& distributionFunc); // generate a random color
     
     bool shouldSpawn(double distr, double deltaTime); // If should spawn at a frame when using spawn interval
     int spawnNumber(double distr) const; // How many to be spawned if spawn is not constant

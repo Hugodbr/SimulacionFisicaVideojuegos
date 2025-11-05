@@ -19,6 +19,17 @@ namespace Constants
 		static constexpr float Damping = 0.98f;
 	};
 
+	// Group that systems or forces can belong to. Used for selective application of forces.
+	namespace Group {
+		enum DynamicGroup {
+			ALL = 0,    // Applies to all systems
+			NONE = 1,   // Applies to no systems
+			ENEMY = 2,   // Applies to enemy systems
+			ENVIRONMENT = 3, // Applies to environment systems
+			// TODO
+		};
+	}
+
 	enum ParticleType {
 		DEFAULT,
 		CANNON_BALL,
@@ -61,7 +72,7 @@ namespace Constants
 
 			namespace Bullet {
 				static const ParticleType type = BULLET;
-				static constexpr float Size = 0.5f;
+				static constexpr float Size = 3.0f;
 				static constexpr float Speed = 1000.0f;
 				static constexpr float Mass = 0.001f;
 				static constexpr double gFactor = 0.1;
@@ -82,9 +93,9 @@ namespace Constants
 	};
 
 	namespace System {
-		static constexpr uint32_t MaxParticleSystems = 50;
-		static constexpr uint32_t MaxInsideForceGenerators = 10;
-		static constexpr uint32_t MaxSubSystems = 10;
+		static constexpr size_t MaxParticleSystems = 50;
+		static constexpr size_t MaxInsideForceGenerators = 10;
+		static constexpr size_t MaxSubSystems = 10;
 		namespace Default {
 			static constexpr uint64_t ReserveCountPerGenerator = 1000;
 		};
@@ -102,10 +113,20 @@ namespace Constants
 	};
 
 	namespace Color {
-		static const physx::PxVec4 White = physx::PxVec4(255, 255, 255, 255);
-		static const physx::PxVec4 Red   = physx::PxVec4(255, 0, 0, 255);
-		static const physx::PxVec4 Green = physx::PxVec4(0, 255, 0, 255);
-		static const physx::PxVec4 Blue  = physx::PxVec4(0, 0, 255, 255);
+		static const physx::PxVec4 White = physx::PxVec4(1.0f, 1.0f, 1.0f, 1.0f);
+		static const physx::PxVec4 Gray  = physx::PxVec4(0.5f, 0.5f, 0.5f, 1.0f);
+		static const physx::PxVec4 Black = physx::PxVec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+		static const physx::PxVec4 Red   = physx::PxVec4(1.0f, 0.0f, 0.0f, 1.0f);
+		static const physx::PxVec4 Yellow = physx::PxVec4(1.0f, 1.0f, 0.0f, 1.0f);
+		static const physx::PxVec4 Green = physx::PxVec4(0.0f, 1.0f, 0.0f, 1.0f);
+		static const physx::PxVec4 Cyan  = physx::PxVec4(0.0f, 1.0f, 1.0f, 1.0f);
+		static const physx::PxVec4 Blue  = physx::PxVec4(0.0f, 0.0f, 1.0f, 1.0f);
+		static const physx::PxVec4 Magenta = physx::PxVec4(1.0f, 0.0f, 1.0f, 1.0f);
+		static const physx::PxVec4 Orange = physx::PxVec4(1.0f, 0.647f, 0.0f, 1.0f);
+		static const physx::PxVec4 Purple = physx::PxVec4(0.5f, 0.0f, 0.5f, 1.0f);
+		static const physx::PxVec4 Pink = physx::PxVec4(1.0f, 0.753f, 0.796f, 1.0f);
+		static const physx::PxVec4 Brown = physx::PxVec4(0.647f, 0.165f, 0.165f, 1.0f);
 	};
 
 };

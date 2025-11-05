@@ -4,8 +4,7 @@
 
 ForceField::ForceField()
     : ForceGenerator()
-{
-}
+{ }
 
 ForceField::ForceField(const ParticleSystem *particleSystem)
     : ForceGenerator(particleSystem)
@@ -13,18 +12,18 @@ ForceField::ForceField(const ParticleSystem *particleSystem)
     initParticleSysForceGen(const_cast<ParticleSystem*>(particleSystem));
 }
 
-void ForceField::updateForce(double deltaTime)
+void ForceField::updateField(double deltaTime)
 {
-    std::cout << "Updating ForceField ID: " << _id << ". Caution: pure force field!" << std::endl;
+    // Default implementation does nothing.
 }
 
-void ForceField::applyForceOnParticle(ParticleWithMass &particle)
+void ForceField::updateForce(double deltaTime)
 {
-    physx::PxVec3 force = computeForceOnParticle(particle);
-    particle.applyForce(force);
+    updateField(deltaTime);
+    ForceGenerator::updateForce(deltaTime);
 }
 
 physx::PxVec3 ForceField::computeForceOnParticle(ParticleWithMass &particle)
 {
-    return physx::PxVec3(0, 0, 0);
+    return _force;
 }

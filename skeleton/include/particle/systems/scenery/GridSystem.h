@@ -24,6 +24,8 @@ protected:
         return Constants::System::Grid::ReserveCountPerGenerator;
     }
 
+    virtual void applyForces() override;
+    
     virtual void initParticleGeneratorAndPool();
 
     virtual void createParticlesInGrid();

@@ -35,6 +35,7 @@ public:
 	}
 
 protected:
+	virtual void applyForces() override;
 
     void initParticleGeneratorAndPool();
 	void initGunMesh();

@@ -13,6 +13,7 @@ GridSystem::GridSystem(const Region &region, float pointSize, double scale, cons
     , _color(color)
     , _visible(true)
 {
+    _group = { Constants::Group::DynamicGroup::NONE };
 }
 
 void GridSystem::init()
@@ -46,6 +47,11 @@ void GridSystem::setRenderable(bool renderable)
             pool->accessParticlePool()[i]->setVisibility(renderable);
         }
     }
+}
+
+void GridSystem::applyForces()
+{
+    // Stable - No forces applied
 }
 
 void GridSystem::initParticleGeneratorAndPool()

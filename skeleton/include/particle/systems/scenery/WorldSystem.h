@@ -1,19 +1,19 @@
 #pragma once
 
-#include <vector>
-#include <memory>
+// #include <vector>
+// #include <memory>
 
-class ParticleSystem;
+// class ParticleSystem;
 
-class WorldSystem
-{
-public:
-    WorldSystem();
-    ~WorldSystem() = default;
+// class WorldSystem
+// {
+// public:
+//     WorldSystem();
+//     ~WorldSystem() = default;
 
-    void init();
-    void update(double deltaTime);
+//     void init();
+//     void update(double deltaTime);
 
-private:
-    std::vector<std::unique_ptr<ParticleSystem>> _particleSystems;
-};
+// private:
+//     std::vector<std::unique_ptr<ParticleSystem>> _particleSystems;
+// };

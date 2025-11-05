@@ -32,6 +32,8 @@ void MeshData::loadMeshFromFile(const std::string& filename)
     }
 
     readUniqueVertices(filename);
+
+    computeCenter();
 }
 
 void MeshData::readUniqueVertices(const std::string& filename) 
@@ -55,6 +57,20 @@ void MeshData::readUniqueVertices(const std::string& filename)
 
     file.close();
     std::cout << "Loaded " << uniqueVertices.size() << " vertices from " << filename << std::endl;
+}
+
+void MeshData::computeCenter()
+{
+    if (uniqueVertices.empty()) {
+        center = physx::PxVec3(0.0f, 0.0f, 0.0f);
+        return;
+    }
+
+    physx::PxVec3 sum(0.0f, 0.0f, 0.0f);
+    for (const auto& vertex : uniqueVertices) {
+        sum += vertex;
+    }
+    center = sum * (1.0f / static_cast<float>(uniqueVertices.size()));
 }
 
 physx::PxVec3 MeshData::randomPointOnMesh(const std::function<double()>& distributionFunc) 
@@ -83,4 +99,16 @@ physx::PxVec3 MeshData::randomPointOnMesh(const std::function<double()>& distrib
 std::vector<physx::PxVec3> MeshData::getMeshVertices() const
 {
     return uniqueVertices;
+}
+
+void MeshData::moveMeshTo(const physx::PxVec3 &position)
+{
+    physx::PxVec3 displacement = position - center;
+    for (auto& vertex : vertices) {
+        vertex += displacement;
+    }
+    for (auto& vertex : uniqueVertices) {
+        vertex += displacement;
+    }
+    center = position;
 }

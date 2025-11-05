@@ -1,5 +1,6 @@
 #include "ParticleWithMass.h"
 
+#include "ForceGenerator.h"
 
 ParticleWithMass::ParticleWithMass(
 	const physx::PxTransform& initTransform,
@@ -90,14 +91,20 @@ void ParticleWithMass::clearForces()
 	_acceleration = physx::PxVec3(0.0f, 0.0f, 0.0f);
 }
 
-void ParticleWithMass::applyForce(const physx::PxVec3 &force)
+void ParticleWithMass::applyForce(ForceGenerator& forceGenerator)
 {
-	_resultingForce += force;
+	// std::cout << "Applying force from ForceGenerator ID " << forceGenerator.getId() << " to Particle ID " << getId() << std::endl;
+	// std::cout << "Current resulting force before applying: (" << _resultingForce.x << ", " << _resultingForce.y << ", " << _resultingForce.z << ")" << std::endl;
+	// std::cout << "Force to apply: (" << forceGenerator.getForceOnParticle(*this).x << ", " << forceGenerator.getForceOnParticle(*this).y << ", " << forceGenerator.getForceOnParticle(*this).z << ")" <<  std::endl;
+	
+	_resultingForce += forceGenerator.getForceOnParticle(*this);
 }
 
 void ParticleWithMass::update(double dt)
 {
 	_acceleration += _resultingForce * _inverseMass;
+	
+	// std::cout << "Particle ID " << getId() << " Acceleration after applying forces: (" << _acceleration.x << ", " << _acceleration.y << ", " << _acceleration.z << ")" << std::endl;
 
 	Particle::update(dt);
 }

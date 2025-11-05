@@ -1,43 +1,74 @@
 #include "RegionalForce.h"
 
+#include <cassert>
+
 #include "ParticleWithMass.h"
 #include "Region.h"
 
 
 RegionalForce::RegionalForce(const Region &region)
-    : ForceField(nullptr)
+    : ForceField()
     , _region(region)
+    , _follows(false)
+    , _followTargetParticle(nullptr)
 {
+    assert(_region.type == BOX && "Only BOX region type is currently supported in RegionalForce.");
 }
 
 RegionalForce::RegionalForce(const ParticleSystem *particleSystem, const Region &region)
     : ForceField(particleSystem)
     , _region(region)
+    , _follows(false)
+    , _followTargetParticle(nullptr)
 {
+    assert(_region.type == BOX && "Only BOX region type is currently supported in RegionalForce.");
+}
+
+void RegionalForce::setRegion(const Region &region)
+{
+    _region = Region(region);
+
+    assert(_region.type == BOX && "Only BOX region type is currently supported in RegionalForce.");
+}
+
+void RegionalForce::setFollowParticle(bool follow, const ParticleWithMass &particle)
+{
+    _follows = follow;
+    if (follow) {
+        _followTargetParticle = &particle;
+    }
+}
+
+void RegionalForce::updateField(double deltaTime)
+{
+    if (_follows) {
+        if (!_followTargetParticle->isActive()) {
+            this->setDead();
+        } else {
+            // Move region to follow target particle
+            _region.moveRegionTo(_followTargetParticle->getPosition());
+        }
+    }
 }
 
 void RegionalForce::updateForce(double deltaTime)
 {
-    if (_force.isZero()) {
-        std::cout << "RegionalForce ID " << _id << " has zero force!" << std::endl;
-    }
+    ForceField::updateForce(deltaTime);
 }
 
-void RegionalForce::applyForceOnParticle(ParticleWithMass &particle)
+physx::PxVec3 RegionalForce::computeForceOnParticle(ParticleWithMass &particle)
 {
-    if (_region.type == BOX) {
-        if (isParticleInsideRegion(particle)) {
-            particle.applyForce(_force);
-        }
+    if (isParticleInsideRegion(particle)) {
+        return _force;
     }
-    else {
-        std::cout << "RegionalForce ID " << _id << " has unsupported region type!" << std::endl;
-    }
+
+    return physx::PxVec3(0.0f, 0.0f, 0.0f);
 }
 
 bool RegionalForce::isParticleInsideRegion(const ParticleWithMass &particle)
 {
     const physx::PxVec3 &pos = particle.getPosition();
+
     if (_region.shape.box.contains(pos)) {
         return true;
     }
