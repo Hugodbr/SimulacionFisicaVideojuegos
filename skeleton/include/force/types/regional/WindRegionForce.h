@@ -17,7 +17,7 @@ public:
 
 protected:
     virtual void init(const Region& region, const physx::PxVec3& velocity);
-
+    
     // Return zero vector if outside region
     virtual physx::PxVec3 computeForceOnParticle(ParticleWithMass& particle) override;
 

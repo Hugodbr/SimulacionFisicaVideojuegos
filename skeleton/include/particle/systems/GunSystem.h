@@ -17,7 +17,7 @@ private:
 	
 public:
 
-	GunSystem(const physx::PxVec3 &position, Camera* cam);
+	GunSystem(const physx::PxVec3 &position, Camera* cam, const std::string& gunMeshFilename);
 	~GunSystem() = default;
 
 	void init() override;
@@ -31,7 +31,11 @@ public:
 
 	// Returns the reserve count per generator for this system
 	virtual uint64_t getReserveCountPerGenerator() const override { 
-		return Constants::System::Gun::ReserveCountPerGenerator; // TODO change to mesh vertices
+		uint64_t total = 0;
+		for (const auto& meshData : _meshDataGun) {
+			total += meshData.getMeshVertices().size();
+		}
+		return total;
 	}
 
 protected:
@@ -43,6 +47,7 @@ protected:
 
     void createGun();
 	void createMuzzleFlash(double deltaTime);
+	void createBulletTraceForce(ParticleWithMass& bulletParticle);
 
 	void updateGunMesh(double deltaTime);
 	void updateGunBullets(double deltaTime);
@@ -50,6 +55,7 @@ protected:
 
     Camera* _camera;
 
+	std::string _gunMeshFilename;
 	std::vector<MeshData> _meshDataGun;
 	std::vector<MeshData> _meshDataMuzzle;
 

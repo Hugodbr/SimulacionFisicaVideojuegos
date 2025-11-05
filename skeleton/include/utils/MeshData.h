@@ -18,6 +18,7 @@ struct MeshData {
     std::vector<unsigned int> indices = {};
 
     physx::PxVec3 center = physx::PxVec3(0.0f, 0.0f, 0.0f);
+    physx::PxBounds3 aabb = physx::PxBounds3();
 
     MeshData() = default;
     MeshData(const MeshData& other) {
@@ -33,8 +34,11 @@ struct MeshData {
     void readUniqueVertices(const std::string& filename);
 
     void computeCenter();
+    void computeAABB();
 
     void moveMeshTo(const physx::PxVec3& position);
+    bool isPointInsideMesh(const physx::PxVec3& point) const;
+
 
     physx::PxVec3 randomPointOnMesh(const std::function<double()>& distributionFunc);
     std::vector<physx::PxVec3> getMeshVertices() const;

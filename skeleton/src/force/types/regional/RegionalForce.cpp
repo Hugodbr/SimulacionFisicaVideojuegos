@@ -12,7 +12,8 @@ RegionalForce::RegionalForce(const Region &region)
     , _follows(false)
     , _followTargetParticle(nullptr)
 {
-    assert(_region.type == BOX && "Only BOX region type is currently supported in RegionalForce.");
+    assert((_region.type == BOX || _region.type == MESH || _region.type == SPHERE || _region.type == CYLINDER)
+        && "Only BOX, MESH, SPHERE, and CYLINDER region types are currently supported in RegionalForce.");
 }
 
 RegionalForce::RegionalForce(const ParticleSystem *particleSystem, const Region &region)
@@ -21,14 +22,16 @@ RegionalForce::RegionalForce(const ParticleSystem *particleSystem, const Region 
     , _follows(false)
     , _followTargetParticle(nullptr)
 {
-    assert(_region.type == BOX && "Only BOX region type is currently supported in RegionalForce.");
+    assert((_region.type == BOX || _region.type == MESH || _region.type == SPHERE || _region.type == CYLINDER)
+        && "Only BOX, MESH, SPHERE, and CYLINDER region types are currently supported in RegionalForce.");
 }
 
 void RegionalForce::setRegion(const Region &region)
 {
     _region = Region(region);
 
-    assert(_region.type == BOX && "Only BOX region type is currently supported in RegionalForce.");
+    assert((_region.type == BOX || _region.type == MESH || _region.type == SPHERE || _region.type == CYLINDER)
+        && "Only BOX, MESH, SPHERE, and CYLINDER region types are currently supported in RegionalForce.");
 }
 
 void RegionalForce::setFollowParticle(bool follow, const ParticleWithMass &particle)
@@ -69,7 +72,7 @@ bool RegionalForce::isParticleInsideRegion(const ParticleWithMass &particle)
 {
     const physx::PxVec3 &pos = particle.getPosition();
 
-    if (_region.shape.box.contains(pos)) {
+    if (_region.containsPoint(pos)) {
         return true;
     }
     return false;

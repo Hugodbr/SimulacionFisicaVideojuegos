@@ -107,8 +107,8 @@ namespace Constants
 		};
 
 		namespace Gun {
-			static constexpr uint64_t ReserveCountPerGenerator = 254;
 			static constexpr uint64_t ReserveCountPerBulletGenerator = 30;
+			static constexpr uint64_t ReserveCountPerMuzzleGenerator = 3000;
 		};
 	};
 

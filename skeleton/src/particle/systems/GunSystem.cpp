@@ -11,11 +11,12 @@
 #include "Bullet.h"
 
 
-GunSystem::GunSystem(const physx::PxVec3 &position, Camera* cam)
+GunSystem::GunSystem(const physx::PxVec3 &position, Camera* cam, const std::string& gunMeshFilename)
     : ParticleSystem()
     , _gunMeshGeneratorAndPool()
     , _gunBulletsGeneratorAndPool()
     , _camera(cam)
+    , _gunMeshFilename(gunMeshFilename)
     , currentAmmunition(0) // index of the generator/pool to use
     , isShooting(false)
 {
@@ -65,6 +66,9 @@ void GunSystem::initGunMesh()
     // Gun color
     physx::PxVec4 color = Constants::Color::Green;
 
+    _meshDataGun.emplace_back();
+	_meshDataGun.back().loadMeshFromFile(_gunMeshFilename);
+
     _gunMeshGeneratorAndPool.push_back({
         std::make_unique<ConstantParticleGenerator>(),
         std::make_unique<ParticlePool<StaticParticle>>(
@@ -80,8 +84,6 @@ void GunSystem::initGunMesh()
 
     // Create generation policy
 	ParticleGenerationPolicy genPolicy;
-    _meshDataGun.emplace_back();
-	_meshDataGun.back().loadMeshFromFile("../resources/flashLight.obj");
 	genPolicy.setRegion(Region(_meshDataGun.back()));
     generator->setGenerationPolicy(genPolicy);
 
@@ -92,20 +94,20 @@ void GunSystem::initGunMesh()
 
     // SECOND MESH -----------------------------------------------------
     // Gun muzzle1
-        // Gun mesh particle size
+    // Gun mesh particle size
     float muzzleSize = 0.5f;
     // Gun color
     physx::PxVec4 color1 = Constants::Color::Red;
-    physx::PxVec4 colorDeviation = physx::PxVec4(0.1f, 0.3f, 0.1f, 0.0f);
+    physx::PxVec4 colorDeviation = physx::PxVec4(0.4f, 0.3f, 0.1f, 0.0f);
     ColorStats muzzleColor(color1, colorDeviation);
 
     _gunMuzzleGeneratorAndPool.push_back({
         std::make_unique<GaussianParticleGenerator>(),
         std::make_unique<ParticlePool<Particle>>(
-            3000,  // Pool size
+            Constants::System::Gun::ReserveCountPerMuzzleGenerator,  // Pool size
             muzzleSize, // size particle
             Constants::Color::Red,  // color particle
-            1000.0f // initial speed
+            Constants::Particle::WithMass::Bullet::Speed // initial speed
         )
     });
 
@@ -114,7 +116,7 @@ void GunSystem::initGunMesh()
     generator->init(_emitterOrigin);
 
     // Create generation policy
-	ParticleGenerationPolicy muzzleGenPolicy(SpawnMode::Count, ScalarStats(700, 100)); // 400 particles per shot
+	ParticleGenerationPolicy muzzleGenPolicy(SpawnMode::Count, ScalarStats(1000, 200)); // 1000 particles per shot
     _meshDataMuzzle.emplace_back();
 	_meshDataMuzzle.back().loadMeshFromFile("../resources/muzzle.obj");
 	muzzleGenPolicy.setRegion(Region(_meshDataMuzzle.back()));
@@ -340,26 +342,29 @@ void GunSystem::shoot()
         p->setTransform(_gunTransform);
         p->setVelocityDirection(bulletDirection);
         p->setColor(gen->getGeneratedColor());
+
+        createBulletTraceForce(*p);
     }
 
-    float boxSize = 10.0f;
-    physx::PxVec3 regionMin = (p->getPosition() - physx::PxVec3(boxSize / 2.0f, boxSize / 2.0f, boxSize / 2.0f));
-    physx::PxVec3 regionMax = (p->getPosition() + physx::PxVec3(boxSize / 2.0f, boxSize / 2.0f, boxSize / 2.0f));
+}
 
-    Region windRegion(physx::PxBounds3(regionMin, regionMax));
+void GunSystem::createBulletTraceForce(ParticleWithMass &bulletParticle)
+{
+    Region windRegion(Cylinder(
+            bulletParticle.getPosition(),
+            bulletParticle.getPosition(),
+            5.0f
+        )   
+    ); // Cylinder region around the bullet that grows with it
 
-    // Region center
-    physx::PxVec3 regionCenter = (regionMin + regionMax) / 2.0f;
-    regionCenter = windRegion.shape.box.getCenter();
+    std::unique_ptr<ForceGenerator> windGen = std::make_unique<WindRegionForce>(
+        this,
+        windRegion,
+        bulletParticle.getVelocity() // wind velocity
+    );
+    
+    dynamic_cast<RegionalForce*>(windGen.get())->setFollowParticle(true, bulletParticle);
 
-	std::unique_ptr<ForceGenerator> windGen = std::make_unique<WindRegionForce>(
-		this,
-		windRegion,
-		bulletDirection * Constants::Particle::WithMass::Bullet::Speed // wind velocity
-	);
-    dynamic_cast<RegionalForce*>(windGen.get())->setFollowParticle(true, *p);
-
-	windGen->setGroup(Constants::Group::DynamicGroup::ALL);
+    windGen->setGroup(Constants::Group::DynamicGroup::ALL);
     registerForceGenAtForceManager(std::move(windGen));
-
 }

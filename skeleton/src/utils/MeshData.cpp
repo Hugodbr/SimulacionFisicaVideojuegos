@@ -34,6 +34,7 @@ void MeshData::loadMeshFromFile(const std::string& filename)
     readUniqueVertices(filename);
 
     computeCenter();
+    computeAABB();
 }
 
 void MeshData::readUniqueVertices(const std::string& filename) 
@@ -111,4 +112,35 @@ void MeshData::moveMeshTo(const physx::PxVec3 &position)
         vertex += displacement;
     }
     center = position;
+}
+
+bool MeshData::isPointInsideMesh(const physx::PxVec3 &point) const
+{
+    if (aabb.contains(point)) {
+        return true;
+    }
+    return false;
+}
+
+void MeshData::computeAABB()
+{
+    if (uniqueVertices.empty()) {
+        std::cout << "MeshData::computeAABB - No unique vertices available to compute AABB." << std::endl;
+        return;
+    }
+
+    physx::PxVec3 minPt = uniqueVertices[0];
+    physx::PxVec3 maxPt = uniqueVertices[0];
+
+    for (const auto& vertex : uniqueVertices) {
+        minPt.x = std::min(minPt.x, vertex.x);
+        minPt.y = std::min(minPt.y, vertex.y);
+        minPt.z = std::min(minPt.z, vertex.z);
+
+        maxPt.x = std::max(maxPt.x, vertex.x);
+        maxPt.y = std::max(maxPt.y, vertex.y);
+        maxPt.z = std::max(maxPt.z, vertex.z);
+    }
+
+    aabb = physx::PxBounds3(minPt, maxPt);
 }

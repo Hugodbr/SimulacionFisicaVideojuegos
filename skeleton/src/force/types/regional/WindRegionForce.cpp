@@ -1,5 +1,9 @@
 #include "WindRegionForce.h"
 
+#include <cassert>
+
+#include "ParticleWithMass.h"
+
 
 WindRegionForce::WindRegionForce(const Region& region, const physx::PxVec3& velocity)
     : ForceGenerator()
@@ -28,7 +32,15 @@ void WindRegionForce::init(const Region &region, const physx::PxVec3 &velocity)
 
 void WindRegionForce::updateField(double deltaTime)
 {
-    RegionalForce::updateField(deltaTime);
+    if (_follows) {
+        if (!_followTargetParticle->isActive()) {
+            this->setDead();
+        } else {
+            // Move region to follow target particle
+            assert(_region.type == CYLINDER && "WindRegionForce follow particle only implemented for CYLINDER region type.");
+            _region.shape.cylinder.update(_followTargetParticle->getPosition(), _region.shape.cylinder.baseCenter, _region.shape.cylinder.radius);
+        }
+    }
 }
 
 void WindRegionForce::updateForce(double deltaTime)
