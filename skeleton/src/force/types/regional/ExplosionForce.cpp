@@ -54,22 +54,19 @@ void ExplosionForce::updateRadius()
 
 void ExplosionForce::updateField(double deltaTime)
 {
-    _timeElapsed += deltaTime; // To update magnitude and radius over time
+    if (this->isActive()) {
+        std::cout << "ExplosionForce ID " << _id << " active exploding." << std::endl;
+        
+        _timeElapsed += deltaTime; // To update magnitude and radius over time
 
-    updateMagnitude();
-    updateRadius();
+        updateMagnitude();
+        updateRadius();
+    }
 }
 
 void ExplosionForce::updateForce(double deltaTime)
 {
-    if (_timer > 0.0) {
-        _timer -= deltaTime;
-    }
-    else {
-        std::cout << "ExplosionForce ID " << _id << " exploding." << std::endl;
-
-        ForceField::updateForce(deltaTime);
-    }
+    ForceField::updateForce(deltaTime);
 }
 
 physx::PxVec3 ExplosionForce::computeForceAtPosition(const physx::PxVec3 &position)

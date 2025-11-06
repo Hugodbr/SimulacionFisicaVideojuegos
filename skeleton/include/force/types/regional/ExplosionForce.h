@@ -17,7 +17,6 @@ public:
     void setRadius(float radius) { _radius = radius; }
     void setMagnitude(float magnitude) { _magnitude = magnitude; }
     void setExpansionVelocity(float velocity) { _expansionVelocity = velocity; }
-    void setTimer(double time) { _timer = time; }
 
     physx::PxVec3 getCenter() const { return _center; }
     float getRadius() const { return _radius; }

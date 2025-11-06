@@ -100,18 +100,18 @@ void initPhysics(bool interactive)
 	// Global Forces
 	// =========================================================================================
 	// Create and register a gravitational force for all particle systems
-	// std::unique_ptr<GlobalForce> gravForce = std::make_unique<GravitationalForce>();
-	// gravForce->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
-	// forceManager.registerGlobalForce(std::move(gravForce));
+	std::unique_ptr<GlobalForce> gravForce = std::make_unique<GravitationalForce>();
+	gravForce->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
+	forceManager.registerGlobalForce(std::move(gravForce));
 
 	// =========================================================================================
 	// Gun System
 	// =========================================================================================
-	physx::PxVec3 gunOrigin_right = physx::PxVec3(8.0f, 3.0f, 0.0f);
-	GunSystem* gunSystem_right = new GunSystem(gunOrigin_right, cam, "../resources/gunRight.obj");
-	gunSystem_right->init();
-	particleSystems.push_back(gunSystem_right);
-	GunSystemIt_Right = std::find(particleSystems.begin(), particleSystems.end(), gunSystem_right);
+	// physx::PxVec3 gunOrigin_right = physx::PxVec3(8.0f, 3.0f, 0.0f);
+	// GunSystem* gunSystem_right = new GunSystem(gunOrigin_right, cam, "../resources/gunRight.obj");
+	// gunSystem_right->init();
+	// particleSystems.push_back(gunSystem_right);
+	// GunSystemIt_Right = std::find(particleSystems.begin(), particleSystems.end(), gunSystem_right);
 
 	// physx::PxVec3 gunOrigin_left = physx::PxVec3(8.0f, 3.0f, 0.0f);
 	// GunSystem* gunSystem_left = new GunSystem(gunOrigin_left, cam, "../resources/gunleft.obj");
@@ -122,15 +122,15 @@ void initPhysics(bool interactive)
 	// =========================================================================================
 	// Rain System
 	// =========================================================================================
-	// float halfRegionSize = 100.0f;
-	// Region rainRegion(physx::PxBounds3(physx::PxVec3(-halfRegionSize, -halfRegionSize, -halfRegionSize), physx::PxVec3(halfRegionSize, halfRegionSize, halfRegionSize)));
-	// physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.shape.box.minimum.y, 0.0f);
+	float halfRegionSize = 100.0f;
+	Region rainRegion(physx::PxBounds3(physx::PxVec3(-halfRegionSize, -halfRegionSize, -halfRegionSize), physx::PxVec3(halfRegionSize, halfRegionSize, halfRegionSize)));
+	physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.shape.box.minimum.y, 0.0f);
 	
-	// RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
-	// rs->init();
-	// rs->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT, Constants::Group::DynamicGroup::ENEMY });
-	// particleSystems.push_back(rs);
-	// RainSystemIt = std::find(particleSystems.begin(), particleSystems.end(), rs);
+	RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
+	rs->init();
+	rs->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT, Constants::Group::DynamicGroup::ENEMY });
+	particleSystems.push_back(rs);
+	RainSystemIt = std::find(particleSystems.begin(), particleSystems.end(), rs);
 
 	// =========================================================================================
 	// Grid System
@@ -160,16 +160,16 @@ void initPhysics(bool interactive)
 	// =========================================================================================
 	// Suzanne Mesh System
 	// =========================================================================================
-	MeshSystem* meshSystem = new MeshSystem(
-		"../resources/suzanne.obj", 
-		0.5f, // point size
-		1.0f, // scale
-		Constants::Color::Black // color
-	);
-	meshSystem->init();
-	meshSystem->setGroups({ Constants::Group::DynamicGroup::ENEMY });
-	particleSystems.push_back(meshSystem);
-	SuzanneMeshSystemIt = std::find(particleSystems.begin(), particleSystems.end(), meshSystem);
+	// MeshSystem* meshSystem = new MeshSystem(
+	// 	"../resources/suzanne20k.obj", 
+	// 	0.5f, // point size
+	// 	1.0f, // scale
+	// 	Constants::Color::Yellow // color
+	// );
+	// meshSystem->init();
+	// meshSystem->setGroups({ Constants::Group::DynamicGroup::ENEMY });
+	// particleSystems.push_back(meshSystem);
+	// SuzanneMeshSystemIt = std::find(particleSystems.begin(), particleSystems.end(), meshSystem);
 
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
 	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));

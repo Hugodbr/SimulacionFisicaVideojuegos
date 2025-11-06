@@ -15,13 +15,14 @@ HurricaneForce::HurricaneForce(const ParticleSystem *particleSystem, const Regio
 
 void HurricaneForce::updateField(double deltaTime)
 {
-    WindRegionForce::updateField(deltaTime);
+    if (this->isActive()) {
+        std::cout << "HurricaneForce ID " << _id << " active." << std::endl;
+        WindRegionForce::updateField(deltaTime);
+    }
 }
 
 void HurricaneForce::updateForce(double deltaTime)
 {
-    std::cout << "HurricaneForce ID " << _id << " updating force." << std::endl;
-
     WindRegionForce::updateForce(deltaTime);
 }
 

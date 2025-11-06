@@ -44,7 +44,8 @@ public:
     Constants::Group::DynamicGroup getGroup() const { return _group; }
     void setGroup(Constants::Group::DynamicGroup group) { _group = group; }
 
-    void setExpireTime(double time) { _expireTime = time; }
+    virtual void setExpireTime(double time) { _expireTime = time; }
+    virtual void setTimer(double time) { _timer = time; }
 
     // Activate or deactivate this force generator. Its effect will be considered only if active.
     virtual void setActive(bool active) { _active = active; }
@@ -72,6 +73,7 @@ protected:
 
     double _age;
     double _expireTime;
+    double _timer;
 
     bool _active;
     bool _dead;
