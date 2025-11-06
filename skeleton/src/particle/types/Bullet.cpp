@@ -2,22 +2,26 @@
 
 Bullet::Bullet(
 	const physx::PxTransform& initTransform, 
-	const physx::PxVec3& initDirection, 
+	const physx::PxVec3&      realVelocity,
+	const physx::PxVec3&      initAcceleration,
+	float realMass,
+	float size,
+	const physx::PxVec4& color,
+	float damping,
+	float velocityFactor,
+	float gravityFactor,
 	Constants::Integration_Method integrationMethod
 )
-	: ParticleWithMass(
-		initTransform, 
-		initDirection * Constants::Particle::WithMass::Bullet::Speed, 
-		physx::PxVec3(0, 0, 0),
-		Constants::Particle::WithMass::Bullet::Mass, 
-		Constants::Particle::WithMass::Bullet::Size, 
-		Constants::Particle::WithMass::Bullet::gFactor,
-		Constants::Particle::WithMass::Bullet::vFactor,
+	: Projectile(
+		initTransform,
+		realVelocity,
+		initAcceleration,
+		realMass,
+		size,
+		color,
+		damping,
+		velocityFactor,
+		gravityFactor,
 		integrationMethod
 	)
-{
-}
-
-Bullet::~Bullet()
-{
-}
+{ }

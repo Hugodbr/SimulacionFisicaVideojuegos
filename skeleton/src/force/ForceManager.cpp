@@ -14,16 +14,22 @@ bool ForceManager::setActiveForceGenAtForceManager(fGenId forceGenId, bool activ
     return false;
 }
 
-void ForceManager::registerGlobalForce(std::unique_ptr<GlobalForce> &forceGen)
+ForceGenerator* ForceManager::registerGlobalForce(std::unique_ptr<ForceGenerator> &forceGen)
 {
-    _forceGenerators[forceGen->getId()] = std::move(forceGen);
+    uint64_t id = forceGen->getId();
+    _forceGenerators[id] = std::move(forceGen);
     _isCacheValid = false; // Invalidate cache
+
+    return _forceGenerators[id].get();
 }
 
-void ForceManager::registerForceGenerator(pSysId systemId, std::unique_ptr<ForceGenerator> forceGen)
+ForceGenerator* ForceManager::registerForceGenerator(pSysId systemId, std::unique_ptr<ForceGenerator> forceGen)
 {
-    _forceGenerators[forceGen->getId()] = std::move(forceGen);
+    uint64_t id = forceGen->getId();
+    _forceGenerators[id] = std::move(forceGen);
     _isCacheValid = false; // Invalidate cache
+
+    return _forceGenerators[id].get();
 }
 
 void ForceManager::deregisterForceGenerator(pSysId systemId, uint64_t forceGenId)

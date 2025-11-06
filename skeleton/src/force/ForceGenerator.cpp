@@ -14,7 +14,7 @@ ForceGenerator::ForceGenerator()
     , _force(physx::PxVec3(0.0f, 0.0f, 0.0f))
     , _direction(physx::PxVec3(0.0f, 0.0f, 0.0f))
     , _age(0.0)
-    , _expireTime(0.0)
+    , _expireTime(INT32_MAX)
     , _timer(0.0)
     , _particleSystem(nullptr)
 {
@@ -29,7 +29,7 @@ ForceGenerator::ForceGenerator(const ParticleSystem *particleSystem)
     , _force(physx::PxVec3(0.0f, 0.0f, 0.0f))
     , _direction(physx::PxVec3(0.0f, 0.0f, 0.0f))
     , _age(0.0)
-    , _expireTime(0.0)
+    , _expireTime(INT32_MAX)
     , _timer(0.0)
 {
     initParticleSysForceGen(const_cast<ParticleSystem*>(particleSystem));
@@ -54,6 +54,17 @@ void ForceGenerator::setForce(const physx::PxVec3& force)
     }
 }
 
+void ForceGenerator::setActive(bool active)
+{
+    _active = active;
+    if (!active) {
+        std::cout << "ForceGenerator ID " << _id << " deactivated." << std::endl;
+    } else {
+        std::cout << "ForceGenerator ID " << _id << " activated." << std::endl;
+        _timer = 0.0; // Reset timer on activation
+    }
+}
+
 void ForceGenerator::setForceDirection(const physx::PxVec3 &direction)
 {
     _direction = direction.getNormalized();
@@ -71,11 +82,13 @@ void ForceGenerator::updateAge(double deltaTime)
         this->setDead();
         return;
     }
-    if (_timer < 0.0) {
-        this->setActive(true);
-    }
-    else {
-        _timer -= deltaTime;
+    if (!this->isActive() && _timer != 0.0) {
+        if (_timer < 0.0) {
+            this->setActive(true);
+        }
+        else {
+            _timer -= deltaTime;
+        }
     }
 
     _age += deltaTime;

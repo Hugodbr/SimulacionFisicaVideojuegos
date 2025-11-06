@@ -20,6 +20,7 @@
 #include "GravitationalForce.h"
 #include "WindForce.h"
 #include "HurricaneForce.h"
+#include "ExplosionForce.h"
 
 #include "CoordAxis.h"
 #include "Particle.h"
@@ -64,9 +65,12 @@ using sysIt = std::vector<ParticleSystem*>::iterator;
 sysIt RainSystemIt;
 sysIt GridSystemIt;
 sysIt GunSystemIt_Right;
-sysIt GunSystemIt_Left;
-
 sysIt SuzanneMeshSystemIt;
+
+ForceGenerator* gravitationalForceGenPtr = nullptr;
+ForceGenerator* explosionForceGenPtr = nullptr;
+ForceGenerator* hurricaneForceGenPtr = nullptr;
+ForceGenerator* windForceGenPtr = nullptr;
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -100,18 +104,53 @@ void initPhysics(bool interactive)
 	// Global Forces
 	// =========================================================================================
 	// Create and register a gravitational force for all particle systems
-	std::unique_ptr<GlobalForce> gravForce = std::make_unique<GravitationalForce>();
+	std::unique_ptr<ForceGenerator> gravForce = std::make_unique<GravitationalForce>();
 	gravForce->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
-	forceManager.registerGlobalForce(std::move(gravForce));
+	gravitationalForceGenPtr = forceManager.registerGlobalForce(std::move(gravForce));
+
+	// Explosion ==================================================================================
+	std::unique_ptr<ForceGenerator> explosionForceGen = std::make_unique<ExplosionForce>(
+		physx::PxVec3(0.0f, 0.0f, 0.0f), // explosion center
+		100000.0f,   // max radius
+		10000000.0f, // magnitude
+		3000000.0f // expansion velocity
+	);
+	explosionForceGen->setGroup(Constants::Group::DynamicGroup::ALL);
+	// explosionForceGen->setTimer(15.0); // Delay activation by 15 seconds
+	// explosionForceGen->setExpireTime(20.0); // Expire after 15 seconds
+	explosionForceGen->setActive(false); // Initially inactive
+	
+	std::cout << "ExplosionForce created." << std::endl;
+
+	explosionForceGenPtr = forceManager.registerGlobalForce(std::move(explosionForceGen));
+
+	// Hurricane ==================================================================================
+	float halfRegionSize = 100.0f;
+	Region hurricaneRegion(physx::PxBounds3(physx::PxVec3(-halfRegionSize, -halfRegionSize, -halfRegionSize), physx::PxVec3(halfRegionSize, halfRegionSize, halfRegionSize)));
+	physx::PxVec3 hurricaneOrigin = physx::PxVec3(0.0f, hurricaneRegion.shape.box.minimum.y, 0.0f);
+
+	std::unique_ptr<ForceGenerator> hurricaneGen = std::make_unique<HurricaneForce>(
+		hurricaneRegion,
+		hurricaneOrigin,
+		physx::PxVec3(0.0f, 10.0f, 0.0f)
+	);
+	hurricaneGen->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
+	// hurricaneGen->setTimer(6.0); // Delay activation by 6 seconds
+	// hurricaneGen->setExpireTime(10.0); // Expire after 10 seconds
+	hurricaneGen->setActive(false); // Initially inactive
+
+	std::cout << "HurricaneForce created." << std::endl;
+
+	hurricaneForceGenPtr = forceManager.registerGlobalForce(std::move(hurricaneGen));
 
 	// =========================================================================================
 	// Gun System
 	// =========================================================================================
-	// physx::PxVec3 gunOrigin_right = physx::PxVec3(8.0f, 3.0f, 0.0f);
-	// GunSystem* gunSystem_right = new GunSystem(gunOrigin_right, cam, "../resources/gunRight.obj");
-	// gunSystem_right->init();
-	// particleSystems.push_back(gunSystem_right);
-	// GunSystemIt_Right = std::find(particleSystems.begin(), particleSystems.end(), gunSystem_right);
+	physx::PxVec3 gunOrigin_right = physx::PxVec3(8.0f, 3.0f, 0.0f);
+	GunSystem* gunSystem_right = new GunSystem(gunOrigin_right, cam, "../resources/gunRight.obj");
+	gunSystem_right->init();
+	particleSystems.push_back(gunSystem_right);
+	GunSystemIt_Right = std::find(particleSystems.begin(), particleSystems.end(), gunSystem_right);
 
 	// physx::PxVec3 gunOrigin_left = physx::PxVec3(8.0f, 3.0f, 0.0f);
 	// GunSystem* gunSystem_left = new GunSystem(gunOrigin_left, cam, "../resources/gunleft.obj");
@@ -122,8 +161,8 @@ void initPhysics(bool interactive)
 	// =========================================================================================
 	// Rain System
 	// =========================================================================================
-	float halfRegionSize = 100.0f;
-	Region rainRegion(physx::PxBounds3(physx::PxVec3(-halfRegionSize, -halfRegionSize, -halfRegionSize), physx::PxVec3(halfRegionSize, halfRegionSize, halfRegionSize)));
+	float halfRegionSizeRain = 100.0f;
+	Region rainRegion(physx::PxBounds3(physx::PxVec3(-halfRegionSizeRain, -halfRegionSizeRain, -halfRegionSizeRain), physx::PxVec3(halfRegionSizeRain, halfRegionSizeRain, halfRegionSizeRain)));
 	physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.shape.box.minimum.y, 0.0f);
 	
 	RainSystem* rs = new RainSystem(rainOrigin, rainRegion);
@@ -135,41 +174,43 @@ void initPhysics(bool interactive)
 	// =========================================================================================
 	// Grid System
 	// =========================================================================================
-	// GridSystem* gridSystem = new GridSystem(
-	// 	Region(physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100))), 
-	// 	1.0f, 
-	// 	20.0,
-	// 	Constants::Color::White
-	// );
-	// gridSystem->init();
-	// particleSystems.push_back(gridSystem);
-	// GridSystemIt = std::find(particleSystems.begin(), particleSystems.end(), gridSystem);
+	GridSystem* gridSystem = new GridSystem(
+		Region(physx::PxBounds3(physx::PxVec3(-100, -100, -100), physx::PxVec3(100, 100, 100))), 
+		3.0f, 
+		10.0,
+		Constants::Color::White
+	);
+	gridSystem->init();
+	gridSystem->setRenderable(false); // Start non-renderable
+	particleSystems.push_back(gridSystem);
+	GridSystemIt = std::find(particleSystems.begin(), particleSystems.end(), gridSystem);
 
 	// =========================================================================================
 	// Cage System
 	// =========================================================================================
-	// MeshSystem* cageSystem = new MeshSystem(
-	// 	"../resources/cage.obj", 
-	// 	10.0f, // point size
-	// 	1.0, // scale
-	// 	Constants::Color::Gray // color
-	// );
-	// cageSystem->init();
-	// particleSystems.push_back(cageSystem);
+	MeshSystem* cageSystem = new MeshSystem(
+		"../resources/cage.obj", 
+		10.0f, // point size
+		1.2, // scale
+		Constants::Color::Gray // color
+	);
+	cageSystem->init();
+	cageSystem->setGroups({ Constants::Group::DynamicGroup::ENEMY });
+	particleSystems.push_back(cageSystem);
 
 	// =========================================================================================
 	// Suzanne Mesh System
 	// =========================================================================================
-	// MeshSystem* meshSystem = new MeshSystem(
-	// 	"../resources/suzanne20k.obj", 
-	// 	0.5f, // point size
-	// 	1.0f, // scale
-	// 	Constants::Color::Yellow // color
-	// );
-	// meshSystem->init();
-	// meshSystem->setGroups({ Constants::Group::DynamicGroup::ENEMY });
-	// particleSystems.push_back(meshSystem);
-	// SuzanneMeshSystemIt = std::find(particleSystems.begin(), particleSystems.end(), meshSystem);
+	MeshSystem* meshSystem = new MeshSystem(
+		"../resources/suzanne20k.obj", 
+		0.9f, // point size
+		2.0f, // scale
+		Constants::Color::Brown // color
+	);
+	meshSystem->init();
+	meshSystem->setGroups({ Constants::Group::DynamicGroup::ENEMY });
+	particleSystems.push_back(meshSystem);
+	SuzanneMeshSystemIt = std::find(particleSystems.begin(), particleSystems.end(), meshSystem);
 
 	//physx::PxShape* shape = CreateShape(PxSphereGeometry(5));
 	////physx::PxTransform* transform = new PxTransform(Vector3(0, 0, 0));
@@ -226,44 +267,57 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch(toupper(key))
 	{
-	case 'Z': 
-		// if (GunSystemIt != particleSystems.end()) {
-		// 	(*GunSystemIt)->setRenderable(!(*GunSystemIt)->isRenderable());
-		// }
+	case 'Y': 
+		std::cout << "Y PRESSED: Toggling Gun System render state." << std::endl;
+		if (GunSystemIt_Right != particleSystems.end()) {
+			(*GunSystemIt_Right)->setRenderable(!(*GunSystemIt_Right)->isRenderable());
+		}
 		break;
-	case 'X': 
-		// if (GunSystemIt != particleSystems.end()) {
-		// 	(*GunSystemIt)->setActive(!(*GunSystemIt)->isActive());
-		// }
+	case 'U': 
+		std::cout << "U PRESSED: Toggling Gun System active state." << std::endl;
+		if (GunSystemIt_Right != particleSystems.end()) {
+			(*GunSystemIt_Right)->setActive(!(*GunSystemIt_Right)->isActive());
+		}
 		break;
-	case 'Q': 
-		// dynamic_cast<GunSystem*>(*GunSystemIt_Left)->shoot();
+	case 'R':
+		std::cout << "R PRESSED: Shooting Gun System." << std::endl;
 		dynamic_cast<GunSystem*>(*GunSystemIt_Right)->shoot();
 		break;
 	case 'C':
+		std::cout << "C PRESSED: Toggling Grid System render state." << std::endl;
 		if (GridSystemIt != particleSystems.end()) {
 			(*GridSystemIt)->setRenderable(!(*GridSystemIt)->isRenderable());
 		}
 		break;
-	case 'V':
-		if (GridSystemIt != particleSystems.end()) {
-			(*GridSystemIt)->setActive(!(*GridSystemIt)->isActive());
-		}
+	case 'Z':
+		std::cout << "Z PRESSED: Toggling Hurricane Force active state." << std::endl;
+		// Toggle hurricane force active state
+		hurricaneForceGenPtr->setActive(!hurricaneForceGenPtr->isActive());
 		break;
-	case 'R': 
+	case 'J': 
+		std::cout << "J PRESSED: Toggling Rain System render state." << std::endl;
 		// Toggle rain system render state
 		if (RainSystemIt != particleSystems.end()) {
 			(*RainSystemIt)->setRenderable(!(*RainSystemIt)->isRenderable());
 		}
 		break;
-	case 'E':
+	case 'K':
+		std::cout << "K PRESSED: Toggling Rain System active state." << std::endl;
 		// Toggle rain system active state
 		if (RainSystemIt != particleSystems.end()) {
 			(*RainSystemIt)->setActive(!(*RainSystemIt)->isActive());
 		}
 		break;
 	case 'M':
-		(*SuzanneMeshSystemIt)->setGroups({ Constants::Group::DynamicGroup::ALL });
+		std::cout << "M PRESSED: Toggling gravitational force active state." << std::endl;
+		gravitationalForceGenPtr->setActive(!gravitationalForceGenPtr->isActive());		
+		break;
+	case 'X':
+		std::cout << "X PRESSED: Activating ExplosionForce." << std::endl;
+		if (explosionForceGenPtr) {
+			explosionForceGenPtr->setActive(true);
+			std::cout << "ExplosionForce activated. Explosions are set dead and removed." << std::endl;
+		}
 		break;
 	default:
 		break;

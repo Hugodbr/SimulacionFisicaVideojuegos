@@ -20,36 +20,36 @@ protected:
 
 public:
 
-	Particle();
+	Particle() = delete;
 
 	Particle(const physx::PxTransform &initTransform, 
 		const physx::PxVec3 &initVelocity, 
 		const physx::PxVec3 &initAcceleration, 
 		double damping, 
-		Constants::Integration_Method integrationMethod, 
-		float size = Constants::Particle::Size
+		Constants::Integration_Method integrationMethod = Constants::Integration_Method::VERLET, 
+		float size = Constants::Particle::Default::Size
 	);
 
 	Particle(const physx::PxTransform &initTransform,
 		const physx::PxVec3 &initVelocity, 
 		const physx::PxVec3 &initAcceleration, 
-		Constants::Integration_Method integrationMethod
+		Constants::Integration_Method integrationMethod = Constants::Integration_Method::VERLET
 	);
 
 	Particle(const physx::PxTransform &initTransform,
 		const physx::PxVec3 &initVelocity, 
 		const physx::PxVec3 &initAcceleration, 
-		Constants::Integration_Method integrationMethod,
 		float size,
 		double damping,
-		const physx::PxVec4 &color
+		const physx::PxVec4 &color,
+		Constants::Integration_Method integrationMethod = Constants::Integration_Method::VERLET
 	);
 
 	Particle(
 		float size,
 		const physx::PxVec4 &color,
 		float speed,
-		Constants::Integration_Method integrationMethod = Constants::Integration_Method::EULER
+		Constants::Integration_Method integrationMethod = Constants::Integration_Method::VERLET
 	);
 
 	// Copy constructor
@@ -135,8 +135,6 @@ protected:
 	bool _alive;
 
 	bool _initialized = false;
-
-private:
 
 	bool _firstIntegration;
 };

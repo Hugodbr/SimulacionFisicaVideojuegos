@@ -63,6 +63,8 @@ protected:
 
 	int currentAmmunition;
 	bool isShooting;
+	double _cooldownTimeSinceLastShot = 0.5; // seconds
+	double _timeSinceLastShot = 0.0;
 
 	// The idea is to have flexibility to have multiple generators and pools if needed for mesh composition
 	std::vector<std::pair<

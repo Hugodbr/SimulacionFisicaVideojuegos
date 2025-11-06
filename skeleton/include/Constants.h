@@ -44,13 +44,31 @@ namespace Constants
 		NONE
 	};
 
+	namespace Color {
+		static const physx::PxVec4 White = physx::PxVec4(1.0f, 1.0f, 1.0f, 1.0f);
+		static const physx::PxVec4 Gray  = physx::PxVec4(0.5f, 0.5f, 0.5f, 1.0f);
+		static const physx::PxVec4 Black = physx::PxVec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+		static const physx::PxVec4 Red   = physx::PxVec4(1.0f, 0.0f, 0.0f, 1.0f);
+		static const physx::PxVec4 Yellow = physx::PxVec4(1.0f, 1.0f, 0.0f, 1.0f);
+		static const physx::PxVec4 Green = physx::PxVec4(0.0f, 1.0f, 0.0f, 1.0f);
+		static const physx::PxVec4 Cyan  = physx::PxVec4(0.0f, 1.0f, 1.0f, 1.0f);
+			static const physx::PxVec4 Blue  = physx::PxVec4(0.0f, 0.0f, 1.0f, 1.0f);
+		static const physx::PxVec4 Magenta = physx::PxVec4(1.0f, 0.0f, 1.0f, 1.0f);
+		static const physx::PxVec4 Orange = physx::PxVec4(1.0f, 0.647f, 0.0f, 1.0f);
+		static const physx::PxVec4 Purple = physx::PxVec4(0.5f, 0.0f, 0.5f, 1.0f);
+		static const physx::PxVec4 Pink = physx::PxVec4(1.0f, 0.753f, 0.796f, 1.0f);
+		static const physx::PxVec4 Brown = physx::PxVec4(0.647f, 0.165f, 0.165f, 1.0f);
+	};
+
 	namespace Particle {
 
-		static constexpr float Size = 0.5f;
 
 		namespace Default {
 			static constexpr double gFactor = 0.5;
 			static constexpr double vFactor = 0.5;
+			static constexpr float Size = 0.5f;
+
 		};
 
 		namespace WithMass {
@@ -67,16 +85,17 @@ namespace Constants
 				static constexpr float Mass = 5.0f;
 				static constexpr double gFactor = 0.5;
 				static constexpr double vFactor = 0.1;
-
+				static const physx::PxVec4 Color = Color::Gray;
 			};
 
 			namespace Bullet {
 				static const ParticleType type = BULLET;
 				static constexpr float Size = 3.0f;
-				static constexpr float Speed = 1000.0f;
+				static constexpr float Speed = 2000.0f;
 				static constexpr float Mass = 0.001f;
 				static constexpr double gFactor = 0.1;
 				static constexpr double vFactor = 1;
+				static const physx::PxVec4 Color = Color::Yellow;
 			};
 
 			namespace Rain {
@@ -86,6 +105,7 @@ namespace Constants
 				static constexpr float Mass = 1.0f;
 				static constexpr double gFactor = 0;
 				static constexpr double vFactor = 0;
+				static const physx::PxVec4 Color = Color::White;
 			};
 		};
 
@@ -111,23 +131,5 @@ namespace Constants
 			static constexpr uint64_t ReserveCountPerMuzzleGenerator = 3000;
 		};
 	};
-
-	namespace Color {
-		static const physx::PxVec4 White = physx::PxVec4(1.0f, 1.0f, 1.0f, 1.0f);
-		static const physx::PxVec4 Gray  = physx::PxVec4(0.5f, 0.5f, 0.5f, 1.0f);
-		static const physx::PxVec4 Black = physx::PxVec4(0.0f, 0.0f, 0.0f, 1.0f);
-
-		static const physx::PxVec4 Red   = physx::PxVec4(1.0f, 0.0f, 0.0f, 1.0f);
-		static const physx::PxVec4 Yellow = physx::PxVec4(1.0f, 1.0f, 0.0f, 1.0f);
-		static const physx::PxVec4 Green = physx::PxVec4(0.0f, 1.0f, 0.0f, 1.0f);
-		static const physx::PxVec4 Cyan  = physx::PxVec4(0.0f, 1.0f, 1.0f, 1.0f);
-		static const physx::PxVec4 Blue  = physx::PxVec4(0.0f, 0.0f, 1.0f, 1.0f);
-		static const physx::PxVec4 Magenta = physx::PxVec4(1.0f, 0.0f, 1.0f, 1.0f);
-		static const physx::PxVec4 Orange = physx::PxVec4(1.0f, 0.647f, 0.0f, 1.0f);
-		static const physx::PxVec4 Purple = physx::PxVec4(0.5f, 0.0f, 0.5f, 1.0f);
-		static const physx::PxVec4 Pink = physx::PxVec4(1.0f, 0.753f, 0.796f, 1.0f);
-		static const physx::PxVec4 Brown = physx::PxVec4(0.647f, 0.165f, 0.165f, 1.0f);
-	};
-
 };
 

@@ -28,10 +28,10 @@ public:
     bool setActiveForceGenAtForceManager(fGenId forceGenId, bool active);
 
     // Register forces that aren't associated with a specific particle system
-    void registerGlobalForce(std::unique_ptr<GlobalForce>& forceGen);
+    ForceGenerator* registerGlobalForce(std::unique_ptr<ForceGenerator>& forceGen);
 
     // Adds a force generator to the specified particle system indexed by systemId
-    void registerForceGenerator(pSysId systemId, std::unique_ptr<ForceGenerator> forceGen);
+    ForceGenerator* registerForceGenerator(pSysId systemId, std::unique_ptr<ForceGenerator> forceGen);
     // Removes a force generator from the specified particle system indexed by systemId
     void deregisterForceGenerator(pSysId systemId, uint64_t forceGenId);
 

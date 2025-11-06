@@ -31,8 +31,7 @@ void RainSystem::initParticleGeneratorAndPool()
         std::make_unique<UniformParticleGenerator>(),
         std::make_unique<ParticlePool<RainParticle>>(
 			getReserveCountPerGenerator(),  // Pool size
-			physx::PxTransform(0, 0, 0, physx::PxQuat(0)), // Initial transform particle
-			physx::PxVec3(0, 0, 0) // Initial velocity particle
+			physx::PxTransform(0, 0, 0, physx::PxQuat(0)) // Initial transform particle
 		)
     });
 
@@ -62,52 +61,11 @@ void RainSystem::initParticleGeneratorAndPool()
     // Create lifetime policy
     ParticleLifetimePolicy lifePolicy = ParticleLifetimePolicy(_region, BoundType::SOLID);
 
-    
 	generator->setLifetimePolicy(lifePolicy);
 }
 
 void RainSystem::createForceGenerator()
 {
-	Region hurricaneRegion(_region);
-
-	// Center of the hurricane = rain region center
-	physx::PxVec3 eye = physx::PxVec3(
-		(_region.shape.box.minimum.x + _region.shape.box.maximum.x) / 2.0f,
-		(_region.shape.box.minimum.y + _region.shape.box.maximum.y) / 2.0f,
-		(_region.shape.box.minimum.z + _region.shape.box.maximum.z) / 2.0f
-	);
-
-	std::unique_ptr<ForceGenerator> forceGen = std::make_unique<HurricaneForce>(
-		this,
-		hurricaneRegion,
-		eye,
-		physx::PxVec3(0.0f, 10.0f, 0.0f)
-	);
-	forceGen->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
-	forceGen->setTimer(6.0); // Delay activation by 6 seconds
-	forceGen->setExpireTime(10.0); // Expire after 10 seconds
-	forceGen->setActive(false); // Initially inactive
-
-	std::cout << "RainSystem::createForceGenerator -> HurricaneForce created." << std::endl;
-
-	registerForceGenAtForceManager(std::move(forceGen));
-
-	// Explosion
-	std::unique_ptr<ForceGenerator> explosionForceGen = std::make_unique<ExplosionForce>(
-		this,
-		eye,
-		100000.0f,   // max radius
-		1000000.0f, // magnitude
-		300000.0f // expansion velocity
-	);
-
-	std::cout << "RainSystem::createForceGenerator -> ExplosionForce created." << std::endl;
-
-	explosionForceGen->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
-	explosionForceGen->setTimer(15.0); // Delay activation by 15 seconds
-	explosionForceGen->setExpireTime(20.0); // Expire after 15 seconds
-	explosionForceGen->setActive(false); // Initially inactive
-	registerForceGenAtForceManager(std::move(explosionForceGen));
 
 }
 
@@ -118,14 +76,14 @@ void RainSystem::applyForces()
 
 	for (auto& [generator, pool] : _generatorsAndPools) // for each pool
 	{
-		for (auto& forceGen : forceGenerators) // for each force generator
+		for (int i = 0; i < pool->getActiveCount(); ++i) // for each active particle in the pool
 		{
-			if (forceGen->isActive() && doForceAffectsSystem(*forceGen)) {
+			auto& particle = pool->accessParticlePool()[i];
+			particle->clearForces();
 
-				for (int i = 0; i < pool->getActiveCount(); ++i) 
-				{
-					auto& particle = pool->accessParticlePool()[i];
-					particle->clearForces();
+			for (auto& forceGen : forceGenerators) // for each force generator
+			{
+				if (forceGen->isActive() && doForceAffectsSystem(*forceGen)) {
 					particle->applyForce(*forceGen);
 				}
 			}

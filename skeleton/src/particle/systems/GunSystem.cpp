@@ -95,7 +95,7 @@ void GunSystem::initGunMesh()
     // SECOND MESH -----------------------------------------------------
     // Gun muzzle1
     // Gun mesh particle size
-    float muzzleSize = 0.5f;
+    float muzzleSize = 0.6f;
     // Gun color
     physx::PxVec4 color1 = Constants::Color::Red;
     physx::PxVec4 colorDeviation = physx::PxVec4(0.4f, 0.3f, 0.1f, 0.0f);
@@ -116,7 +116,7 @@ void GunSystem::initGunMesh()
     generator->init(_emitterOrigin);
 
     // Create generation policy
-	ParticleGenerationPolicy muzzleGenPolicy(SpawnMode::Count, ScalarStats(1000, 200)); // 1000 particles per shot
+	ParticleGenerationPolicy muzzleGenPolicy(SpawnMode::Count, ScalarStats(1500, 200)); // 1500 particles per shot
     _meshDataMuzzle.emplace_back();
 	_meshDataMuzzle.back().loadMeshFromFile("../resources/muzzle.obj");
 	muzzleGenPolicy.setRegion(Region(_meshDataMuzzle.back()));
@@ -126,7 +126,7 @@ void GunSystem::initGunMesh()
     // Create lifetime policy
     // _meshDataMuzzle.emplace_back();
     // _meshDataMuzzle.back().loadMeshFromFile("../resources/muzzleConstraint.obj");
-    ParticleLifetimePolicy muzzleLifePolicy(ScalarStats(0.03, 0.02)); // 0.03 seconds lifetime
+    ParticleLifetimePolicy muzzleLifePolicy(ScalarStats(0.1, 0.02)); // 0.1 seconds lifetime
     // muzzleLifePolicy.setVolumeRegion(Region(_meshDataMuzzle.back()));
 	muzzleGenerator->setLifetimePolicy(muzzleLifePolicy);
 }
@@ -136,16 +136,16 @@ void GunSystem::initGunBullets()
     // ONE BULLET TYPE -----------------------------------------------------
     
     // Bullet size
-    float size = 10.0f;
+    float size =  Constants::Particle::WithMass::Bullet::Size;
     // Bullet color
-    physx::PxVec4 color = Constants::Color::Purple;
+    physx::PxVec4 color = Constants::Color::Green;
 
     _gunBulletsGeneratorAndPool.push_back({
         std::make_unique<ConstantParticleGenerator>(),
         std::make_unique<ParticlePool<Bullet>>(
             Constants::System::Gun::ReserveCountPerBulletGenerator,  // Pool size
             _camera->getTransformRelativeToCamera(_emitterOrigin.x, _emitterOrigin.y, _emitterOrigin.z), // position particle
-            _camera->getDir() // direction particle
+            _camera->getDir() * Constants::Particle::WithMass::Bullet::Speed
         )
     });
 
@@ -296,6 +296,8 @@ void GunSystem::update(double deltaTime)
 		return;
 	}
 
+    _timeSinceLastShot += deltaTime;
+
     updateGunMesh(deltaTime);
     updateGunBullets(deltaTime);
     if (isShooting) {
@@ -329,6 +331,10 @@ void GunSystem::setTransform(const physx::PxTransform &t)
 
 void GunSystem::shoot()
 {
+    if (_timeSinceLastShot < _cooldownTimeSinceLastShot) {
+        return; // Still in cooldown
+    }
+    _timeSinceLastShot = 0.0;
     isShooting = true;
 
     physx::PxVec3 bulletDirection = _camera->getDir().getNormalized();
@@ -353,7 +359,7 @@ void GunSystem::createBulletTraceForce(ParticleWithMass &bulletParticle)
     Region windRegion(Cylinder(
             bulletParticle.getPosition(),
             bulletParticle.getPosition(),
-            5.0f
+            10.0f
         )   
     ); // Cylinder region around the bullet that grows with it
 
@@ -362,9 +368,11 @@ void GunSystem::createBulletTraceForce(ParticleWithMass &bulletParticle)
         windRegion,
         bulletParticle.getVelocity() // wind velocity
     );
-    
-    dynamic_cast<RegionalForce*>(windGen.get())->setFollowParticle(true, bulletParticle);
 
-    windGen->setGroup(Constants::Group::DynamicGroup::ALL);
+    dynamic_cast<RegionalForce*>(windGen.get())->setFollowParticle(
+        true, dynamic_cast<ParticleWithMass&>(bulletParticle)
+    );
+
+    windGen->setGroup(Constants::Group::DynamicGroup::ENEMY);
     registerForceGenAtForceManager(std::move(windGen));
 }

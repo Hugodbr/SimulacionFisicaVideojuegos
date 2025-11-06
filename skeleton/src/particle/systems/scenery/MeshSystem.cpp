@@ -74,11 +74,12 @@ void MeshSystem::initParticleGeneratorAndPool()
 {
     _generatorsAndPools.push_back({
         std::make_unique<ConstantParticleGenerator>(),
-        std::make_unique<ParticlePool<ParticleWithMass>>(getReserveCountPerGenerator()
-        , 2.0f // mass
-        , _pointSize // size
-        , _color  // color
-        )
+        std::make_unique<ParticlePool<ParticleWithMass>>(
+            getReserveCountPerGenerator(),  // Pool size
+            2.0f, // mass
+            _pointSize, // size
+            _color  // color
+            )
     });
 
     auto& generator = _generatorsAndPools[0].first;

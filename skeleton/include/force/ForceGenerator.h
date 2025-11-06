@@ -48,7 +48,7 @@ public:
     virtual void setTimer(double time) { _timer = time; }
 
     // Activate or deactivate this force generator. Its effect will be considered only if active.
-    virtual void setActive(bool active) { _active = active; }
+    virtual void setActive(bool active);
     bool isActive() const { return _active; }
     // Mark this force generator as dead (to be removed and deleted)
     void setDead() { 

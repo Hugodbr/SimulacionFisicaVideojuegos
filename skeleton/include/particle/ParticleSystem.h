@@ -26,7 +26,7 @@ private:
 
 protected:
 	// The groups this system belongs to. Forces can be applied selectively based on group.
-	std::vector<Constants::Group::DynamicGroup> _group = { Constants::Group::DynamicGroup::ALL };
+	std::vector<Constants::Group::DynamicGroup> _groups = { Constants::Group::DynamicGroup::ALL };
 	uint64_t _id; // Protected to allow derived classes access
 
 protected:
@@ -64,10 +64,10 @@ public:
 	uint64_t getId() const { return _id; }
 	// Group management
 	virtual void addGroup(Constants::Group::DynamicGroup group) {
-		_group.push_back(group);
+		_groups.push_back(group);
 	}
 	virtual void setGroups(const std::vector<Constants::Group::DynamicGroup>& groups) {
-		_group = groups;
+		_groups = groups;
 	}
 
 	// Check if the system is renderable

@@ -1,16 +1,23 @@
 #pragma once
-#include "ParticleWithMass.h"
+#include "Projectile.h"
 
 
-class CannonBall : public ParticleWithMass
+class CannonBall : public Projectile
 {
 public:
 	CannonBall(
-		const physx::PxTransform& initTransform,
-		const physx::PxVec3& initDirection,
-		Constants::Integration_Method integrationMethod = Constants::Integration_Method::VERLET
-	);
+        const physx::PxTransform& initTransform, 
+        const physx::PxVec3&      realVelocity,
+        const physx::PxVec3&      initAcceleration,
+        float realMass,
+        float size,
+        const physx::PxVec4& color,
+        float damping = Constants::Physics::Damping,
+        float velocityFactor = Constants::Particle::Default::vFactor,
+        float gravityFactor = Constants::Particle::Default::gFactor,
+        Constants::Integration_Method integrationMethod = Constants::Integration_Method::VERLET
+    );
 
-	~CannonBall();
+	virtual ~CannonBall() = default;
 };
 

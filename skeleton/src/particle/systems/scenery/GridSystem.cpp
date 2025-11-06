@@ -13,7 +13,7 @@ GridSystem::GridSystem(const Region &region, float pointSize, double scale, cons
     , _color(color)
     , _visible(true)
 {
-    _group = { Constants::Group::DynamicGroup::NONE };
+    _groups = { Constants::Group::DynamicGroup::NONE };
 }
 
 void GridSystem::init()
@@ -58,7 +58,10 @@ void GridSystem::initParticleGeneratorAndPool()
 {
     _generatorsAndPools.push_back({
         std::make_unique<ConstantParticleGenerator>(),
-        std::make_unique<ParticlePool<StaticParticle>>(getReserveCountPerGenerator(), 0.2f, Constants::Color::Green)
+        std::make_unique<ParticlePool<StaticParticle>>(
+            getReserveCountPerGenerator(), // Pool size
+            0.2f, // particle size
+            Constants::Color::Green)
     });
 
     auto& generator = _generatorsAndPools[0].first;

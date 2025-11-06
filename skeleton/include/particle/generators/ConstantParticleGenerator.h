@@ -11,7 +11,7 @@ public:
     ~ConstantParticleGenerator() = default;
 
     double getDistribution() const override {
-        return 1.0;
+        return 0.0;
     }
     
 };

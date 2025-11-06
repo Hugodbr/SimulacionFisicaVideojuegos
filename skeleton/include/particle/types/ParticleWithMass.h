@@ -12,53 +12,42 @@ public:
 
 	ParticleWithMass(
 		const physx::PxTransform& initTransform, 
-		const physx::PxVec3& realVelocity,
-		const physx::PxVec3& initAcceleration,
-		const physx::PxVec3& realGravity,
-		float realMass,
-		float damping,
-		Constants::Integration_Method integrationMethod,
-		float size = Constants::Particle::Size,
-		float gravityFactor = Constants::Particle::Default::gFactor,
-		float velocityFactor = Constants::Particle::Default::vFactor
+		const physx::PxVec3&      velocity,
+		const physx::PxVec3&      initAcceleration,
+		float mass,
+		float size = Constants::Particle::Default::Size,
+		Constants::Integration_Method integrationMethod = Constants::Integration_Method::VERLET,
+		float damping = Constants::Physics::Damping
 	);
 
 	ParticleWithMass(
 		const physx::PxTransform& initTransform, 
-		const physx::PxVec3& realVelocity,
-		const physx::PxVec3& initAcceleration,
-		float realMass,
+		const physx::PxVec3&      velocity,
+		const physx::PxVec3&      initAcceleration,
+		float mass,
 		float size,
-		float gravityFactor,
-		float velocityFactor,
-		Constants::Integration_Method integrationMethod
+		Constants::Integration_Method integrationMethod = Constants::Integration_Method::VERLET
 	);
 
 	ParticleWithMass(
-		const physx::PxTransform& initTransform, 
-		const physx::PxVec3& realVelocity,
-		const physx::PxVec3& initAcceleration,
-		float realMass,
-		Constants::Integration_Method integrationMethod
+		float mass,
+		float size,
+		const physx::PxVec4& color
 	);
 
 	ParticleWithMass(
-		float realMass,
+		float mass,
 		float size,
 		const physx::PxVec4& color,
 		float speed
-	);
-
-	ParticleWithMass(
-		float realMass,
-		float size,
-		const physx::PxVec4& color
 	);
 
 	// Copy constructor deep
 	ParticleWithMass(const ParticleWithMass& other);
 
 	virtual ~ParticleWithMass() = default;
+
+	virtual void init() override;
 
 	// Sets acceleration to zero and resulting force to zero. Must be called at the beginning of each particle update cycle!
 	virtual void clearForces();
@@ -68,8 +57,6 @@ public:
 	// Integrates position and velocity based on acceleration and integration method, and updates age.
 	virtual void update(double dt) override;
 
-	virtual void setRealVelocity(const physx::PxVec3& realVelocity);
-
 	virtual physx::PxVec3 getResultingForce() const { return _resultingForce; }
 	virtual float getInverseMass() const { return _inverseMass; }
 	virtual float getMass() const { return _mass; }
@@ -78,22 +65,11 @@ public:
 
 
 protected:
+	void setInverseMass();
 
-	virtual void setSimulatedVelocity();
-	// virtual void setSimulatedGravity();
-	// virtual void setSimulatedAcceleration();
-	virtual void setSimulatedMass();
-
-	float _gravityFactor;
-	float _velocityFactor;
-
-	physx::PxVec3 _gravity;
-	physx::PxVec3 _gravityReal;
-
-	physx::PxVec3 _velocityReal;
+protected:
 
 	float _mass;
-	float _massReal;
 	float _inverseMass;
 
 	physx::PxVec3 _resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);

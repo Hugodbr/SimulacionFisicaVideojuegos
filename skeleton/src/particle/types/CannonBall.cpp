@@ -1,22 +1,27 @@
 #include "CannonBall.h"
 
 CannonBall::CannonBall(
-	const physx::PxTransform& initTransform,
-	const physx::PxVec3& initDirection,
+	const physx::PxTransform& initTransform, 
+	const physx::PxVec3&      realVelocity,
+	const physx::PxVec3&      initAcceleration,
+	float realMass,
+	float size,
+	const physx::PxVec4& color,
+	float damping,
+	float velocityFactor,
+	float gravityFactor,
 	Constants::Integration_Method integrationMethod
 )
-	: ParticleWithMass(
+	: Projectile(
 		initTransform,
-		initDirection* Constants::Particle::WithMass::CannonBall::Speed,
-		physx::PxVec3(0, 0, 0),
-		Constants::Particle::WithMass::CannonBall::Mass,
-		Constants::Particle::WithMass::CannonBall::Size,
-		Constants::Particle::WithMass::CannonBall::gFactor,
-		Constants::Particle::WithMass::CannonBall::vFactor,
-		integrationMethod)
-{
-}
-
-CannonBall::~CannonBall()
-{
-}
+		realVelocity,
+		initAcceleration,
+		realMass,
+		size,
+		color,
+		damping,
+		velocityFactor,
+		gravityFactor,
+		integrationMethod
+	)
+{ }
