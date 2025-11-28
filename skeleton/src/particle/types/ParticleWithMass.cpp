@@ -66,7 +66,6 @@ void ParticleWithMass::init()
 void ParticleWithMass::clearForces()
 {
 	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
-	_acceleration = physx::PxVec3(0.0f, 0.0f, 0.0f);
 }
 
 void ParticleWithMass::applyForce(ForceGenerator& forceGenerator)
@@ -80,7 +79,7 @@ void ParticleWithMass::applyForce(ForceGenerator& forceGenerator)
 
 void ParticleWithMass::update(double dt)
 {
-	_acceleration += _resultingForce * _inverseMass;
+	_acceleration = _resultingForce * _inverseMass;
 	
 	// std::cout << "Particle ID " << getId() << " Acceleration after applying forces: (" << _acceleration.x << ", " << _acceleration.y << ", " << _acceleration.z << ")" << std::endl;
 
