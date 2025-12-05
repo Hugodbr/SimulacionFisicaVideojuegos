@@ -2,6 +2,7 @@
 
 #include <PxPhysicsAPI.h>
 
+
 struct Vector3Stats {
     physx::PxVec3 mean;
     physx::PxVec3 deviation;

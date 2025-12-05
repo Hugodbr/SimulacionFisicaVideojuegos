@@ -1,0 +1,87 @@
+#pragma once
+
+#include "ParticleSystem.h"
+#include "ParticlePool.h"
+
+class ConstantParticleGenerator;
+class UniformParticleGenerator;
+class GaussianParticleGenerator;
+class StaticParticle;
+class Bullet;
+class MeshData;
+class Camera;
+
+class GunSystem : public ParticleSystem
+{
+private:
+	physx::PxBounds3 _region;
+	
+public:
+
+	GunSystem(const physx::PxVec3 &position, Camera* cam, const std::string& gunMeshFilename);
+	~GunSystem() = default;
+
+	void init() override;
+	void update(double deltaTime) override;
+
+	void setRenderable(bool renderable) override;
+
+    void setTransform(const physx::PxTransform& t);
+
+	void shoot();
+
+	// Returns the reserve count per generator for this system
+	virtual uint64_t getReserveCountPerGenerator() const override { 
+		uint64_t total = 0;
+		for (const auto& meshData : _meshDataGun) {
+			total += meshData.getMeshVertices().size();
+		}
+		return total;
+	}
+
+protected:
+	virtual void applyForces() override;
+
+    void initParticleGeneratorAndPool();
+	void initGunMesh();
+	void initGunBullets();
+
+    void createGun();
+	void createMuzzleFlash(double deltaTime);
+	void createBulletTraceForce(ParticleWithMass& bulletParticle);
+
+	void updateGunMesh(double deltaTime);
+	void updateGunBullets(double deltaTime);
+	void updateMuzzleFlash(double deltaTime);
+
+    Camera* _camera;
+
+	std::string _gunMeshFilename;
+	std::vector<MeshData> _meshDataGun;
+	std::vector<MeshData> _meshDataMuzzle;
+
+	physx::PxTransform _gunTransform;
+
+	int currentAmmunition;
+	bool isShooting;
+	double _cooldownTimeSinceLastShot = 0.5; // seconds
+	double _timeSinceLastShot = 0.0;
+
+	// The idea is to have flexibility to have multiple generators and pools if needed for mesh composition
+	std::vector<std::pair<
+		std::unique_ptr<ConstantParticleGenerator>,
+		std::unique_ptr<ParticlePool<StaticParticle>>
+            >> _gunMeshGeneratorAndPool;
+
+	// Muzzle flash generator and pool (could be multiple types of muzzle flashes)
+	std::vector<std::pair<
+		std::unique_ptr<GaussianParticleGenerator>,
+		std::unique_ptr<ParticlePool<Particle>>
+            >> _gunMuzzleGeneratorAndPool;
+
+	// Also flexible to have multiple bullet generators and pools (different bullet types)
+	std::vector<std::pair<
+		std::unique_ptr<ConstantParticleGenerator>,
+		std::unique_ptr<ParticlePool<Bullet>>
+			>> _gunBulletsGeneratorAndPool;
+};

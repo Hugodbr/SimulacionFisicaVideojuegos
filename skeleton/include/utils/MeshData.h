@@ -1,5 +1,7 @@
 #pragma once
 
+#include <PxPhysicsAPI.h>
+
 #include <functional>
 #include <unordered_set>
 #include <tuple>
@@ -9,7 +11,6 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "PxPhysicsAPI.h"
 
 
 struct MeshData {

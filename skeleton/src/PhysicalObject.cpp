@@ -96,9 +96,9 @@ PhysicalObject::PhysicalObject(const PhysicalObject& other)
 
 PhysicalObject::~PhysicalObject()
 {
-	if (_renderItem != nullptr) {
-		_renderItem->release();
-	}
+	// if (_renderItem != nullptr) {
+	// 	_renderItem->release();
+	// }
 }
 
 void PhysicalObject::init()
@@ -109,7 +109,7 @@ void PhysicalObject::init()
 
 	_id = _nextId++;
 
-	createRenderItem();
+	// createRenderItem();
 
 	deactivate();
 
@@ -174,16 +174,16 @@ void PhysicalObject::setVelocityDirection(const physx::PxVec3 &direction)
 	_velocityPrevious = _velocity;
 }
 
-void PhysicalObject::createRenderItem()
-{
-	_shape = CreateShape(physx::PxSphereGeometry(_size));
-	_renderItem = new RenderItem(_shape, &_transform, _color);
-}
+// void PhysicalObject::createRenderItem()
+// {
+// 	_shape = CreateShape(physx::PxSphereGeometry(_size));
+// 	_renderItem = new RenderItem(_shape, &_transform, _color);
+// }
 
 void PhysicalObject::activate()
 {
 	_alive = true;
-	_renderItem->setVisibility(true);
+	// _renderItem->setVisibility(true);
 	_age = 0.0;
 	_firstIntegration = true;
 }
@@ -191,7 +191,7 @@ void PhysicalObject::activate()
 void PhysicalObject::deactivate()
 {
     _alive = false;
-	_renderItem->setVisibility(false);
+	// _renderItem->setVisibility(false);
 }
 
 void PhysicalObject::update(double dt) 
@@ -203,13 +203,13 @@ void PhysicalObject::update(double dt)
 void PhysicalObject::setColor(const physx::PxVec4 &color)
 {
 	_color = color;
-	_renderItem->setColor(_color);
+	// _renderItem->setColor(_color);
 }
 
-void PhysicalObject::setVisibility(bool visibility)
-{
-	_renderItem->setVisibility(visibility);
-}
+// void PhysicalObject::setVisibility(bool visibility)
+// {
+// 	_renderItem->setVisibility(visibility);
+// }
 
 void PhysicalObject::setAge(double age) {
 	_age = age;
@@ -222,7 +222,7 @@ void PhysicalObject::setAcceleration(const physx::PxVec3 &acceleration) {
 void PhysicalObject::setSize(double size)
 {
 	_size = size;
-	_renderItem->changeSize(static_cast<float>(size));
+	// _renderItem->changeSize(static_cast<float>(size));
 	// createRenderItem();
 
 	// _renderItem->it

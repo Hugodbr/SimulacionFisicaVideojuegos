@@ -3,12 +3,12 @@
 #include <memory>
 #include <iostream>
 
-#include "RenderUtils.hpp"
+// #include "RenderUtils.hpp"
 
 #include "Constants.h"
 
 
-class RenderItem;
+// class RenderItem;
 
 
 class PhysicalObject
@@ -87,15 +87,15 @@ public:
 
 	virtual void setColor(const physx::PxVec4& color);
 
-	virtual bool isVisible() const { return _renderItem->visible; }
-	virtual void setVisibility(bool visibility);
+	// virtual bool isVisible() const { return _renderItem->visible; }
+	// virtual void setVisibility(bool visibility);
 
 
 protected:
 
 	virtual void init();
 
-	virtual void createRenderItem();
+	// virtual void createRenderItem();
 
 	virtual void integrate(double dt);
 
@@ -109,7 +109,7 @@ protected:
 
 protected:
 
-	RenderItem* _renderItem;
+	// RenderItem* _renderItem;
 
 	physx::PxVec3 _acceleration;
 

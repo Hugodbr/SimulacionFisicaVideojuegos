@@ -1,11 +1,12 @@
-cmake_minimum_required(VERSION 3.15...3.30)
+cmake_minimum_required(VERSION 3.16...3.30)
 
-# Proyecto en C++
+# ======================================================
+# Project Configuration
+# ======================================================
 project(SIM_3_GDV VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Checked;Profile;RelWithDebInfo" CACHE STRING "" FORCE)
 
-# Selecciona la versión C++17 del estándar (sin extensiones)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -14,47 +15,51 @@ if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
-# Suppress CMP0175 warning (if needed)
 if(POLICY CMP0175)
     cmake_policy(SET CMP0175 OLD)
 endif()
 
-# Root paths
+# ======================================================
+# Source and Include Paths
+# ======================================================
 set(SKELETON_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/skeleton/src")
 set(SKELETON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/skeleton/include")
 
-# Collect source files recursively
-file(GLOB_RECURSE MY_SOURCE_FILES CONFIGURE_DEPENDS 
-    "${SKELETON_SRC_DIR}/*.cpp"
-)
+file(GLOB_RECURSE MY_SOURCE_FILES CONFIGURE_DEPENDS "${SKELETON_SRC_DIR}/*.cpp")
 
-# # Explicitly add MeshData.cpp
-# list(APPEND MY_SOURCE_FILES "${SKELETON_SRC_DIR}/utils/MeshData.cpp")
-
-# Include directories
 set(MY_INCLUDE_DIRECTORIES
     "${SKELETON_INCLUDE_DIR}"
+    "${SKELETON_INCLUDE_DIR}/app"
+    "${SKELETON_INCLUDE_DIR}/app/gameplay"
 
-    "${SKELETON_INCLUDE_DIR}/render"
+    "${SKELETON_INCLUDE_DIR}/core"
 
-    "${SKELETON_INCLUDE_DIR}/particle"
-    "${SKELETON_INCLUDE_DIR}/particle/generators"
-    "${SKELETON_INCLUDE_DIR}/particle/systems"
-    "${SKELETON_INCLUDE_DIR}/particle/systems/scenery"
-    "${SKELETON_INCLUDE_DIR}/particle/types"
-    "${SKELETON_INCLUDE_DIR}/particle/policies"
+    "${SKELETON_INCLUDE_DIR}/framework"
+    "${SKELETON_INCLUDE_DIR}/framework/glfw"
 
-    "${SKELETON_INCLUDE_DIR}/force"
-    "${SKELETON_INCLUDE_DIR}/force/generators"
-    "${SKELETON_INCLUDE_DIR}/force/types"
-    "${SKELETON_INCLUDE_DIR}/force/types/regional"
+    "${SKELETON_INCLUDE_DIR}/engine"
+
+    "${SKELETON_INCLUDE_DIR}/engine/scene"
+
+    "${SKELETON_INCLUDE_DIR}/engine/physics"
+    "${SKELETON_INCLUDE_DIR}/engine/physics/particle"
+    "${SKELETON_INCLUDE_DIR}/engine/physics/particle/generators"
+    "${SKELETON_INCLUDE_DIR}/engine/physics/particle/systems"
+    "${SKELETON_INCLUDE_DIR}/engine/physics/particle/systems/scenery"
+    "${SKELETON_INCLUDE_DIR}/engine/physics/particle/types"
+    "${SKELETON_INCLUDE_DIR}/engine/physics/particle/policies"
+    "${SKELETON_INCLUDE_DIR}/engine/physics/force"
+    "${SKELETON_INCLUDE_DIR}/engine/physics/force/generators"
+    "${SKELETON_INCLUDE_DIR}/engine/physics/force/types"
+    "${SKELETON_INCLUDE_DIR}/engine/physics/force/types/regional"
+
+    "${SKELETON_INCLUDE_DIR}/engine/render"
+    "${SKELETON_INCLUDE_DIR}/engine/render/openGL"
 
     "${SKELETON_INCLUDE_DIR}/utils"
 )
 
 add_executable(game ${MY_SOURCE_FILES})
-
-# Apply project-specific include directories
 target_include_directories(game PRIVATE ${MY_INCLUDE_DIRECTORIES})
 
 set(INCLUDE_DEPENDENCIES "")
@@ -83,7 +88,6 @@ list(APPEND LIB_DEPENDENCIES UtilsLib)
 # ---------------------------------------------------------------------
 set(GRAPHICS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/common/Graphics")
 
-# Ver arquitectura
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(GLUT_LIB "${GRAPHICS_PATH}/lib/win64/glut/glut32.lib")
 else()
@@ -156,7 +160,46 @@ FetchContent_MakeAvailable(assimp)
 list(APPEND LIB_DEPENDENCIES assimp::assimp)
 list(APPEND INCLUDE_DEPENDENCIES ${assimp_SOURCE_DIR}/include/assimp ${assimp_BINARY_DIR}/include)
 
-# ---------------------------------------------------------------------
+# ======================================================
+# GLEW (OpenGL Extensions)
+# ======================================================
+FetchContent_Declare(
+    glew
+    GIT_REPOSITORY https://github.com/Perlmint/glew-cmake.git
+    GIT_TAG master
+)
+FetchContent_MakeAvailable(glew)
+
+list(APPEND LIB_DEPENDENCIES libglew_static)
+list(APPEND INCLUDE_DEPENDENCIES ${glew_SOURCE_DIR}/include)
+
+# ======================================================
+# GLM (Math Library)
+# ======================================================
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG 0af55ccecd98d4e5a8d1fad7de25ba429d60e863
+)
+FetchContent_MakeAvailable(glm)
+target_link_libraries(game PRIVATE glm::glm)
+
+# ======================================================
+# GLFW (Window + Input)
+# ======================================================
+FetchContent_Declare(
+    glfw
+    GIT_REPOSITORY https://github.com/glfw/glfw.git
+    GIT_TAG 3.4
+)
+FetchContent_MakeAvailable(glfw)
+
+list(APPEND LIB_DEPENDENCIES glfw)
+list(APPEND INCLUDE_DEPENDENCIES ${glfw_SOURCE_DIR}/include)
+
+# ======================================================
+# Final Linking
+# ======================================================
 target_link_libraries(game PRIVATE ${LIB_DEPENDENCIES})
 target_include_directories(game PRIVATE ${INCLUDE_DEPENDENCIES})
 
