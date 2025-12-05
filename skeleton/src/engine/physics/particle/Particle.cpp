@@ -89,7 +89,8 @@ Particle::Particle(const Particle& other)
 Particle::~Particle()
 {
 	// The renderable is deleted by the scene!!
-
+	// delete _renderable;
+	// _renderable = nullptr;
 	// if (_renderItem != nullptr) {
 	// 	_renderItem->release();
 	// }
@@ -182,14 +183,15 @@ void Particle::createRender()
 
 	// _renderable = new ModelEntity("C:\\Users\\hugod\\Github\\PhysxIG1\\resources\\fbx\\nurse-of-horror\\source\\nurse_lp.fbx", 50.0f);
 
-
-	// _renderable->setWPos(glm::vec3(_transform.p.x, _transform.p.y, _transform.p.z));
+	_renderable = new Sphere(_size, 10, 10, glm::vec4(_color.x, _color.y, _color.z, _color.w));
+	_renderable->setWPos(glm::vec3(_transform.p.x, _transform.p.y, _transform.p.z));
 }
 
 void Particle::activate()
 {
 	_alive = true;
 	// _renderItem->setVisibility(true);
+	_renderable->setVisibility(true);
 	_age = 0.0;
 	_firstIntegration = true;
 }
@@ -197,6 +199,7 @@ void Particle::activate()
 void Particle::deactivate()
 {
     _alive = false;
+	_renderable->setVisibility(false);
 	// _renderItem->setVisibility(false);
 }
 
@@ -204,17 +207,21 @@ void Particle::update(double dt)
 {
 	integrate(dt);
 	updateAge(dt);
+
+	_renderable->setWPos(glm::vec3(_transform.p.x, _transform.p.y, _transform.p.z));
 }
 
 void Particle::setColor(const physx::PxVec4 &color)
 {
 	_color = color;
+	// _renderable->setColor(_color); // ! TODO
 	// _renderItem->setColor(_color);
 }
 
 void Particle::setVisibility(bool visibility)
 {
 	// _renderItem->setVisibility(visibility);
+	_renderable->setVisibility(visibility);
 }
 
 void Particle::setAge(double age) {
@@ -228,6 +235,7 @@ void Particle::setAcceleration(const physx::PxVec3 &acceleration) {
 void Particle::setSize(double size)
 {
 	_size = size;
+	std::cout << "Particle::setSize not implemented yet." << std::endl;
 	// _renderItem->changeSize(static_cast<float>(size));
 	// createRenderItem();
 

@@ -2,7 +2,8 @@
 
 #include "Scene.h"
 
-class Particle;
+
+class ParticleSystem;
 
 class Scene01 : public Scene
 {
@@ -14,6 +15,7 @@ public:
     void update() override;
 
 private:
+	ParticleSystem* _meshSystem = nullptr;
 	// Particle* _particle = nullptr;
 	// Particle* _particle2 = nullptr;
 };

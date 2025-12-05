@@ -2,6 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <iostream>
 
 using namespace glm;
 
@@ -12,9 +13,9 @@ Scene::init()
 
 	// allocate memory and load resources
 	// Lights
-	// mGlobalLight = new DirLight(getDirLightID());
-	// mGlobalLight->setDirection(glm::vec3(-1, -1, -1));
-	// gLights.push_back({ mGlobalLight, ON });
+	mGlobalLight = new DirLight(getDirLightID());
+	mGlobalLight->setDirection(glm::vec3(-1, -1, -1));
+	gLights.push_back({ mGlobalLight, ON });
 	// gLights.push_back({ new SpotLightYZ(getSpotLightID()), ON });
 
 	// // Textures
@@ -33,20 +34,23 @@ void
 Scene::destroy()
 { // release memory and resources
 
-	for (Abs_Entity* el : gObjects)
+	int i = 0;
+	for (Abs_Entity* el : gObjects) {
+		std::cout << "Deleting object " << i++ << '\n';
 		delete el;
+	}
 
 	gObjects.clear();
 
-	for (Abs_Entity* tel : gTranslucidObjs)
-		delete tel;
+	// for (Abs_Entity* tel : gTranslucidObjs)
+	// 	delete tel;
 
-	gTranslucidObjs.clear();
+	// gTranslucidObjs.clear();
 
-	for (Texture* tx : gTextures)
-		delete tx;
+	// for (Texture* tx : gTextures)
+	// 	delete tx;
 
-	gTextures.clear();
+	// gTextures.clear();
 
 	for (auto& [light, state] : gLights)
 		delete light;
@@ -167,12 +171,14 @@ void
 Scene::render(Camera const& cam) const
 {
 	cam.upload();
-	// uploadLights(cam); // see this later
+	uploadLights(cam); // see this later
 
 	for (Abs_Entity* el : gObjects) {
-		el->render(cam.viewMat());
+		if (el->getVisibility()) {
+			el->render(cam.viewMat());
+		}
 	}
 
-	for (Abs_Entity* tel : gTranslucidObjs)
-		tel->render(cam.viewMat());
+	// for (Abs_Entity* tel : gTranslucidObjs)
+	// 	tel->render(cam.viewMat());
 }

@@ -13,7 +13,7 @@
 #include <iostream>
 
 
-Camera::Camera(Viewport* vp)
+Camera::Camera(Viewport* vp, const physx::PxVec3 &eye, const physx::PxVec3& dir)
 	: mInputMgr(InputManager::getInstance())
 	, mViewMat(1.0)
 	, mProjMat(1.0)
@@ -22,6 +22,8 @@ Camera::Camera(Viewport* vp)
 	, yTop(vp->height() / 2.0)
 	, yBot(-yTop)
 	, mViewPort(vp)
+	, mDir(dir.getNormalized())
+	, mEye(glm::dvec3(eye.x, eye.y, eye.z))
 {
 	setPM();
 }
@@ -41,7 +43,10 @@ Camera::setVM()
 
 void Camera::onMouseScroll(double dx, double dy)
 {
-	setScale(dy * 0.1);
+	mEye += glm::dvec3(0, 0, -1.0*2.0);
+	// setScale(dy * 0.1);
+	setVM();
+
 }
 
 void Camera::set2D()
@@ -57,9 +62,9 @@ void Camera::set2D()
 void
 Camera::set3D()
 {
-	mEye  = {0.0f, 2.0f, 5.0f};
-	mLook = {0.0f, 1.0f, 0.0f};
-	mUp   = {0.0f, 1.0f, 0.0f};
+	// mEye  = {0.0f, 2.0f, 5.0f};
+	// mLook = {0.0f, 1.0f, 0.0f};
+	// mUp   = {0.0f, 1.0f, 0.0f};
 	mRadio = glm::sqrt(glm::pow(mEye.z - mLook.z, 2) + glm::pow(mEye.x - mLook.x, 2));
 	mAng = glm::radians(.0);
 	setVM();

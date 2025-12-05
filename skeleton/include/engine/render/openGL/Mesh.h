@@ -71,8 +71,7 @@ public:
 	// skeletal animation support /
 
 protected:
-	GLuint mPrimitive =
-	  GL_TRIANGLES;          // graphic primitive: GL_POINTS, GL_LINES, GL_TRIANGLES, ...
+	GLuint mPrimitive = GL_TRIANGLES;          // graphic primitive: GL_POINTS, GL_LINES, GL_TRIANGLES, ...
 	GLuint mNumVertices = 0; // number of elements ( = vVertices.size())
 	std::vector<glm::vec3> vVertices; // vertex array
 	std::vector<glm::vec4> vColors;   // color array
@@ -84,8 +83,6 @@ protected:
 	GLuint mNBO; // en la GPU
 
 	GLuint mVAO;  // vertex array object
-
-
 
 private:
 	GLuint mVBO;  // vertex buffer object
@@ -119,8 +116,6 @@ public:
 
 protected:
 	std::vector<GLuint> vIndexes;
-
-
 
 private:
 	GLuint mIBO; // index buffer object

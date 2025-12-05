@@ -13,7 +13,7 @@ class InputManager;
 class Camera : public IInputEventListener
 {
 public:
-	explicit Camera(Viewport* vp);
+	explicit Camera(Viewport* vp, const physx::PxVec3 &eye, const physx::PxVec3& dir);
 	~Camera() = default;
 
 	// ! socorro

@@ -88,6 +88,7 @@ void ApplicationContext::run() // enters the main event processing loop
         double deltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
+		// std::cout << "Frame Delta Time: " << deltaTime << " seconds." << std::endl;
 		_inputManager->beginFrame();
 		_windowSystem->pollEvents();
 

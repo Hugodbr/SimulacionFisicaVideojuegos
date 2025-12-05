@@ -13,6 +13,8 @@
 
 #include "callbacks.hpp"
 
+class ForceManager;
+class ParticleSystem;
 
 class PhysicsEngine {
 
@@ -85,16 +87,20 @@ public:
     void stepSimulation(double deltaTime);
     void shutdown();
 
-    // Simulation thread helpers
-    void startSimulationThread(double stepSeconds);
-    void stopSimulationThread();
+    // Reset the physics engine state, clearing all particle systems.
+    void reset();
+
+    // // Simulation thread helpers
+    // void startSimulationThread(double stepSeconds);
+    // void stopSimulationThread();
 
     physx::PxPhysics* getPhysics() const { return gPhysics; }
     physx::PxScene* getScene() const { return gScene; }
     physx::PxMaterial* getMaterial() const { return gMaterial; }
 
     physx::PxShape* createShape(const physx::PxGeometry& geo, const physx::PxMaterial* mat);
-    void pushParticle(class Particle* particle) { _particles.push_back(particle); }
+    // void pushParticle(class Particle* particle) { _particles.push_back(particle); }
+    void pushParticleSystem(ParticleSystem* particleSystem) { _particleSystems.push_back(particleSystem); }
 
     // Notification methods called by ContactReportCallback
     void notifyContact(physx::PxActor* actor1, physx::PxActor* actor2);
@@ -133,5 +139,6 @@ private:
     );
 
 private:
-    std::vector<Particle*> _particles = {};
+    std::vector<ParticleSystem*> _particleSystems = {};
+    ForceManager* forceManager;
 };

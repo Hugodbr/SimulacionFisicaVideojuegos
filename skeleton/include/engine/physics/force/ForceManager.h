@@ -8,7 +8,9 @@
 #include <PxPhysicsAPI.h>
 
 
-class ForceGenerator;
+#include "ForceGenerator.h"
+
+
 class GlobalForce;
 
 using pSysId = std::uint64_t;

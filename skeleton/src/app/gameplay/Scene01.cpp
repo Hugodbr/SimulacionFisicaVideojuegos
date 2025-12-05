@@ -5,8 +5,17 @@
 #include "Particle.h"
 #include "engine/physics/PhysicsEngine.h"
 
+#include "engine/physics/particle/systems/scenery/MeshSystem.h"
+#include "ResourceLocator.h"
+#include "ParticleWithMass.h"
+#include "GravitationalForce.h"
+#include "ForceManager.h"
+
+
 Scene01::~Scene01()
 {
+	delete _meshSystem;
+	_meshSystem = nullptr;
 	// if (_particle != nullptr) {
 	// 	delete _particle;
 	// 	_particle = nullptr;
@@ -20,6 +29,35 @@ Scene01::~Scene01()
 void Scene01::init()
 {
 	Scene::init();
+
+	std::string projectRoot = "C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos";
+
+	// =========================================================================================
+	// Global Forces
+	// =========================================================================================
+	// Create and register a gravitational force for all particle systems
+	std::unique_ptr<ForceGenerator> gravForce = std::make_unique<GravitationalForce>();
+	gravForce->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
+	ForceManager::getInstance().registerGlobalForce(std::move(gravForce));
+
+	// =========================================================================================
+	// Cage System
+	// =========================================================================================
+	_meshSystem = new MeshSystem(
+		projectRoot + "/resources/blender/cube.obj", 
+		10.0f, // point size
+		10.0, // scale
+		Constants::Color::Red // color
+	);
+	_meshSystem->init();
+	_meshSystem->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT });
+
+	PhysicsEngine::getInstance().pushParticleSystem(_meshSystem);
+
+	for (auto* particle : static_cast<MeshSystem*>(_meshSystem)->getParticlePool()->accessParticlePool()) {
+		gObjects.push_back(particle->getRenderable());
+	}
+	// =========================================================================================
 
 	// _particle = new Particle(
 	// 	physx::PxTransform(physx::PxVec3(0.0f, 0.0f, 0.0f)), 

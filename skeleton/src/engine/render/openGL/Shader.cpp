@@ -14,7 +14,7 @@ using namespace std;
 
 // Shader factory
 map<string, unique_ptr<Shader>> shaders;
-std::string Shader::SHADERS_ROOT = "C:\\Users\\hugod\\Github\\PhysxIG1\\resources\\shaders\\"; // default path
+std::string Shader::SHADERS_ROOT = "C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\shaders\\"; // default path
 
 Shader::Shader(const string& name)
 {

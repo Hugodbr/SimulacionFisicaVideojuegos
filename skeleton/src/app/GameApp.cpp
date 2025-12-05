@@ -45,7 +45,7 @@ void GameApp::onInit()
 
     // Start the physics simulation thread at the same timestep used by the rest of the app.
     // Uses TIME_STEP defined elsewhere in the project.
-    _physicsEngine.startSimulationThread(TIME_STEP);
+    // _physicsEngine.startSimulationThread(TIME_STEP);
 
     initSceneManager();
     createViewportsAndCameras();
@@ -66,7 +66,7 @@ void GameApp::onRender()
 void GameApp::onShutdown()
 {
     // Ensure the simulation thread is stopped before tearing down physics.
-    _physicsEngine.stopSimulationThread();
+    // _physicsEngine.stopSimulationThread();
 
     _sceneManager.shutdown();
     _physicsEngine.shutdown();
@@ -98,7 +98,7 @@ void GameApp::createViewportsAndCameras()
 	mViewPorts.push_back(mainViewPort);
 
 	// CAMARAS ------------------------------------------------------
-	Camera* mainCamera = new Camera(mainViewPort);
+	Camera* mainCamera = new Camera(mainViewPort, physx::PxVec3(50.0f, 50.0f, 50.0f), physx::PxVec3(-0.6f,-0.2f,-0.7f));
 	mCamera = mainCamera;
 	mCameras.push_back(mainCamera);
     _windowSystem->addInputEventListener(mCamera);

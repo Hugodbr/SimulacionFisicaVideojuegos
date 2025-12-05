@@ -20,7 +20,7 @@ class Scene
 {
 public:
 	Scene() = default;
-	~Scene();
+	virtual ~Scene();
 
 	Scene(const Scene& s) = delete;            // no copy constructor
 	Scene& operator=(const Scene& s) = delete; // no copy assignment

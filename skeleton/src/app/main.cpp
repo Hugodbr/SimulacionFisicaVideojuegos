@@ -9,7 +9,7 @@
 int main(int, const char*const*)
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	// _CrtSetBreakAlloc(524); // Uncomment to break at specific memory allocation number
+	// _CrtSetBreakAlloc(176012); // Uncomment to break at specific memory allocation number
 
 	GameApp game;
 	bool interactive;

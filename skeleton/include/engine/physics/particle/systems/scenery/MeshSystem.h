@@ -22,6 +22,11 @@ public:
     virtual void init() override;
     virtual void update(double deltaTime) override;
 
+    virtual ParticlePool<ParticleWithMass>* getParticlePool() {
+        // For now, only one generator // ! TODO
+        return _generatorsAndPools[0].second.get();
+    }
+
 protected:
 	// Returns the reserve count per generator for this system
 	virtual uint64_t getReserveCountPerGenerator() const override { 

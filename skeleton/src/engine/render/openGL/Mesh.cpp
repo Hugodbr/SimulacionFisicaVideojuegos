@@ -130,6 +130,11 @@ void Mesh::unload()
 		glDeleteBuffers(1, &mNBO);
 		mNBO = NONE;
 	}
+
+	if (mTangentsBO != NONE) {
+		glDeleteBuffers(1, &mTangentsBO);
+		mTangentsBO = NONE;
+	}
 }
 
 void

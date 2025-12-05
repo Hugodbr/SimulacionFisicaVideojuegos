@@ -16,8 +16,6 @@ private:
 	static uint64_t _nextId; // Static counter for generating unique IDs
 protected:
     uint64_t _id; // Protected to allow derived classes access
-
-    Abs_Entity* _renderable;
 public:
 
 	Particle() = delete;
@@ -80,9 +78,9 @@ public:
 	virtual void setColor(const physx::PxVec4& color);
 
 	virtual bool isVisible() const { 
-		std::cout << "Need to implement isVisible in Particle class." << std::endl;
+		std::cout << "Need to implement isVisible in Particle class. (check)" << std::endl;
 		// return _renderItem->visible; 
-		return true;
+		return _renderable->getVisibility();
 	}
 	virtual void setVisibility(bool visibility);
 
@@ -108,6 +106,7 @@ protected:
 protected:
 
 	// RenderItem* _renderItem;
+    Abs_Entity* _renderable;
 
 	physx::PxVec3 _acceleration;
 

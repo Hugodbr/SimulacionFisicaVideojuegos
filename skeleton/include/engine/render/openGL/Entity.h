@@ -36,6 +36,9 @@ public:
 
 	void setTexture(Texture* tex) { mTexture = tex; }
 
+	void setVisibility(bool visibility) { _isVisible = visibility; };
+	bool getVisibility() const { return _isVisible; };
+
 	// load or unload entity data into the GPU
 	virtual void load();
 	virtual void unload();
@@ -47,6 +50,8 @@ protected:
 	Texture* mTexture = nullptr;
 
 	glm::vec3 mWorldPosition; // position with axis as origin
+
+	bool _isVisible = true;
 
 	// transfers modelViewMat to the GPU
 	virtual void upload(const glm::mat4& mModelViewMat) const;
