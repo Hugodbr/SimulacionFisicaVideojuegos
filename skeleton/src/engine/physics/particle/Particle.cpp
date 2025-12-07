@@ -183,6 +183,7 @@ void Particle::createRender()
 
 	// _renderable = new ModelEntity("C:\\Users\\hugod\\Github\\PhysxIG1\\resources\\fbx\\nurse-of-horror\\source\\nurse_lp.fbx", 50.0f);
 
+	// _renderable = new IndexedBox(_size, glm::vec4(_color.x, _color.y, _color.z, _color.w));
 	_renderable = new Sphere(_size, 10, 10, glm::vec4(_color.x, _color.y, _color.z, _color.w));
 	_renderable->setWPos(glm::vec3(_transform.p.x, _transform.p.y, _transform.p.z));
 }

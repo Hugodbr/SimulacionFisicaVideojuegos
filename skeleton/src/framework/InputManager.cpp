@@ -34,6 +34,7 @@ void InputManager::onCharEvent(unsigned int codepoint)
 
 void InputManager::onMouseButton(MouseButton button, KeyAction action, KeyMod mods)
 {
+    std::cout << "Mouse button event: " << static_cast<int>(button) << " Action: " << static_cast<int>(action) << "\n";
     if (action == KeyAction::Press) {
         _currentMouseState[button] = true;
 

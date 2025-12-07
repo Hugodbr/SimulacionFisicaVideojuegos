@@ -36,16 +36,16 @@ void Scene01::init()
 	// Global Forces
 	// =========================================================================================
 	// Create and register a gravitational force for all particle systems
-	std::unique_ptr<ForceGenerator> gravForce = std::make_unique<GravitationalForce>();
-	gravForce->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
-	ForceManager::getInstance().registerGlobalForce(std::move(gravForce));
+	// std::unique_ptr<ForceGenerator> gravForce = std::make_unique<GravitationalForce>();
+	// gravForce->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
+	// ForceManager::getInstance().registerGlobalForce(std::move(gravForce));
 
 	// =========================================================================================
 	// Cage System
 	// =========================================================================================
 	_meshSystem = new MeshSystem(
 		projectRoot + "/resources/blender/cube.obj", 
-		10.0f, // point size
+		3.0f, // point size
 		10.0, // scale
 		Constants::Color::Red // color
 	);

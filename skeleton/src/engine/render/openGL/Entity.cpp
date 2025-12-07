@@ -11,7 +11,7 @@ using namespace glm;
 void
 Abs_Entity::upload(const mat4& modelViewMat) const
 {
-	mShader->setUniform("modelView", modelViewMat);
+	// mShader->setUniform("modelView", modelViewMat);
 }
 
 Abs_Entity::~Abs_Entity()
@@ -171,28 +171,29 @@ EntityWithMaterial::EntityWithMaterial(const glm::vec4& color)
 	: SingleColorEntity(color)
 	, mMaterial(color)
 {
-	mShader = Shader::get("light");
+	mShader = Shader::get("basic");
 }
 
 void EntityWithMaterial::render(const glm::mat4& modelViewMat) const
 {
 	if (mMesh != nullptr)
 	{
-		mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
+		// mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
 
-		assert(mShader == Shader::get("light"));
+		assert(mShader == Shader::get("basic"));
 		mShader->use();
 		// mShader->setUniform("time",static_cast<float>(GameApp::getInstance().getAbsTime()));
-		upload(aMat); // = mShader->setUniform("modelView", aMat);
-		mMaterial.upload(*mShader);
+		// upload(aMat); // = mShader->setUniform("modelView", aMat);
+		mShader->setUniform("modelMat", mModelMat);
+		// mMaterial.upload(*mShader);
 
 		mMesh->render();
 	}
 
-	if (mShowNormals)
-	{
-		renderNormals(modelViewMat);
-	}
+	// if (mShowNormals)
+	// {
+	// 	renderNormals(modelViewMat);
+	// }
 }
 
 void EntityWithMaterial::toggleShowNormals()
@@ -234,8 +235,8 @@ void EntityWithMultiTexture::render(const glm::mat4& modelViewMat) const
 	}
 
 	mat4 model = mModelMat;
-	mat4 view  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().getViewMatrix();
-	mat4 proj  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().getProjectionMatrix();
+	mat4 view  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().viewMat();
+	mat4 proj  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().projMat();
 	
 	mShader->use();
 	mShader->setUniform("model", model);

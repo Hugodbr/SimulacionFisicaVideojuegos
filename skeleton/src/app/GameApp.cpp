@@ -28,7 +28,7 @@ GameApp::~GameApp()
 
 void GameApp::runInteractive()
 {
-    ApplicationContext::init("Game Application", "GLFW");
+    ApplicationContext::init("Game", "GLFW");
     ApplicationContext::run();
 }
 
@@ -53,7 +53,7 @@ void GameApp::onInit()
 
 void GameApp::onUpdate(double deltaTime)
 {
-    mCamera->update();
+    mCamera->update(deltaTime);
     _sceneManager.update(deltaTime);
     _physicsEngine.stepSimulation(deltaTime);
 }
@@ -98,7 +98,7 @@ void GameApp::createViewportsAndCameras()
 	mViewPorts.push_back(mainViewPort);
 
 	// CAMARAS ------------------------------------------------------
-	Camera* mainCamera = new Camera(mainViewPort, physx::PxVec3(50.0f, 50.0f, 50.0f), physx::PxVec3(-0.6f,-0.2f,-0.7f));
+	Camera* mainCamera = new Camera(mainViewPort, physx::PxVec3(30.0f, 30.0f, 30.0f), physx::PxVec3(.0f, .0f, .0f));
 	mCamera = mainCamera;
 	mCameras.push_back(mainCamera);
     _windowSystem->addInputEventListener(mCamera);

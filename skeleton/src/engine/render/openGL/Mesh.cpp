@@ -48,6 +48,7 @@ Mesh::load()
 {
 	assert(mVBO == NONE); // not already loaded
 
+	// location 0: vertices
 	if (vVertices.size() > 0) { // transfer data
 		glGenBuffers(1, &mVBO);
 		glGenVertexArrays(1, &mVAO);
@@ -58,6 +59,7 @@ Mesh::load()
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), nullptr);
 		glEnableVertexAttribArray(0);
 
+		// location 1: colors
 		if (vColors.size() > 0) {             // upload colors
 			glGenBuffers(1, &mCBO);
 
@@ -67,6 +69,7 @@ Mesh::load()
 			glEnableVertexAttribArray(1);
 		}
 
+		// location 2: texture coordinates
 		if (vTexCoords.size() > 0) {
 			glGenBuffers(1, &mTCO);
 			glBindBuffer(GL_ARRAY_BUFFER, mTCO);
@@ -78,6 +81,7 @@ Mesh::load()
 			glEnableVertexAttribArray(2);
 		}
 
+		// location 3: normals
 		if (vNormals.size() > 0) // upload normals
 		{
 			glGenBuffers(1, &mNBO);
@@ -90,6 +94,7 @@ Mesh::load()
 			glEnableVertexAttribArray(3);
 		}
 
+		// location 4: tangents
 		if (vTangents.size() > 0) // upload tangents
 		{
 			glGenBuffers(1, &mTangentsBO);
