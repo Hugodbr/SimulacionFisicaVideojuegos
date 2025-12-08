@@ -13,7 +13,6 @@ public:
 	ParticleWithMass(
 		const physx::PxTransform& initTransform, 
 		const physx::PxVec3&      velocity,
-		const physx::PxVec3&      initAcceleration,
 		float mass,
 		float size = Constants::Particle::Default::Size,
 		Constants::Integration_Method integrationMethod = Constants::Integration_Method::VERLET,
@@ -23,7 +22,6 @@ public:
 	ParticleWithMass(
 		const physx::PxTransform& initTransform, 
 		const physx::PxVec3&      velocity,
-		const physx::PxVec3&      initAcceleration,
 		float mass,
 		float size,
 		Constants::Integration_Method integrationMethod = Constants::Integration_Method::VERLET
@@ -47,8 +45,6 @@ public:
 
 	virtual ~ParticleWithMass() = default;
 
-	virtual void init() override;
-
 	// Sets acceleration to zero and resulting force to zero. Must be called at the beginning of each particle update cycle!
 	virtual void clearForces();
 	// Adds force to resulting force
@@ -65,6 +61,7 @@ public:
 
 
 protected:
+	virtual void onInit();
 	void setInverseMass();
 
 protected:

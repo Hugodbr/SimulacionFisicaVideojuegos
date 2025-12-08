@@ -14,6 +14,7 @@ class ForceGenerator;
 class ParticleGenerator;
 class Particle;
 class ParticleWithMass;
+class Abs_Entity;
 
 // class ForceGenerator;
 using fGenId = std::uint64_t;
@@ -31,6 +32,8 @@ protected:
 	uint64_t _id; // Protected to allow derived classes access
 
 protected:
+    std::unique_ptr<Abs_Entity> _renderableEntity;
+
 	physx::PxVec3 _emitterOrigin;
 
 	ForceManager& _forceManager;
@@ -58,9 +61,16 @@ public:
 
 	virtual void init() = 0;
 
+	// ! TODO Make it = 0 to enforce derived classes to implement it
+	virtual void load() {};
+	virtual void unload() {};
+
 	virtual void update(double deltaTime);
 
 	virtual void setWorldRegion(const Region& region);
+
+	virtual void setRenderableEntity(std::unique_ptr<Abs_Entity> renderable) {};
+	virtual void render(const glm::mat4& modelViewMat) {};
 
 	uint64_t getId() const { return _id; }
 	// Group management

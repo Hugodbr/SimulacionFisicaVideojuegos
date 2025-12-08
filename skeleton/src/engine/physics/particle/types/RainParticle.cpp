@@ -8,7 +8,6 @@ RainParticle::RainParticle(
 	: ParticleWithMass(
         initTransform,
         physx::PxVec3(0, 0, 0), // initial velocity = 0
-        physx::PxVec3(0, 0, 0), // initial acceleration = 0
         Constants::Particle::WithMass::Rain::Mass,
         Constants::Particle::WithMass::Rain::Size,
         integrationMethod,

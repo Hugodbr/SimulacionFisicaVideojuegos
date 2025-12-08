@@ -2,22 +2,18 @@
 
 #include <iostream>
 
-#include "Constants.h"
+#include "EntityRenderable.h"
 
-
-// Initialize static member
-uint64_t PhysicalObject::_nextId = 0;
 
 PhysicalObject::PhysicalObject(
     const physx::PxTransform &initTransform,
     const physx::PxVec3 &initVelocity,
-    const physx::PxVec3 &initAcceleration,
     double damping,
     Constants::Integration_Method integrationMethod,
     float size)
     : _velocity(initVelocity),
 	_speed(initVelocity.magnitude()),
-	_acceleration(initAcceleration),
+	_acceleration(physx::PxVec3(0,0,0)),
 	_damping(damping),
 	_integrationMethod(integrationMethod),
 	_color(Constants::Color::White),
@@ -31,20 +27,17 @@ PhysicalObject::PhysicalObject(
 	_transformPrevious.q = initTransform.q;
 	_transformOriginal.p = initTransform.p;
 	_transformOriginal.q = initTransform.q;
-
-	init();
 }
 
-PhysicalObject::PhysicalObject(const physx::PxTransform& initTransform, const physx::PxVec3& initVelocity, const physx::PxVec3& initAcceleration, Constants::Integration_Method integrationMethod)
-	: PhysicalObject(initTransform, initVelocity, initAcceleration, Constants::Physics::Damping, integrationMethod)
+PhysicalObject::PhysicalObject(const physx::PxTransform& initTransform, const physx::PxVec3& initVelocity, Constants::Integration_Method integrationMethod)
+	: PhysicalObject(initTransform, initVelocity, Constants::Physics::Damping, integrationMethod)
 {
-	init();
 }
 
-PhysicalObject::PhysicalObject(const physx::PxTransform &initTransform, const physx::PxVec3 &initVelocity, const physx::PxVec3 &initAcceleration, float size, double damping, const physx::PxVec4 &color, Constants::Integration_Method integrationMethod)
+PhysicalObject::PhysicalObject(const physx::PxTransform &initTransform, const physx::PxVec3 &initVelocity, float size, double damping, const physx::PxVec4 &color, Constants::Integration_Method integrationMethod)
 	: _velocity(initVelocity),
 	  _speed(initVelocity.magnitude()),
-	  _acceleration(initAcceleration),
+	  _acceleration(physx::PxVec3(0,0,0)),
 	  _damping(damping),
 	  _integrationMethod(integrationMethod),
 	  _color(color),
@@ -58,19 +51,15 @@ PhysicalObject::PhysicalObject(const physx::PxTransform &initTransform, const ph
 	_transformPrevious.q = initTransform.q;
 	_transformOriginal.p = initTransform.p;
 	_transformOriginal.q = initTransform.q;
-
-	init();
 }
 
 PhysicalObject::PhysicalObject(float size, const physx::PxVec4 &color, float speed, Constants::Integration_Method integrationMethod)
-	: PhysicalObject(physx::PxTransform(physx::PxVec3(0,0,0)), physx::PxVec3(1,0,0).getNormalized() * speed, physx::PxVec3(0,0,0), Constants::Physics::Damping, integrationMethod, size)
+	: PhysicalObject(physx::PxTransform(physx::PxVec3(0,0,0)), physx::PxVec3(1,0,0).getNormalized() * speed, Constants::Physics::Damping, integrationMethod, size)
 {
 	_size = size;
 	_color = color;
 	_speed = speed;
 	_integrationMethod = integrationMethod;
-
-	init();
 }
 
 PhysicalObject::PhysicalObject(const PhysicalObject& other)
@@ -90,15 +79,10 @@ PhysicalObject::PhysicalObject(const PhysicalObject& other)
 	_size = other._size;
 	_age = other._age;
 	_speed = other._speed;
-
-	init();
 }
 
 PhysicalObject::~PhysicalObject()
 {
-	// if (_renderItem != nullptr) {
-	// 	_renderItem->release();
-	// }
 }
 
 void PhysicalObject::init()
@@ -106,14 +90,12 @@ void PhysicalObject::init()
 	if (_initialized) {
 		return;
 	}
+	_initialized = true;
 
-	_id = _nextId++;
-
-	// createRenderItem();
-
-	deactivate();
-
+	onInit();   // Hook for derived classes
 	_firstIntegration = true;
+
+	_acceleration = physx::PxVec3(0, 0, 0);
 
 	switch (_integrationMethod)
 	{
@@ -131,12 +113,17 @@ void PhysicalObject::init()
 	case Constants::Integration_Method::NONE:
 		// std::cout << "PhysicalObject initialized with NONE integration method. Setting velocity and acceleration to zero." << std::endl;
 		_velocity = _velocityPrevious = physx::PxVec3(0, 0, 0);
-		_acceleration = physx::PxVec3(0, 0, 0);
 		break;
 	}
 }
 
-void PhysicalObject::setTransform(const physx::PxTransform& origin)
+// void PhysicalObject::setRenderableEntity(std::unique_ptr<Abs_Entity> renderable)
+// {
+// 	_renderable = std::move(renderable);
+// 	_renderable->setWPos(_transform.p.x, _transform.p.y, _transform.p.z);
+// }
+
+void PhysicalObject::setTransform(const physx::PxTransform &origin)
 {
 	_transform.p.x = _transformPrevious.p.x = origin.p.x;
 	_transform.p.y = _transformPrevious.p.y = origin.p.y;
@@ -174,16 +161,11 @@ void PhysicalObject::setVelocityDirection(const physx::PxVec3 &direction)
 	_velocityPrevious = _velocity;
 }
 
-// void PhysicalObject::createRenderItem()
-// {
-// 	_shape = CreateShape(physx::PxSphereGeometry(_size));
-// 	_renderItem = new RenderItem(_shape, &_transform, _color);
-// }
-
 void PhysicalObject::activate()
 {
 	_alive = true;
-	// _renderItem->setVisibility(true);
+	_isVisible = true;
+	// _renderable->setVisibility(true);
 	_age = 0.0;
 	_firstIntegration = true;
 }
@@ -191,25 +173,35 @@ void PhysicalObject::activate()
 void PhysicalObject::deactivate()
 {
     _alive = false;
-	// _renderItem->setVisibility(false);
+	_isVisible = false;
+	// _renderable->setVisibility(false);
 }
 
 void PhysicalObject::update(double dt) 
 {
+	assert(_initialized && "PhysicalObject not initialized. Call init() before update().");
+
 	integrate(dt);
 	updateAge(dt);
+	// updateRenderableEntity();
 }
 
 void PhysicalObject::setColor(const physx::PxVec4 &color)
 {
 	_color = color;
-	// _renderItem->setColor(_color);
+	// _renderable->setColor(_color);
+	std::cout << "PhysicalObject::setColor not implemented yet." << std::endl;
 }
 
-// void PhysicalObject::setVisibility(bool visibility)
-// {
-// 	_renderItem->setVisibility(visibility);
-// }
+bool PhysicalObject::isVisible() const {
+	return _isVisible;
+    // return _renderable->isVisible();
+}
+
+void PhysicalObject::setVisibility(bool visibility) {
+	_isVisible = visibility;
+	// _renderable->setVisibility(visibility);
+}
 
 void PhysicalObject::setAge(double age) {
 	_age = age;
@@ -222,13 +214,7 @@ void PhysicalObject::setAcceleration(const physx::PxVec3 &acceleration) {
 void PhysicalObject::setSize(double size)
 {
 	_size = size;
-	// _renderItem->changeSize(static_cast<float>(size));
-	// createRenderItem();
-
-	// _renderItem->it
-	// if (_alive) {
-	// 	RegisterRenderItem(_renderItem);
-	// }
+	std::cout << "PhysicalObject::setSize not implemented yet." << std::endl;
 }
 
 void PhysicalObject::integrate(double dt)
@@ -249,8 +235,17 @@ void PhysicalObject::integrate(double dt)
 	}
 }
 
-void PhysicalObject::updateAge(double dt)
-{
+// void PhysicalObject::updateRenderableEntity()
+// {
+// 	if (_renderable) {
+// 		_renderable->setWPos(_transform.p.x, _transform.p.y, _transform.p.z);
+// 	}
+// 	else {
+// 		std::cout << "PhysicalObject::updateRenderableEntity -> No renderable associated!" << std::endl;
+// 	}
+// }
+
+void PhysicalObject::updateAge(double dt) {
 	_age += dt;
 }
 

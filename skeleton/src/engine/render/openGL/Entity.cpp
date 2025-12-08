@@ -46,6 +46,10 @@ Abs_Entity::setWPos(glm::vec3 position)
 	setModelMat(glm::translate(modelMat(), mWorldPosition));
 }
 
+void Abs_Entity::setWPos(float x, float y, float z)
+{
+	setWPos(glm::vec3(x, y, z));
+}
 
 /* ---------------------ENTITY WITH COLORS--------------------- */
 

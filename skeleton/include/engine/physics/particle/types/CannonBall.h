@@ -8,7 +8,6 @@ public:
 	CannonBall(
         const physx::PxTransform& initTransform, 
         const physx::PxVec3&      realVelocity,
-        const physx::PxVec3&      initAcceleration,
         float realMass,
         float size,
         const physx::PxVec4& color,

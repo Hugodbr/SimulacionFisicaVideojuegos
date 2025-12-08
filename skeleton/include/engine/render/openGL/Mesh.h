@@ -96,6 +96,7 @@ class IndexMesh : public Mesh
 {
 public:
 	IndexMesh();
+	~IndexMesh();
 
 	IndexMesh(const IndexMesh& im) = delete;            // no copy constructor
 	IndexMesh& operator=(const IndexMesh& im) = delete; // no copy assignment

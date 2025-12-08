@@ -31,6 +31,30 @@ Mesh::Mesh()
 
 Mesh::~Mesh()
 {
+	// Delete all textures
+	delete normalTex;
+	normalTex = nullptr;
+	delete roughnessTex;
+	roughnessTex = nullptr;
+	delete metallicTex;
+	metallicTex = nullptr;
+	delete aoTex;
+	aoTex = nullptr;
+	delete emissiveTex;
+	emissiveTex = nullptr;
+	delete metallicRoughnessTex;
+	metallicRoughnessTex = nullptr;
+	delete albedoTex;
+	albedoTex = nullptr;
+
+	// Clear all CPU-side data
+	mNumVertices = 0;
+	vVertices.clear();
+	vColors.clear();
+	vNormals.clear();
+	vTangents.clear();
+	vTexCoords.clear();
+
 	unload();
 }
 
@@ -554,6 +578,13 @@ IndexMesh::IndexMesh()
 {
 }
 
+IndexMesh::~IndexMesh()
+{
+	vIndexes.clear();
+	
+	unload();
+}
+
 void IndexMesh::load()
 {
 	Mesh::load();
@@ -955,7 +986,7 @@ IndexMesh *IndexMesh::loadMeshWithAssimp(const std::string &filePath, float scal
 	// if (!mesh->normalTex)
 	// 	mesh->normalTex = loadTex(aiTextureType_HEIGHT);
 
-	mesh->loadBones(aiMesh);
+	// mesh->loadBones(aiMesh); // TODO
 
 	std::cout << "FINAL normalTex: " << mesh->normalTex << std::endl;
 

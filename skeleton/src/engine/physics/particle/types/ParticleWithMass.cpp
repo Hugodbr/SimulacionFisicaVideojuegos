@@ -5,44 +5,38 @@
 ParticleWithMass::ParticleWithMass(
 	const physx::PxTransform& initTransform,
 	const physx::PxVec3&      velocity,
-	const physx::PxVec3&      initAcceleration,
 	float mass,
 	float size,
 	Constants::Integration_Method integrationMethod,
 	float damping
 )
-	: Particle(initTransform, velocity, initAcceleration, damping, integrationMethod, size)
+	: Particle(initTransform, velocity, damping, integrationMethod, size)
 	, _mass(mass)
 {
-	init();
 }
 
 ParticleWithMass::ParticleWithMass(
 	const physx::PxTransform& initTransform,
 	const physx::PxVec3&      velocity,
-	const physx::PxVec3&      initAcceleration,
 	float mass,
 	float size,
 	Constants::Integration_Method integrationMethod
 )
-	: Particle(initTransform, velocity, initAcceleration, Constants::Physics::Damping, integrationMethod, size)
+	: Particle(initTransform, velocity, Constants::Physics::Damping, integrationMethod, size)
 	, _mass(mass)
 {
-	init();
 }
 
 ParticleWithMass::ParticleWithMass(float mass, float size, const physx::PxVec4 &color)
 	: Particle(size, color, 0.0f, Constants::Integration_Method::VERLET)
 	, _mass(mass)
 {
-	init();
 }
 
 ParticleWithMass::ParticleWithMass(float mass, float size, const physx::PxVec4 &color, float speed)
 	: Particle(size, color, speed)
 	, _mass(mass)
 {
-	init();
 }
 
 ParticleWithMass::ParticleWithMass(const ParticleWithMass& other)
@@ -54,13 +48,6 @@ ParticleWithMass::ParticleWithMass(const ParticleWithMass& other)
 
 	_resultingForce = other._resultingForce;
 	_inverseMass = other._inverseMass;
-}
-
-void ParticleWithMass::init()
-{
-	Particle::init();
-	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
-	setInverseMass();
 }
 
 void ParticleWithMass::clearForces()
@@ -92,7 +79,15 @@ void ParticleWithMass::changeMass(float newMass)
 	setInverseMass();
 }
 
+void ParticleWithMass::onInit()
+{
+	Particle::onInit();
+
+	_resultingForce = physx::PxVec3(0.0f, 0.0f, 0.0f);
+	setInverseMass();
+}
+
 void ParticleWithMass::setInverseMass()
 {
-	_inverseMass = (_mass != 0.0) ? 1.0 / _mass : 0.0;
+	_inverseMass = (_mass != 0.0f) ? 1.0f / _mass : 0.0f;
 }

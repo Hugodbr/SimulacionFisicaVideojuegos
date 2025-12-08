@@ -8,7 +8,6 @@ public:
 	Bullet(
         const physx::PxTransform& initTransform, 
         const physx::PxVec3&      realVelocity,
-        const physx::PxVec3&      initAcceleration = physx::PxVec3(0,0,0),
         float realMass = Constants::Particle::WithMass::Bullet::Mass,
         float size = Constants::Particle::WithMass::Bullet::Size,
         const physx::PxVec4& color = Constants::Particle::WithMass::Bullet::Color,

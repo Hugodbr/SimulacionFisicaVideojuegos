@@ -33,11 +33,13 @@ public:
 	// position modification
 	glm::vec3 getWPos();
 	void setWPos(glm::vec3 position);
+	void setWPos(float x, float y, float z);
 
 	void setTexture(Texture* tex) { mTexture = tex; }
 
 	void setVisibility(bool visibility) { _isVisible = visibility; };
-	bool getVisibility() const { return _isVisible; };
+	// Called by the scene when rendering
+	bool isVisible() const { return _isVisible; };
 
 	// load or unload entity data into the GPU
 	virtual void load();

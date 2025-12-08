@@ -4,6 +4,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
+#include "ParticleSystem.h"
+
 using namespace glm;
 
 void
@@ -36,10 +38,10 @@ Scene::destroy()
 { // release memory and resources
 
 	int i = 0;
-	for (Abs_Entity* el : gObjects) {
-		std::cout << "Deleting object " << i++ << '\n';
-		delete el;
-	}
+	// for (Abs_Entity* el : gObjects) {
+	// 	std::cout << "Deleting object " << i++ << '\n';
+	// 	delete el;
+	// }
 
 	gObjects.clear();
 
@@ -62,23 +64,29 @@ Scene::destroy()
 void
 Scene::load()
 {
+	for (const auto& ps : _particleSystems) {
+		ps->load();
+	}
 	// setColor(); // background color
 
-	for (Abs_Entity* obj : gObjects)
-		obj->load();
+	// for (Abs_Entity* obj : gObjects)
+	// 	obj->load();
 
-	for (Abs_Entity* tobj : gTranslucidObjs)
-		tobj->load();
+	// for (Abs_Entity* tobj : gTranslucidObjs)
+	// 	tobj->load();
 }
 
 void
 Scene::unload()
 {
-	for (Abs_Entity* obj : gObjects)
-		obj->unload();
+	for (const auto& ps : _particleSystems) {
+		ps->unload();
+	}
+	// for (Abs_Entity* obj : gObjects)
+	// 	obj->unload();
 
-	for (Abs_Entity* tobj : gTranslucidObjs)
-		tobj->unload();
+	// for (Abs_Entity* tobj : gTranslucidObjs)
+	// 	tobj->unload();
 
 	for (auto& [light, state] : gLights)
 		light->unload(*Shader::get("light"));
@@ -174,11 +182,15 @@ Scene::render(Camera const& cam) const
 	cam.upload();
 	uploadLights(cam); // see this later
 
-	for (Abs_Entity* el : gObjects) {
-		if (el->getVisibility()) {
-			el->render(cam.viewMat());
-		}
+	for (const auto& ps : _particleSystems) {
+		ps->render(cam.viewMat());
 	}
+
+	// for (Abs_Entity* el : gObjects) {
+	// 	if (el->isVisible()) {
+	// 		el->render(cam.viewMat());
+	// 	}
+	// }
 
 	// for (Abs_Entity* tel : gTranslucidObjs)
 	// 	tel->render(cam.viewMat());

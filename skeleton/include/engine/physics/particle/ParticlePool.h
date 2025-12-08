@@ -33,13 +33,13 @@ public:
         for (int i = 0; i < maxParticles; ++i) {
             void* mem = _arena.allocate(sizeof(ParticleType), alignof(ParticleType));
             ParticleType* p = new (mem) ParticleType(std::forward<Args>(args)...);
+            p->init();
             _particles.push_back(p);
             total_active_particles++;
         }
         total_allocated_bytes += maxParticles * sizeof(ParticleType);
         std::cout << "ParticlePool created with " << maxParticles << " particles. Total allocated bytes: " << total_allocated_bytes << "\n";
         std::cout << "Total active particles: " << total_active_particles << "\n";
-
     }
 
     ~ParticlePool() noexcept {

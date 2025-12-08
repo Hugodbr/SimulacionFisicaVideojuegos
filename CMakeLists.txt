@@ -52,6 +52,8 @@ set(MY_INCLUDE_DIRECTORIES
     "${SKELETON_INCLUDE_DIR}/engine/physics/force/generators"
     "${SKELETON_INCLUDE_DIR}/engine/physics/force/types"
     "${SKELETON_INCLUDE_DIR}/engine/physics/force/types/regional"
+    "${SKELETON_INCLUDE_DIR}/engine/physics/rigidbody"
+    "${SKELETON_INCLUDE_DIR}/engine/physics/rigidbody/types"
 
     "${SKELETON_INCLUDE_DIR}/engine/render"
     "${SKELETON_INCLUDE_DIR}/engine/render/openGL"

@@ -5,10 +5,11 @@
 #include <string>
 
 #include "ParticleSystem.h"
+#include "ParticleWithMass.h"
 #include "MeshData.h"
 
 class ConstantParticleGenerator;
-class ParticleWithMass;
+
 
 class MeshSystem : public ParticleSystem
 {
@@ -21,6 +22,11 @@ public:
 
     virtual void init() override;
     virtual void update(double deltaTime) override;
+
+    virtual void setRenderableEntity(std::unique_ptr<Abs_Entity> renderable) override;
+    virtual void render(const glm::mat4& modelViewMat) override;
+    virtual void load() override;
+	virtual void unload() override;
 
     virtual ParticlePool<ParticleWithMass>* getParticlePool() {
         // For now, only one generator // ! TODO
@@ -41,7 +47,6 @@ protected:
 
 
 protected:
-
     MeshData _meshData;
 
     float _pointSize;

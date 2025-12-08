@@ -70,6 +70,40 @@ void MeshSystem::update(double deltaTime)
     }
 }
 
+void MeshSystem::setRenderableEntity(std::unique_ptr<Abs_Entity> renderable)
+{
+    _renderableEntity = std::move(renderable);
+}
+
+void MeshSystem::render(const glm::mat4& modelViewMat)
+{
+    assert(_renderableEntity && "Renderable entity not set for MeshSystem.");
+
+    auto& [generator, pool] = _generatorsAndPools[0];
+
+    for (auto& particle : pool->accessParticlePool()) 
+    {
+        if (particle->isActive()) {
+            _renderableEntity->setWPos(
+                particle->getTransform().p.x,
+                particle->getTransform().p.y,
+                particle->getTransform().p.z
+            );
+            _renderableEntity->render(modelViewMat);
+        }
+    }
+}
+
+void MeshSystem::load()
+{
+    _renderableEntity->load();
+}
+
+void MeshSystem::unload()
+{
+    _renderableEntity->unload();
+}
+
 void MeshSystem::initParticleGeneratorAndPool()
 {
     std::cout << "Reserving " << getReserveCountPerGenerator() << " particles for MeshSystem.\n";

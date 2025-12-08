@@ -11,21 +11,14 @@
 #include "GravitationalForce.h"
 #include "ForceManager.h"
 
+#include "MeshSystem.h"
+#include "EntityRenderable.h"
+
 
 Scene01::~Scene01()
 {
-	delete _meshSystem;
-	_meshSystem = nullptr;
-	// if (_particle != nullptr) {
-	// 	delete _particle;
-	// 	_particle = nullptr;
-	// }
-
-	// if (_particle2 != nullptr) {
-	// 	delete _particle2;
-	// 	_particle2 = nullptr;
-	// }
 }
+
 void Scene01::init()
 {
 	Scene::init();
@@ -36,27 +29,29 @@ void Scene01::init()
 	// Global Forces
 	// =========================================================================================
 	// Create and register a gravitational force for all particle systems
-	// std::unique_ptr<ForceGenerator> gravForce = std::make_unique<GravitationalForce>();
-	// gravForce->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
-	// ForceManager::getInstance().registerGlobalForce(std::move(gravForce));
+	std::unique_ptr<ForceGenerator> gravForce = std::make_unique<GravitationalForce>();
+	gravForce->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
+	ForceManager::getInstance().registerGlobalForce(std::move(gravForce));
 
 	// =========================================================================================
 	// Cage System
 	// =========================================================================================
-	_meshSystem = new MeshSystem(
+	std::unique_ptr<MeshSystem> meshSystem = std::make_unique<MeshSystem>(
 		projectRoot + "/resources/blender/originPoint.obj", 
 		3.0f, // point size
 		10.0, // scale
 		Constants::Color::Red // color
 	);
-	_meshSystem->init();
-	_meshSystem->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT });
+	meshSystem->init();
+	meshSystem->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\fbx\\crate-box-free\\source\\Crate.fbx"));
+	meshSystem->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT });
+	_particleSystems.push_back(std::move(meshSystem));
 
-	PhysicsEngine::getInstance().pushParticleSystem(_meshSystem);
+	PhysicsEngine::getInstance().pushParticleSystem(_particleSystems.back().get());
 
-	for (auto* particle : static_cast<MeshSystem*>(_meshSystem)->getParticlePool()->accessParticlePool()) {
-		gObjects.push_back(particle->getRenderable());
-	}
+	// for (auto* particle : static_cast<MeshSystem*>(_meshSystem)->getParticlePool()->accessParticlePool()) {
+	// 	gObjects.push_back(particle->getRenderable());
+	// }
 	// =========================================================================================
 
 	// _particle = new Particle(
