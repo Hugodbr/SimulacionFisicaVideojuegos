@@ -955,9 +955,77 @@ IndexMesh *IndexMesh::loadMeshWithAssimp(const std::string &filePath, float scal
 	// if (!mesh->normalTex)
 	// 	mesh->normalTex = loadTex(aiTextureType_HEIGHT);
 
+	mesh->loadBones(aiMesh);
+
 	std::cout << "FINAL normalTex: " << mesh->normalTex << std::endl;
 
     return mesh;
+}
+
+void IndexMesh::loadBones(const aiMesh *aiMesh)
+{
+	std::cout << "Mesh has bones: " << aiMesh->mNumBones << std::endl;
+
+	for (unsigned b = 0; b < aiMesh->mNumBones; b++)
+	{
+		aiBone* aiBone = aiMesh->mBones[b];
+
+		BoneInfo bone;
+		bone.name = aiBone->mName.C_Str();
+		bone.offset = glm::transpose(glm::make_mat4(&aiBone->mOffsetMatrix.a1));
+
+		this->bones.push_back(bone);
+	}
+
+	//--------------------------------------------------------
+	// Build skeleton ONCE (outside loop!)
+	//--------------------------------------------------------
+	std::function<void(aiNode*, int, IndexMesh*)> traverse =
+		[&](aiNode* node, int parentIndex, IndexMesh* mesh)
+	{
+		int currentIndex = -1;
+
+		// Match node to bone
+		for (int i = 0; i < mesh->bones.size(); i++)
+		{
+			if (mesh->bones[i].name == node->mName.C_Str())
+			{
+				mesh->bones[i].parentIndex = parentIndex;
+
+				glm::mat4 local = glm::transpose(glm::make_mat4(&node->mTransformation.a1));
+
+				if (parentIndex >= 0)
+					mesh->bones[i].globalTransform = mesh->bones[parentIndex].globalTransform * local;
+				else
+					mesh->bones[i].globalTransform = local;
+
+				currentIndex = i;
+				break;
+			}
+		}
+
+		// Recurse children
+		for (unsigned c = 0; c < node->mNumChildren; c++)
+			traverse(node->mChildren[c], currentIndex, mesh);
+	};
+
+
+	// {
+	// 	traverse(scene->mRootNode, -1, mesh);
+
+	// 	mesh->boneLines.clear();
+
+	// 	for (int i = 0; i < mesh->bones.size(); i++)
+	// 	{
+	// 		int parent = mesh->bones[i].parentIndex;
+	// 		if (parent < 0) continue;
+
+	// 		glm::vec3 childPos  = glm::vec3(mesh->bones[i].globalTransform[3]);
+	// 		glm::vec3 parentPos = glm::vec3(mesh->bones[parent].globalTransform[3]);
+
+	// 		mesh->boneLines.push_back({ parentPos, childPos });
+	// 	}
+	// }
 }
 
 std::vector<IndexMesh*> IndexMesh::loadAllMeshesWithAssimp(const std::string& filePath, float scale)

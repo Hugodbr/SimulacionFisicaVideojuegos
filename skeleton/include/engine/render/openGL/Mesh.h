@@ -114,6 +114,8 @@ public:
 	void draw() const override;
 
 	void buildNormalVectors();
+	void loadBones(const aiMesh* aiMesh);
+
 
 protected:
 	std::vector<GLuint> vIndexes;

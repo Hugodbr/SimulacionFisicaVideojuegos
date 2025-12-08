@@ -739,7 +739,9 @@ void ModelSingleMeshPBR::render(const glm::mat4 &modelViewMat) const
 	if (mPBRMaterial) {
 		mPBRMaterial->bindAll(mShader->getProgram());
 		glEnable(GL_DEPTH_TEST);
+		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		mMesh->render();
+		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glDisable(GL_DEPTH_TEST);
 		mPBRMaterial->unbindAll(); 
 	} 
