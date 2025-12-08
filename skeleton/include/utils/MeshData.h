@@ -42,7 +42,7 @@ struct MeshData {
 
 
     physx::PxVec3 randomPointOnMesh(const std::function<double()>& distributionFunc);
-    std::vector<physx::PxVec3> getMeshVertices() const;
+    const std::vector<physx::PxVec3>& getMeshVertices() const;
 
     MeshData& operator =(const MeshData& other) {
         vertices = other.vertices;

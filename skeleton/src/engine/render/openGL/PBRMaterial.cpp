@@ -8,57 +8,90 @@ static void setSamplerUniform(GLuint program, const char* name, int unit) {
     if (loc >= 0) glUniform1i(loc, unit);
 }
 
-void PBRMaterial::bindAll(GLuint shaderProgram) const
+void PBRMaterial::bindAll(GLuint shaderProgram)
 {
+    hasAlbedoTex = hasNormalTex = hasMetallicTex = hasRoughnessTex = hasAOTex = hasEmissiveTex = hasMetallicRoughnessTex = false;
+
     int unit = 0;
-    if (albedo) {
+
+    if (albedoTex) {
         glActiveTexture(GL_TEXTURE0 + unit);
-        albedo->bind();
+        albedoTex->bind();
         setSamplerUniform(shaderProgram, "uAlbedo", unit);
         ++unit;
+        hasAlbedoTex = true;
     }
-    if (normal) {
+
+    if (normalTex) {
         glActiveTexture(GL_TEXTURE0 + unit);
-        normal->bind();
-        // std::cout << "Binding normalTex id=" << normal->getId() << std::endl;
-        // std::cout << "Normal: " << (normal ? normal->getId() : 0) << std::endl;
+        normalTex->bind();
+        // std::cout << "Binding normalTex id=" << normalTex->getId() << std::endl;
+        // std::cout << "Normal: " << (normalTex ? normalTex->getId() : 0) << std::endl;
         setSamplerUniform(shaderProgram, "uNormal", unit);
         ++unit;
+        hasNormalTex = true;
     }
+
+    if(metallicRoughnessTex) {
+        glActiveTexture(GL_TEXTURE0 + unit);
+        metallicRoughnessTex->bind();
+        setSamplerUniform(shaderProgram, "uMetallicRoughness", unit);
+        ++unit;
+        hasMetallicRoughnessTex = true;
+    }
+
     // else {
     //     std::cout << "No normal texture to bind." << std::endl;
     // }
-    if (metallic) {
+    if (metallicTex) {
         glActiveTexture(GL_TEXTURE0 + unit);
-        metallic->bind();
+        metallicTex->bind();
         setSamplerUniform(shaderProgram, "uMetallic", unit);
         ++unit;
+        hasMetallicTex = true;
     }
     // else {
     //     std::cout << "No metallic texture to bind." << std::endl;
     // }
-    if (roughness) {
+    if (roughnessTex) {
         glActiveTexture(GL_TEXTURE0 + unit);
-        roughness->bind();
+        roughnessTex->bind();
         setSamplerUniform(shaderProgram, "uRoughness", unit);
         ++unit;
+        hasRoughnessTex = true;
     }
     // else {
     //     std::cout << "No roughness texture to bind." << std::endl;
     // }
-    if (ao) {
+    if (aoTex) {
         glActiveTexture(GL_TEXTURE0 + unit);
-        ao->bind();
+        aoTex->bind();
         setSamplerUniform(shaderProgram, "uAO", unit);
         ++unit;
+        hasAOTex = true;
     }
 
-    if (emissive) {
+    if (emissiveTex) {
         glActiveTexture(GL_TEXTURE0 + unit);
-        emissive->bind();
+        emissiveTex->bind();
         setSamplerUniform(shaderProgram, "uEmissive", unit);
         ++unit;
+        hasEmissiveTex = true;
     }
+
+    glUniform1i(glGetUniformLocation(shaderProgram, "hasAlbedoTex"), hasAlbedoTex);
+    glUniform1i(glGetUniformLocation(shaderProgram, "hasMetalTex"), hasMetallicTex);
+    glUniform1i(glGetUniformLocation(shaderProgram, "hasRoughTex"), hasRoughnessTex);
+    glUniform1i(glGetUniformLocation(shaderProgram, "hasNormalTex"), hasNormalTex);
+    glUniform1i(glGetUniformLocation(shaderProgram, "hasAoTex"), hasAOTex);
+    glUniform1i(glGetUniformLocation(shaderProgram, "hasEmissiveTex"), hasEmissiveTex);
+    glUniform1i(glGetUniformLocation(shaderProgram, "hasMetallicRoughnessTex"), hasMetallicRoughnessTex);
+
+    glUniform3fv(glGetUniformLocation(shaderProgram, "uBaseColor"), 1, &albedoColor[0]);
+    glUniform1f(glGetUniformLocation(shaderProgram, "uMetallicValue"), metallicValue);
+    glUniform1f(glGetUniformLocation(shaderProgram, "uRoughnessValue"), roughnessValue);
+    glUniform1f(glGetUniformLocation(shaderProgram, "uAoValue"), aoValue);
+    glUniform3fv(glGetUniformLocation(shaderProgram, "uEmissiveColor"), 1, &emissiveColor[0]);
 }
 
 void PBRMaterial::unbindAll() const

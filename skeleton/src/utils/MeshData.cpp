@@ -9,29 +9,35 @@
 
 void MeshData::loadMeshFromFile(const std::string& filename) 
 {
-    Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(
-        filename,
-        aiProcess_Triangulate | aiProcess_JoinIdenticalVertices
-    );
+    readUniqueVertices(filename);
 
-    if (!scene || !scene->HasMeshes()) {
-        throw std::runtime_error("Failed to load mesh from file: " + filename);
+    if (uniqueVertices.empty()) {
+        throw std::runtime_error("No vertices loaded from file: " + filename);
     }
+    if (uniqueVertices.size() > 3){
 
-    aiMesh* m = scene->mMeshes[0];
-    vertices.reserve(m->mNumVertices);
-    for (unsigned int i = 0; i < m->mNumVertices; ++i) {
-        vertices.emplace_back(m->mVertices[i].x, m->mVertices[i].y, m->mVertices[i].z);
-    }
+        Assimp::Importer importer;
+        const aiScene* scene = importer.ReadFile(
+            filename,
+            aiProcess_Triangulate | aiProcess_JoinIdenticalVertices
+        );
 
-    for (unsigned int i = 0; i < m->mNumFaces; ++i) {
-        for (unsigned int j = 0; j < m->mFaces[i].mNumIndices; ++j) {
-            indices.push_back(m->mFaces[i].mIndices[j]);
+        if (!scene || !scene->HasMeshes()) {
+            throw std::runtime_error("Failed to load mesh from file: " + filename);
+        }
+
+        aiMesh* m = scene->mMeshes[0];
+        vertices.reserve(m->mNumVertices);
+        for (unsigned int i = 0; i < m->mNumVertices; ++i) {
+            vertices.emplace_back(m->mVertices[i].x, m->mVertices[i].y, m->mVertices[i].z);
+        }
+
+        for (unsigned int i = 0; i < m->mNumFaces; ++i) {
+            for (unsigned int j = 0; j < m->mFaces[i].mNumIndices; ++j) {
+                indices.push_back(m->mFaces[i].mIndices[j]);
+            }
         }
     }
-
-    readUniqueVertices(filename);
 
     computeCenter();
     computeAABB();
@@ -51,6 +57,7 @@ void MeshData::readUniqueVertices(const std::string& filename)
             std::istringstream iss(line.substr(2)); // skip "v "
             float x, y, z;
             if (iss >> x >> y >> z) {
+                std::cout << "Read vertex: " << x << ", " << y << ", " << z << std::endl;
                 uniqueVertices.emplace_back(x, y, z);
             }
         }
@@ -97,7 +104,7 @@ physx::PxVec3 MeshData::randomPointOnMesh(const std::function<double()>& distrib
     return a + (b - a) * u + (c - a) * v;
 }
 
-std::vector<physx::PxVec3> MeshData::getMeshVertices() const
+const std::vector<physx::PxVec3>& MeshData::getMeshVertices() const
 {
     return uniqueVertices;
 }

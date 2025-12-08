@@ -44,7 +44,7 @@ void Scene01::init()
 	// Cage System
 	// =========================================================================================
 	_meshSystem = new MeshSystem(
-		projectRoot + "/resources/blender/cube.obj", 
+		projectRoot + "/resources/blender/originPoint.obj", 
 		3.0f, // point size
 		10.0, // scale
 		Constants::Color::Red // color
@@ -62,10 +62,10 @@ void Scene01::init()
 	// _particle = new Particle(
 	// 	physx::PxTransform(physx::PxVec3(0.0f, 0.0f, 0.0f)), 
 	// 	physx::PxVec3(0.0f, 0.0f, 0.0f), 
-	// 	physx::PxVec3(0.0f, -9.8f, 0.0f), 
+	// 	physx::PxVec3(0.0f, 0.0f, 0.0f), 
 	// 	1.0f, 
-	// 	Integration_Method::VERLET,
-	// 	50.0f);
+	// 	Constants::Integration_Method::VERLET,
+	// 	10.0f);
 
 	// gObjects.push_back(_particle->getRenderable());
 

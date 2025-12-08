@@ -3,6 +3,7 @@
 #include "Image.h"
 #include <iostream>
 #include <vector>
+#include <stb_image.h>
 
 using rgba_color = glm::u8vec4;
 
@@ -110,4 +111,44 @@ Texture::setWrap(GLuint wp) // GL_REPEAT, GL_CLAMP_TO_EDGE, ...
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wp);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wp);
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Texture::loadEmbedded(const aiTexture* tex)
+{
+    bind();
+    init();
+
+    if (tex->mHeight == 0)
+    {
+        // PNG/JPG encoded
+        int w, h, channels;
+        unsigned char* data = stbi_load_from_memory(
+            (unsigned char*)tex->pcData,
+            tex->mWidth,
+            &w, &h, &channels,
+            4
+        );
+
+        mWidth = w;
+        mHeight = h;
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        // RAW pixel data
+        mWidth = tex->mWidth;
+        mHeight = tex->mHeight;
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,
+            tex->mWidth, tex->mHeight, 0,
+            GL_BGRA, GL_UNSIGNED_BYTE,
+            tex->pcData);
+    }
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+    unbind();
 }

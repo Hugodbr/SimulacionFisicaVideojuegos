@@ -184,7 +184,18 @@ void Particle::createRender()
 	// _renderable = new ModelEntity("C:\\Users\\hugod\\Github\\PhysxIG1\\resources\\fbx\\nurse-of-horror\\source\\nurse_lp.fbx", 50.0f);
 
 	// _renderable = new IndexedBox(_size, glm::vec4(_color.x, _color.y, _color.z, _color.w));
-	_renderable = new Sphere(_size, 10, 10, glm::vec4(_color.x, _color.y, _color.z, _color.w));
+	// _renderable = new Sphere(_size, 10, 10, glm::vec4(_color.x, _color.y, _color.z, _color.w));
+
+	// _renderable = new Sphere(_size, 10, 10, glm::vec4(_color.x, _color.y, _color.z, _color.w));
+	// Material mat;
+	// mat.setGold();
+	// _renderable = new ModelSingleMeshMaterial("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\blender\\monkey.obj");
+	// _renderable = new ModelSingleMeshPBR("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\blender\\rainDropGLB.glb");
+	// _renderable = new ModelSingleMeshPBR("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\fbx\\crate-box\\source\\796b3b0283794320bc74bbccf8578115.fbx.fbx");
+	_renderable = new ModelSingleMeshPBR("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\fbx\\crate-box-free\\source\\Crate.fbx");
+	// _renderable = new ModelSingleMeshPBR("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\fbx\\smily-horror-monster\\source\\monster.fbx");
+
+	// static_cast<ModelSingleMeshMaterial*>(_renderable)->setMaterial(mat);
 	_renderable->setWPos(glm::vec3(_transform.p.x, _transform.p.y, _transform.p.z));
 }
 

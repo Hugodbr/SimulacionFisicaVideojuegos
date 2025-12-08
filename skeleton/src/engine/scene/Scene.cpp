@@ -13,9 +13,10 @@ Scene::init()
 
 	// allocate memory and load resources
 	// Lights
-	// mGlobalLight = new DirLight(getDirLightID());
-	// mGlobalLight->setDirection(glm::vec3(-1, -1, -1));
-	// gLights.push_back({ mGlobalLight, ON });
+	mGlobalLight = new DirLight(getDirLightID());
+	mGlobalLight->setDirection(glm::vec3(-1, -1, -1));
+	gLights.push_back({ mGlobalLight, ON });
+	
 	// gLights.push_back({ new SpotLightYZ(getSpotLightID()), ON });
 
 	// // Textures
@@ -171,7 +172,7 @@ void
 Scene::render(Camera const& cam) const
 {
 	cam.upload();
-	// uploadLights(cam); // see this later
+	uploadLights(cam); // see this later
 
 	for (Abs_Entity* el : gObjects) {
 		if (el->getVisibility()) {

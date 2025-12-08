@@ -149,6 +149,7 @@ Mesh::render() const
 
 	glBindVertexArray(mVAO);
 	draw();
+	glBindVertexArray(0);
 }
 
 Mesh*
@@ -752,6 +753,7 @@ IndexMesh *IndexMesh::loadMeshWithAssimp(const std::string &filePath, float scal
 
     // --- Vertices ---
     mesh->vVertices.reserve(aiMesh->mNumVertices);
+	std::cout << "Number of vertices: " << aiMesh->mNumVertices << std::endl;
     for (unsigned i = 0; i < aiMesh->mNumVertices; i++)
     {
         aiVector3D pos = aiMesh->mVertices[i] * scale;
@@ -778,6 +780,7 @@ IndexMesh *IndexMesh::loadMeshWithAssimp(const std::string &filePath, float scal
 		if (aiMesh->HasTextureCoords(uv))
 			std::cout << "UV SET " << uv << " exists" << std::endl;
 	}
+
     // --- Texture Coordinates (only channel 0) ---
     if (aiMesh->HasTextureCoords(0))
     {
@@ -832,6 +835,27 @@ IndexMesh *IndexMesh::loadMeshWithAssimp(const std::string &filePath, float scal
 		std::string raw = texPath.C_Str();
 		std::cout << "[Assimp] Material texture type " << type << ": " << raw << std::endl;
 
+		// ------------------------------------------------------------
+		// CASE 1: embedded texture (“*0”) — GLB ONLY
+		// ------------------------------------------------------------
+		if (!raw.empty() && raw[0] == '*')
+		{
+			const aiTexture* embedded = scene->GetEmbeddedTexture(raw.c_str());
+			if (!embedded)
+			{
+				std::cout << "[ERROR] Embedded texture not found: " << raw << std::endl;
+				return nullptr;
+			}
+
+			Texture* tex = new Texture();
+			tex->loadEmbedded(embedded);
+			std::cout << "[LOAD] Loaded embedded texture: " << raw << std::endl;
+			return tex;
+		}
+		
+		// ------------------------------------------------------------
+		// CASE 2: external texture — FBX, OBJ, GLTF (non-embedded)
+		// ------------------------------------------------------------
 		std::filesystem::path baseDir = std::filesystem::path(filePath).parent_path();
 
 		// --- Step 1: Extract only the filename ---
@@ -874,18 +898,62 @@ IndexMesh *IndexMesh::loadMeshWithAssimp(const std::string &filePath, float scal
 		return tex;
 	};
 
-	mesh->diffuseTex    = loadTex(aiTextureType_DIFFUSE);
-	mesh->roughnessTex  = loadTex(aiTextureType_DIFFUSE_ROUGHNESS);
-	mesh->metallicTex   = loadTex(aiTextureType_METALNESS);
-	mesh->aoTex         = loadTex(aiTextureType_AMBIENT_OCCLUSION);
-	mesh->emissiveTex   = loadTex(aiTextureType_EMISSIVE);
+	// ----------------------------------------------------------------------
+	// 0. glTF metallic-roughness *combined* texture (R = occlusion, G = roughness, B = metallic)
+	// ----------------------------------------------------------------------
+	Texture* mrCombined = loadTex(aiTextureType_UNKNOWN);  
+	if (mrCombined) {
+		mesh->metallicRoughnessTex = mrCombined;
+	}
 
-	// NORMALS MUST BE LAST
+	// ----------------------------------------------------------------------
+	// 1. glTF metallic-roughness *combined* texture (G = roughness, B = metallic)
+	// ----------------------------------------------------------------------
+	mesh->metallicRoughnessTex = loadTex(aiTextureType_UNKNOWN);
+
+	// ----------------------------------------------------------------------
+	// 2. Albedo / Base Color
+	// ----------------------------------------------------------------------
+	mesh->albedoTex = loadTex(aiTextureType_BASE_COLOR);
+	if (!mesh->albedoTex)
+		mesh->albedoTex = loadTex(aiTextureType_DIFFUSE); // FBX fallback
+
+	// ----------------------------------------------------------------------
+	// 3. Normal map
+	// ----------------------------------------------------------------------
 	mesh->normalTex = loadTex(aiTextureType_NORMALS);
 	if (!mesh->normalTex)
 		mesh->normalTex = loadTex(aiTextureType_NORMAL_CAMERA);
 	if (!mesh->normalTex)
-		mesh->normalTex = loadTex(aiTextureType_HEIGHT);
+		mesh->normalTex = loadTex(aiTextureType_HEIGHT); // bump → normal fallback
+
+	// ----------------------------------------------------------------------
+	// 4. Metallic + Roughness (FBX separate maps)
+	// ONLY load these if glTF combined texture is missing
+	// ----------------------------------------------------------------------
+	if (!mesh->metallicRoughnessTex) {
+		mesh->metallicTex  = loadTex(aiTextureType_METALNESS);
+		mesh->roughnessTex = loadTex(aiTextureType_DIFFUSE_ROUGHNESS);
+	}
+
+	// ----------------------------------------------------------------------
+	// 5. AO + Emissive
+	// ----------------------------------------------------------------------
+	mesh->aoTex       = loadTex(aiTextureType_AMBIENT_OCCLUSION);
+	mesh->emissiveTex = loadTex(aiTextureType_EMISSIVE);
+
+	// mesh->diffuseTex    = loadTex(aiTextureType_DIFFUSE);
+	// mesh->roughnessTex  = loadTex(aiTextureType_DIFFUSE_ROUGHNESS);
+	// mesh->metallicTex   = loadTex(aiTextureType_METALNESS);
+	// mesh->aoTex         = loadTex(aiTextureType_AMBIENT_OCCLUSION);
+	// mesh->emissiveTex   = loadTex(aiTextureType_EMISSIVE);
+
+	// // NORMALS MUST BE LAST
+	// mesh->normalTex = loadTex(aiTextureType_NORMALS);
+	// if (!mesh->normalTex)
+	// 	mesh->normalTex = loadTex(aiTextureType_NORMAL_CAMERA);
+	// if (!mesh->normalTex)
+	// 	mesh->normalTex = loadTex(aiTextureType_HEIGHT);
 
 	std::cout << "FINAL normalTex: " << mesh->normalTex << std::endl;
 
@@ -1060,7 +1128,7 @@ std::vector<IndexMesh*> IndexMesh::loadAllMeshesWithAssimp(const std::string& fi
         // ------------------------------------------------------------------
         aiMaterial* aiMat = scene->mMaterials[aiMesh->mMaterialIndex];
 
-        mesh->diffuseTex    = loadTex(aiMat, aiTextureType_DIFFUSE);
+        mesh->albedoTex    = loadTex(aiMat, aiTextureType_DIFFUSE);
         mesh->roughnessTex  = loadTex(aiMat, aiTextureType_DIFFUSE_ROUGHNESS);
         mesh->metallicTex   = loadTex(aiMat, aiTextureType_METALNESS);
         mesh->aoTex         = loadTex(aiMat, aiTextureType_AMBIENT_OCCLUSION);

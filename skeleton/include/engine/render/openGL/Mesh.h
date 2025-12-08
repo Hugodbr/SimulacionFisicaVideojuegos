@@ -45,12 +45,13 @@ public:
 	virtual void load();
 	virtual void unload();
 
-	Texture* diffuseTex = nullptr;
 	Texture* normalTex = nullptr;
 	Texture* roughnessTex = nullptr;
 	Texture* metallicTex = nullptr;
 	Texture* aoTex = nullptr;
 	Texture* emissiveTex = nullptr;
+	Texture* metallicRoughnessTex = nullptr;
+	Texture* albedoTex = nullptr;
 
 	// skeletal animation support /
 	struct BoneInfo {

@@ -171,29 +171,32 @@ EntityWithMaterial::EntityWithMaterial(const glm::vec4& color)
 	: SingleColorEntity(color)
 	, mMaterial(color)
 {
-	mShader = Shader::get("basic");
+	mShader = Shader::get("light");
+	mMaterial = Material(glm::vec3(color.r, color.g, color.b), 32.0f);
+	mMaterial.setGold();
 }
 
 void EntityWithMaterial::render(const glm::mat4& modelViewMat) const
 {
-	if (mMesh != nullptr)
-	{
-		// mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
-
-		assert(mShader == Shader::get("basic"));
-		mShader->use();
-		// mShader->setUniform("time",static_cast<float>(GameApp::getInstance().getAbsTime()));
-		// upload(aMat); // = mShader->setUniform("modelView", aMat);
-		mShader->setUniform("modelMat", mModelMat);
-		// mMaterial.upload(*mShader);
-
-		mMesh->render();
+	if (!mMesh) {
+		std::cout << "Warning: Mesh is null in EntityWithMaterial::render()" << std::endl;
+		return;
 	}
 
-	// if (mShowNormals)
-	// {
-	// 	renderNormals(modelViewMat);
-	// }
+	mat4 model = mModelMat;
+	mat4 view  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().viewMat();
+	mat4 proj  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().projMat();
+	
+	assert(mShader == Shader::get("light"));
+
+	mShader->use();
+	mShader->setUniform("modelMat", model);
+	mShader->setUniform("viewMat", view);
+	mShader->setUniform("projMat", proj);	
+	mMaterial.upload(*mShader);
+
+	glEnable(GL_DEPTH_TEST);
+	mMesh->render();
 }
 
 void EntityWithMaterial::toggleShowNormals()

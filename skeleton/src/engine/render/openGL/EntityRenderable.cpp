@@ -617,12 +617,12 @@ ModelEntity::ModelEntity(const std::string &filePath, float scale)
 	for (auto* mesh : mMeshes) {
 		mMaterials.push_back(new PBRMaterial());
 
-		mMaterials.back()->albedo    = mesh->diffuseTex;
-		mMaterials.back()->normal    = mesh->normalTex;
-		mMaterials.back()->roughness = mesh->roughnessTex;
-		mMaterials.back()->metallic  = mesh->metallicTex;
-		mMaterials.back()->ao        = mesh->aoTex;
-		mMaterials.back()->emissive  = mesh->emissiveTex;
+		// mMaterials.back()->albedo    = mesh->diffuseTex;
+		// mMaterials.back()->normal    = mesh->normalTex;
+		// mMaterials.back()->roughness = mesh->roughnessTex;
+		// mMaterials.back()->metallic  = mesh->metallicTex;
+		// mMaterials.back()->ao        = mesh->aoTex;
+		// mMaterials.back()->emissive  = mesh->emissiveTex;
 
 		EntityWithMultiTexture* entity = new EntityWithMultiTexture();
 		entity->setMesh(mesh);
@@ -660,4 +660,92 @@ ModelEntity::~ModelEntity()
 		delete material;
 	}
 	mMaterials.clear();
+}
+
+ModelSingleMeshMaterial::ModelSingleMeshMaterial(const std::string &filePath, const glm::vec4 &color)
+{
+	mShader = Shader::get("light");
+	mMesh = IndexMesh::loadMeshWithAssimp(filePath, 5.0f);
+}
+
+void ModelSingleMeshMaterial::render(const glm::mat4 &modelViewMat) const
+{
+	if (mMesh == nullptr) {
+		std::cerr << "ModelSingleMeshMaterial::render: No mesh assigned!" << std::endl;
+	}
+
+	assert(mShader == Shader::get("light"));
+
+	mat4 model = mModelMat;
+	mat4 view  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().viewMat();
+	mat4 proj  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().projMat();
+	
+	mShader->use();
+	mShader->setUniform("modelMat", model);
+	mShader->setUniform("viewMat", view);
+	mShader->setUniform("projMat", proj);
+	mMaterial.upload(*mShader);
+
+	glEnable(GL_DEPTH_TEST);
+	mMesh->render();
+	glDisable(GL_DEPTH_TEST);
+}
+
+ModelSingleMeshPBR::ModelSingleMeshPBR(const std::string &filePath)
+{
+	mShader = Shader::get("pbr");
+	mMesh = IndexMesh::loadMeshWithAssimp(filePath, 1.0f);
+
+	mPBRMaterial = new PBRMaterial();
+
+	mPBRMaterial->albedoTex            = mMesh->albedoTex;
+	mPBRMaterial->normalTex            = mMesh->normalTex;
+	mPBRMaterial->metallicRoughnessTex = mMesh->metallicRoughnessTex;
+	mPBRMaterial->roughnessTex         = mMesh->roughnessTex;
+	mPBRMaterial->metallicTex          = mMesh->metallicTex;
+	mPBRMaterial->aoTex                = mMesh->aoTex;
+	mPBRMaterial->emissiveTex          = mMesh->emissiveTex;
+}
+
+ModelSingleMeshPBR::~ModelSingleMeshPBR()
+{
+	delete mPBRMaterial;
+	mPBRMaterial = nullptr;
+
+	// Note: mMesh is deleted in the base class Abs_Entity
+}
+
+void ModelSingleMeshPBR::render(const glm::mat4 &modelViewMat) const
+{
+	if (mMesh == nullptr) {
+		std::cerr << "ModelSingleMeshPBR::render: No mesh assigned!" << std::endl;
+	}
+
+	assert(mShader == Shader::get("pbr"));
+
+	mat4 model = mModelMat;
+	mat4 view  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().viewMat();
+	mat4 proj  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().projMat();
+	
+	mShader->use();
+	mShader->setUniform("modelMat", model);
+	mShader->setUniform("viewMat", view);
+	mShader->setUniform("projMat", proj);
+
+	glm::vec3 lightDirWorld = glm::normalize(glm::vec3(-1, -1, -1));
+	glm::vec3 lightDirView  = glm::mat3(view) * lightDirWorld;
+	mShader->setUniform("lightDirView", lightDirView);
+
+	if (mPBRMaterial) {
+		mPBRMaterial->bindAll(mShader->getProgram());
+		glEnable(GL_DEPTH_TEST);
+		mMesh->render();
+		glDisable(GL_DEPTH_TEST);
+		mPBRMaterial->unbindAll(); 
+	} 
+	else {
+		std::cout << "Warning: PBRMaterial is null in ModelSingleMeshPBR::render()" << std::endl;
+	}
+
+
 }

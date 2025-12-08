@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <string>
 
+#include <assimp/scene.h>
+
 class Texture
 {
 public:
@@ -17,6 +19,8 @@ public:
 	void load(const std::string& filename,
 	          GLubyte alpha = 255); // load from file and upload to GPU
 	void loadColorBuffer(GLsizei width, GLsizei height, GLuint buffer = GL_FRONT);
+	void loadEmbedded(const aiTexture* t);
+
 	void save(const std::string& name);
 
 	void bind();

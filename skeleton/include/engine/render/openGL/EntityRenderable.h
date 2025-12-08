@@ -151,6 +151,23 @@ public:
 	explicit Cone(GLdouble h, GLdouble r, GLdouble R, GLuint nRings, GLuint nSamples, const glm::vec4& color = glm::vec4(1));
 };
 
+class ModelSingleMeshMaterial : public ColorMaterialEntity
+{
+public:
+	explicit ModelSingleMeshMaterial(const std::string& filePath, const glm::vec4& color = glm::vec4(1));
+	virtual void render(const glm::mat4& modelViewMat) const override;
+};
+
+class ModelSingleMeshPBR : public Abs_Entity
+{
+public:
+	explicit ModelSingleMeshPBR(const std::string& filePath);
+	virtual ~ModelSingleMeshPBR();
+	virtual void render(const glm::mat4& modelViewMat) const override;
+protected:
+	PBRMaterial* mPBRMaterial = nullptr;
+};
+
 
 /* ---------------------COMPOUNTD ENTITY--------------------- */
 

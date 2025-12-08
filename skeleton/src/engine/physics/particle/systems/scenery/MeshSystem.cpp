@@ -72,10 +72,12 @@ void MeshSystem::update(double deltaTime)
 
 void MeshSystem::initParticleGeneratorAndPool()
 {
+    std::cout << "Reserving " << getReserveCountPerGenerator() << " particles for MeshSystem.\n";
+
     _generatorsAndPools.push_back({
         std::make_unique<ConstantParticleGenerator>(),
         std::make_unique<ParticlePool<ParticleWithMass>>(
-            getReserveCountPerGenerator(),  // Pool size
+            getReserveCountPerGenerator() + 1,  // Pool size // TODO study
             2.0f, // mass
             _pointSize, // size
             _color  // color
@@ -103,6 +105,8 @@ void MeshSystem::createParticlesAtMeshVertices()
 
     for (auto& vertex : _meshData.getMeshVertices()) 
     {
+        // std::cout << "Creating particle at vertex: " 
+                //   << vertex.x << ", " << vertex.y << ", " << vertex.z << std::endl;
         Particle* p = pool->activateParticle();
         if (p) {
             // Set particle position to vertex position
@@ -110,5 +114,10 @@ void MeshSystem::createParticlesAtMeshVertices()
             p->setTransform(physx::PxTransform(pos, physx::PxQuat(0)));
             // p->setVelocity(physx::PxVec3(5.0f, 0, 0));
         }
+        else {
+            std::cerr << "Failed to activate particle from pool." << std::endl;
+        }
     }
+
+
 }
