@@ -4,13 +4,14 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
+#include <vector>
+
 #include "Camera.h"
 #include "EntityRenderable.h"
 #include "Light.h"
 
-#include <vector>
-
 #include "ParticleSystem.h"
+#include "RigidBody.h"
 
 
 enum {
@@ -20,6 +21,9 @@ enum {
 
 class Scene
 {
+protected:
+	static inline std::string ROOT_DIR = ""; // Root directory for resources
+
 public:
 	Scene() = default;
 	virtual ~Scene();
@@ -38,9 +42,6 @@ public:
 
 	void uploadLights(Camera const& cam) const;
 
-	virtual void printscreen() {};
-	virtual void showNormals();
-
 	virtual void rotate() {}
 	virtual void orbit() {}
 
@@ -57,14 +58,10 @@ public:
 
 protected:
 	void destroy();
-	// void setGL();
-	// void resetGL();
-	// virtual void setColor();
-	std::vector<std::unique_ptr<ParticleSystem>> _particleSystems;
 
-	std::vector<Abs_Entity*> gObjects; // Entities (graphic objects) of the scene
-	std::vector<Abs_Entity*> gTranslucidObjs; // Entities (translucid objects) of the scene
-	std::vector<Texture*> gTextures; // Texturas de la escena
+	std::vector<std::unique_ptr<ParticleSystem>> _particleSystems;
+	std::vector<std::unique_ptr<RigidBody>> _rigidBodies;
+
 	std::vector<std::pair<Light*, bool>> gLights; // Luces de la escena: {light, on/off}
 
 	// Max number of lights for each type (capped by shader)

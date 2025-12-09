@@ -31,6 +31,7 @@ public:
     int getWindowWidth() const { return _windowSystem->getWindowWidth(); }
     int getWindowHeight() const { return _windowSystem->getWindowHeight(); }
 
+    std::string getProjectRoot() const;
     // Test
     double getAbsTime() const;
 

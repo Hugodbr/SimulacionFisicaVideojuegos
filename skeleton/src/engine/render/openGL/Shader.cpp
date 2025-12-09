@@ -9,17 +9,20 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
+#include "ApplicationContext.h"
 
 using namespace std;
 
 // Shader factory
 map<string, unique_ptr<Shader>> shaders;
-std::string Shader::SHADERS_ROOT = "C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\shaders\\"; // default path
+std::string Shader::SHADERS_ROOT;
 
 Shader::Shader(const string& name)
 {
+	SHADERS_ROOT = ApplicationContext::getInstance().getProjectRoot() + "\\resources\\shaders\\";
 	std::cout << SHADERS_ROOT << std::endl;
-	std::cout << name << std::endl;
+	std::cout << "Shader name: " << name << std::endl;
+	
 	GLuint vertex, fragment;
 
 	// Name can be either a plain identifier or a colon-separated name pair

@@ -4,14 +4,15 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-#include "ParticleSystem.h"
+#include "GameApp.h"
 
 using namespace glm;
 
 void
 Scene::init()
 {
-	// setGL(); // OpenGL settings
+	ROOT_DIR = GameApp::getInstance().getProjectRoot();
+	std::cout << "Scene root directory set to: " << ROOT_DIR << std::endl;
 
 	// allocate memory and load resources
 	// Lights
@@ -20,41 +21,16 @@ Scene::init()
 	gLights.push_back({ mGlobalLight, ON });
 	
 	// gLights.push_back({ new SpotLightYZ(getSpotLightID()), ON });
-
-	// // Textures
-
-	// // Graphics objects (entities) of the scene
-	// gObjects.push_back(new RGBAxes(400.0));
 }
 
 Scene::~Scene()
 {
 	destroy();
-	// resetGL();
 }
 
 void
 Scene::destroy()
-{ // release memory and resources
-
-	int i = 0;
-	// for (Abs_Entity* el : gObjects) {
-	// 	std::cout << "Deleting object " << i++ << '\n';
-	// 	delete el;
-	// }
-
-	gObjects.clear();
-
-	// for (Abs_Entity* tel : gTranslucidObjs)
-	// 	delete tel;
-
-	// gTranslucidObjs.clear();
-
-	// for (Texture* tx : gTextures)
-	// 	delete tx;
-
-	// gTextures.clear();
-
+{
 	for (auto& [light, state] : gLights)
 		delete light;
 
@@ -67,13 +43,9 @@ Scene::load()
 	for (const auto& ps : _particleSystems) {
 		ps->load();
 	}
-	// setColor(); // background color
-
-	// for (Abs_Entity* obj : gObjects)
-	// 	obj->load();
-
-	// for (Abs_Entity* tobj : gTranslucidObjs)
-	// 	tobj->load();
+	for (const auto& rb : _rigidBodies) {
+		rb->load();
+	}
 }
 
 void
@@ -82,11 +54,10 @@ Scene::unload()
 	for (const auto& ps : _particleSystems) {
 		ps->unload();
 	}
-	// for (Abs_Entity* obj : gObjects)
-	// 	obj->unload();
 
-	// for (Abs_Entity* tobj : gTranslucidObjs)
-	// 	tobj->unload();
+	for (const auto& rb : _rigidBodies) {
+		rb->unload();
+	}
 
 	for (auto& [light, state] : gLights)
 		light->unload(*Shader::get("light"));
@@ -103,14 +74,6 @@ void Scene::uploadLights(Camera const& cam) const
 		light->upload(*s, cam.viewMat()); // We upload the shader
 	}
 
-}
-
-void Scene::showNormals()
-{
-	for (auto* o : gObjects) {
-		if (dynamic_cast<ColorMaterialEntity*>(o))
-			dynamic_cast<ColorMaterialEntity*>(o)->toggleShowNormals();
-	}
 }
 
 void Scene::toggleLight(Light* light)
@@ -157,25 +120,6 @@ int Scene::getPosLightID()
 	return aux;
 }
 
-// void
-// Scene::setGL()
-// {
-// 	// OpenGL basic setting
-// 	setColor(); // background color
-// 	glEnable(GL_DEPTH_TEST);          // enable Depth test
-// }
-// void
-// Scene::resetGL()
-// {
-// 	glClearColor(.0, .0, .0, .0); // background color (alpha=1 -> opaque)
-// 	glDisable(GL_DEPTH_TEST);     // disable Depth test
-// }
-
-// void Scene::setColor()
-// {
-// 	glClearColor(0.6, 0.7, 0.8, 1.0); // background color (alpha=1 -> opaque)
-// }
-
 void
 Scene::render(Camera const& cam) const
 {
@@ -186,12 +130,7 @@ Scene::render(Camera const& cam) const
 		ps->render(cam.viewMat());
 	}
 
-	// for (Abs_Entity* el : gObjects) {
-	// 	if (el->isVisible()) {
-	// 		el->render(cam.viewMat());
-	// 	}
-	// }
-
-	// for (Abs_Entity* tel : gTranslucidObjs)
-	// 	tel->render(cam.viewMat());
+	for (const auto& rb : _rigidBodies) {
+		rb->render(cam.viewMat());
+	}
 }

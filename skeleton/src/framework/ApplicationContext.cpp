@@ -13,6 +13,12 @@
 
 ApplicationContext* ApplicationContext::s_appInstance = nullptr;
 
+std::string ApplicationContext::getProjectRoot() const
+{
+	std::string projectRoot = ResourceLocator::getProjectRoot().string();
+	return projectRoot;
+}
+
 double ApplicationContext::getAbsTime() const
 {
     return glfwGetTime();
