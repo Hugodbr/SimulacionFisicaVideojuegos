@@ -148,37 +148,34 @@ void Camera::upload() const
 //===============================================================================
 void Camera::update(double deltaTime)
 {
+	// std::cout << "Updating camera...\n";
+
 	if (mInputMgr.isKeyPressed(KeyCode::O)) {
 		mOrbiting = !mOrbiting;
-		std::cout << "Orbiting toggled to " << (mOrbiting ? "ON" : "OFF") << "\n";
+		// std::cout << "Orbiting toggled to " << (mOrbiting ? "ON" : "OFF") << std::endl;
 	}
 	if (mOrbiting) {
-		orbitate(1000000.0 * deltaTime); // Orbit with a period of 60 frames
+		orbitate(100000.0 * deltaTime); // Orbit with a period of 60 frames
 	}
-
-		glm::vec2 mouseDelta = mInputMgr.getMouseDelta();
-		orbit(mouseDelta.x, mouseDelta.y);
+	
 	// Is the left mouse button is already pressed when it`s time to update, the camera orbits according to mouse movement delta stored at InputManager
-	if( !mInputMgr.isMousePressedThisFrame(MouseButton::Left) && 
-		 mInputMgr.isMousePressed(MouseButton::Left) )
-		{
+	if( /*!mInputMgr.isMousePressedThisFrame(MouseButton::Left) && */ mInputMgr.isMousePressed(MouseButton::Left) ) {
 		glm::vec2 mouseDelta = mInputMgr.getMouseDelta();
 		orbit(mouseDelta.x, mouseDelta.y);
-		std::cout << "Orbiting with mouse drag: (" << mouseDelta.x << ", " << mouseDelta.y << ")\n";
+		// std::cout << "Orbiting with mouse drag: (" << mouseDelta.x << ", " << mouseDelta.y << ")" << std::endl;
 	}
 
-	if( mInputMgr.isMousePressed(MouseButton::Left) )
-		{
-		std::cout << "PRESSING 	\n";
-	}
+	// if( mInputMgr.isMousePressed(MouseButton::Left) ) {
+	// 	std::cout << "PRESSING" << std::endl;
+	// }
 
 	// if (mInputMgr.isMousePressed(MouseButton::Left)) {
-	// 	std::cout << "Left mouse pressed\n";
+	// 	std::cout << "Left mouse pressed" << std::endl;
 	// 	glm::vec2 mouseDelta = mInputMgr.getMouseDelta();
 	// 	orbit(mouseDelta.x, mouseDelta.y);
 	// }
 	// if (mInputMgr.isMousePressed(MouseButton::Right)) {
-	// 	std::cout << "Right mouse pressed\n";
+	// 	std::cout << "Right mouse pressed" << std::endl;
 	// 	glm::vec2 mouseDelta = mInputMgr.getMouseDelta();
 	// 	moveUD(-mouseDelta.y);
 	// 	moveLR(mouseDelta.x);

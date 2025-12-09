@@ -10,8 +10,8 @@ void InputManager::beginFrame()
     _previousKeyState = _currentKeyState;
     _previousMouseState = _currentMouseState;
 
-    _currentKeyState = {};
-    _currentMouseState = {};
+    // _currentKeyState = {};
+    // _currentMouseState = {};
 }
 
 
@@ -34,7 +34,8 @@ void InputManager::onCharEvent(unsigned int codepoint)
 
 void InputManager::onMouseButton(MouseButton button, KeyAction action, KeyMod mods)
 {
-    std::cout << "Mouse button event: " << static_cast<int>(button) << " Action: " << static_cast<int>(action) << "\n";
+    // std::cout << "Mouse button event: " << static_cast<int>(button) << " Action: " << static_cast<int>(action) << std::endl;
+
     if (action == KeyAction::Press) {
         _currentMouseState[button] = true;
 
@@ -110,6 +111,8 @@ bool InputManager::isMousePressed(MouseButton button) const
 
 bool InputManager::isMousePressedThisFrame(MouseButton button) const
 {
+    // std::cout << "Checking if mouse button " << static_cast<int>(button) << " was pressed this frame.\n";
+
     bool currentlyPressed = false;
     auto itCurrent = _currentMouseState.find(button);
     if (itCurrent != _currentMouseState.end()) {

@@ -10,6 +10,7 @@
 #include "ParticleWithMass.h"
 #include "GravitationalForce.h"
 #include "ForceManager.h"
+#include "ExplosionForce.h"
 
 #include "MeshSystem.h"
 #include "RainSystem.h"
@@ -35,6 +36,22 @@ void Scene01::init()
 	gravForce->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
 	ForceManager::getInstance().registerGlobalForce(std::move(gravForce));
 
+	// Explosion ==================================================================================
+	// std::unique_ptr<ForceGenerator> explosionForceGen = std::make_unique<ExplosionForce>(
+	// 	physx::PxVec3(0.0f, 0.0f, 0.0f), // explosion center
+	// 	100000.0f,   // max radius
+	// 	10000000.0f, // magnitude
+	// 	3000000.0f // expansion velocity
+	// );
+	// explosionForceGen->setGroup(Constants::Group::DynamicGroup::ALL);
+	// explosionForceGen->setTimer(5.0); // Delay activation by 5 seconds
+	// // explosionForceGen->setExpireTime(20.0); // Expire after 15 seconds
+	// explosionForceGen->setActive(false); // Initially inactive
+	
+	// std::cout << "ExplosionForce created." << std::endl;
+
+	// ForceManager::getInstance().registerGlobalForce(std::move(explosionForceGen));
+
 	// =========================================================================================
 	// Cage System
 	// =========================================================================================
@@ -47,7 +64,7 @@ void Scene01::init()
 	meshSystem->init();
 	meshSystem->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\fbx\\crate-box-free\\source\\Crate.fbx"));
 	meshSystem->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT });
-	
+
 	_particleSystems.push_back(std::move(meshSystem));
 
 	PhysicsEngine::getInstance().pushParticleSystem(_particleSystems.back().get());
@@ -61,7 +78,7 @@ void Scene01::init()
 	
 	std::unique_ptr<RainSystem> rs = std::make_unique<RainSystem>(rainOrigin, rainRegion);
 	rs->init();
-	rs->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\blender\\sphere.obj"));
+	rs->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\fbx\\crate-box-free\\source\\Crate.fbx"));
 	rs->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT, Constants::Group::DynamicGroup::ENEMY });
 
 	_particleSystems.push_back(std::move(rs));

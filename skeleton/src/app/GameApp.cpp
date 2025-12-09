@@ -53,6 +53,8 @@ void GameApp::onInit()
 
 void GameApp::onUpdate(double deltaTime)
 {
+    // std::cout << "GameApp updating..." << std::endl;
+
     mCamera->update(deltaTime);
     _sceneManager.update(deltaTime);
     _physicsEngine.stepSimulation(deltaTime);
@@ -60,6 +62,8 @@ void GameApp::onUpdate(double deltaTime)
 
 void GameApp::onRender()
 {
+    // std::cout << "GameApp rendering..." << std::endl;
+
     _sceneManager.render(mCamera);
 }
 
