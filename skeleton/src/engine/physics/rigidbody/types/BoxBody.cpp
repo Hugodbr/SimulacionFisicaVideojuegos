@@ -2,13 +2,15 @@
 
 
 
-BoxBody::BoxBody(const physx::PxVec3 &center, const std::string &filePath)
+BoxBody::BoxBody(const physx::PxVec3 &center, const std::string &filePath, float scale)
 {
-    createRenderableEntity(filePath);
-
+    createRenderableEntity(filePath, scale);
     glm::vec3 dimensions = _renderableEntity->getDimensions();
+    calculateVolume(dimensions);
 
-    _bounds = physx::PxBounds3(
+    // Initially, the bounds can be set based on the center and dimensions
+    // but after simulation starts, we should get the bounds from the physics body
+    physx::PxBounds3 bounds = physx::PxBounds3(
         physx::PxVec3(
             center.x - dimensions.x * 0.5f,
             center.y - dimensions.y * 0.5f,
@@ -20,49 +22,37 @@ BoxBody::BoxBody(const physx::PxVec3 &center, const std::string &filePath)
             center.z + dimensions.z * 0.5f
         )
     );
-
-    // ! TEST apply rotation
-    physx::PxQuat rotationQuat = physx::PxQuat(0.0, 0.0, 0.0, 1.0);
-    physx::PxQuat delta = physx::PxQuat(physx::PxPi / 5, physx::PxVec3(1, 0, 0)); // Rotate 45 degrees around X axis
-    rotationQuat *= delta;
-    physx::PxTransform currentPose = physx::PxTransform(center, rotationQuat);
     
-    _body     = _physics->createRigidDynamic(currentPose);
+    _body     = _physics->createRigidDynamic(physx::PxTransform(center, physx::PxQuat(0.0f, 0.0f, 0.0f, 1.0f)));
+    std::cout << "BoxBody _body = " << _body << std::endl;
     _material = _physics->createMaterial(0.5f, 0.5f, 0.9f);
     _shape    = _body->createShape(
         physx::PxBoxGeometry(
-            (_bounds.maximum.x - _bounds.minimum.x) * 0.5f,
-            (_bounds.maximum.y - _bounds.minimum.y) * 0.5f,
-            (_bounds.maximum.z - _bounds.minimum.z) * 0.5f
+            (bounds.maximum.x - bounds.minimum.x) * 0.5f,
+            (bounds.maximum.y - bounds.minimum.y) * 0.5f,
+            (bounds.maximum.z - bounds.minimum.z) * 0.5f
         ),
         *_material
     );
-    _shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
-    // _shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
-    // _shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
-    // _shape->setContactOffset(0.02f);
-    // _shape->setRestOffset(0.0f);
-
     // _body->attachShape(*_shape); // ! Create shape already attaches it to the actor
-    physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidDynamic&>(*_body), physx::PxReal(1000.0f)); // Approximate density for a wooden crate
+    _shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 
+    _density = physx::PxReal(200.0f); // kg/m^3
+    physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidDynamic&>(*_body), _density);
+    std::cout << "BoxBody density set to " << _density << " kg/m^3. Has mass = " << static_cast<physx::PxRigidDynamic&>(*_body).getMass() << " and volume: " << this->_volume << std::endl;
+
+    // Apply initial rotation to the box
+    // ! Must be done before adding to scene !!!
+    rotate(physx::PxQuat(physx::PxPiDivTwo, physx::PxVec3(-1,0,0)));
+
+    _body->userData = this; // for collision callbacks
     _scene->addActor(*_body);
 
-
-    // Pose the renderable entity
-    _renderableEntity->setPose(
-        glm::vec3(center.x, center.y, center.z),
-        glm::quat(
-            _body->getGlobalPose().q.w,
-            _body->getGlobalPose().q.x,
-            _body->getGlobalPose().q.y,
-            _body->getGlobalPose().q.z)
-    );
     std::cout << "BoxBody created at position: (" << center.x << ", " << center.y << ", " << center.z << ")" << std::endl;
 }
 
-void BoxBody::createRenderableEntity(const std::string &filePath)
+void BoxBody::createRenderableEntity(const std::string &filePath, float scale)
 {
     std::cout << "BoxBody::createRenderableEntity() called with filePath: " << filePath << std::endl;
-    setRenderableEntity(std::make_unique<ModelSingleMeshPBR>(filePath));
+    setRenderableEntity(std::make_unique<ModelSingleMeshPBR>(filePath, scale));
 }

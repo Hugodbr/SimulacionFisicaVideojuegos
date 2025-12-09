@@ -691,10 +691,10 @@ void ModelSingleMeshMaterial::render(const glm::mat4 &modelViewMat) const
 	glDisable(GL_DEPTH_TEST);
 }
 
-ModelSingleMeshPBR::ModelSingleMeshPBR(const std::string &filePath)
+ModelSingleMeshPBR::ModelSingleMeshPBR(const std::string &filePath, float scale)
 {
 	mShader = Shader::get("pbr");
-	mMesh = IndexMesh::loadMeshWithAssimp(filePath, 1.0f);
+	mMesh = IndexMesh::loadMeshWithAssimp(filePath, scale);
 
 	mPBRMaterial = new PBRMaterial();
 

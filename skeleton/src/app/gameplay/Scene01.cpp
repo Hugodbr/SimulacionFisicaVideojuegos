@@ -100,8 +100,10 @@ void Scene01::init()
 	// RigidBody Box
 	// =========================================================================================
 	std::unique_ptr<RigidBody> boxBody = std::make_unique<BoxBody>(
-		physx::PxVec3(0.0f, 5.0f, 0.0f),
-		ROOT_DIR + "\\resources\\fbx\\crate-box-free\\source\\Crate.fbx"
+		physx::PxVec3(0.0f, 1.1f, 0.0f),
+		// ROOT_DIR + "\\resources\\fbx\\crate-box-free\\source\\Crate.fbx"
+		ROOT_DIR + "\\resources\\blender\\wooden_boat.glb",
+		0.025f
 	);
 	boxBody->init();
 	_rigidBodies.push_back(std::move(boxBody));

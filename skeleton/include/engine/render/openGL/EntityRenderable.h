@@ -161,7 +161,7 @@ public:
 class ModelSingleMeshPBR : public Abs_Entity
 {
 public:
-	explicit ModelSingleMeshPBR(const std::string& filePath);
+	explicit ModelSingleMeshPBR(const std::string& filePath, float scale = 1.0f);
 	virtual ~ModelSingleMeshPBR();
 	virtual void render(const glm::mat4& modelViewMat) const override;
 protected:

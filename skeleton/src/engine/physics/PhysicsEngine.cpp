@@ -84,7 +84,7 @@ void PhysicsEngine::stepSimulation(double deltaTime)
         gScene->fetchResults(true);
     }
 
-	std::this_thread::sleep_for(std::chrono::microseconds(10));
+	// std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
 
 void PhysicsEngine::shutdown()
@@ -137,7 +137,7 @@ void PhysicsEngine::notifyContact(physx::PxActor *actor1, physx::PxActor *actor2
         onCollisionCallback(actor1, actor2);
     }
     else {
-        std::cout << "Contact detected between two actors." << std::endl;
+        std::cout << "Contact detected between two actors. No callback set." << std::endl;
     }
 }
 
@@ -171,17 +171,21 @@ void PhysicsEngine::notifySleep(physx::PxActor** actors, physx::PxU32 count)
     }
 }
 
-void PhysicsEngine::notifyTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
+void PhysicsEngine::notifyTriggerEnter(physx::PxTriggerPair* pairs, physx::PxU32 count)
 {
-    PX_UNUSED(pairs);
-    PX_UNUSED(count);
-
-    if(onTriggerCallback) {
-        onTriggerCallback(pairs, count);
+    if(onTriggerEnterCallback) {
+        onTriggerEnterCallback(pairs, count);
     }
 }
 
-void PhysicsEngine::notifyAdvance(const physx::PxRigidBody*const* bodies, const physx::PxTransform* poses, const physx::PxU32 count)
+void PhysicsEngine::notifyTriggerExit(physx::PxTriggerPair *pairs, physx::PxU32 count)
+{
+    if(onTriggerExitCallback) {
+        onTriggerExitCallback(pairs, count);
+    }
+}
+
+void PhysicsEngine::notifyAdvance(const physx::PxRigidBody *const *bodies, const physx::PxTransform *poses, const physx::PxU32 count)
 {
     PX_UNUSED(bodies);
     PX_UNUSED(poses);

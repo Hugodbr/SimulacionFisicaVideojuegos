@@ -47,7 +47,8 @@ physx::PxFilterFlags contactReportFilterShader(
 	pairFlags = physx::PxPairFlag::eSOLVE_CONTACT     
 		| physx::PxPairFlag::eDETECT_DISCRETE_CONTACT 
 		| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND      // Call onContact when a contact first occurs
-		| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS   // Call onContact for each simulation step while the contact persists
+		| physx::PxPairFlag::eNOTIFY_TOUCH_LOST	      // Call onContact when a contact ends
+		// | physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS   // Call onContact for each simulation step while the contact persists // ! c:\code\gameworks\physx-3.4\physx_3.4\source\simulationcontroller\src\ScTriggerInteraction.h (99) : warning : Trigger pairs do not support PxPairFlag::eNOTIFY_TOUCH_PERSISTS events any longer.
 		| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;  // Call onContact for each contact point with per-point data
 
 	return physx::PxFilterFlag::eDEFAULT; // Use default filtering behavior applying the above pairFlags
@@ -101,6 +102,23 @@ void ContactReportCallback::onTrigger(physx::PxTriggerPair *pairs, physx::PxU32 
 	// To avoid compiler warnings:
 	PX_UNUSED(pairs);
 	PX_UNUSED(count);
+
+	// std::cout << "Trigger event detected." << std::endl;
+	for (physx::PxU32 i = 0; i < count; ++i) {
+		physx::PxTriggerPair& pair = pairs[i];
+		physx::PxRigidActor* triggerActor = pair.triggerActor;
+		physx::PxRigidActor* otherActor = pair.otherActor;
+
+		if (pair.status == physx::PxPairFlag::eNOTIFY_TOUCH_FOUND) {
+			_engine->notifyTriggerEnter(pairs, count);
+			// std::cout << "Trigger Enter Event." << std::endl;
+		}
+		else if (pair.status == physx::PxPairFlag::eNOTIFY_TOUCH_LOST) {
+			_engine->notifyTriggerExit(pairs, count);
+			// std::cout << "Trigger Exit Event." << std::endl;
+		}
+		// std::cout << "Trigger Actor: " << triggerActor << ", Other Actor: " << otherActor << std::endl;
+	}
 }
 
 void ContactReportCallback::onAdvance(const physx::PxRigidBody *const *, const physx::PxTransform *, const physx::PxU32)

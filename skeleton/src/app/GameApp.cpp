@@ -86,6 +86,21 @@ void GameApp::onResize(int newWidth, int newHeight)
 void GameApp::initPhysicsEngine()
 {
     _physicsEngine.init();
+
+    // Set up collision callbacks
+    _physicsEngine.setOnCollisionCallback([](physx::PxActor* actor1, physx::PxActor* actor2) {
+        std::cout << "Collision detected between actors. Callback triggered." << std::endl;
+        static_cast<RigidBody*>(actor1->userData)->onCollision(actor2);
+        static_cast<RigidBody*>(actor2->userData)->onCollision(actor1);
+    });
+
+    // Set up trigger callbacks
+    _physicsEngine.setOnTriggerEnterCallback([](physx::PxTriggerPair* pairs, physx::PxU32 count) {
+        static_cast<RigidBody*>(pairs->triggerActor->userData)->onTriggerEnter(pairs->otherActor);
+    });
+    _physicsEngine.setOnTriggerExitCallback([](physx::PxTriggerPair* pairs, physx::PxU32 count) {
+        static_cast<RigidBody*>(pairs->triggerActor->userData)->onTriggerExit(pairs->otherActor);
+    });
 }
 
 void GameApp::initSceneManager()

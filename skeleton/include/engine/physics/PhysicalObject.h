@@ -64,6 +64,7 @@ public:
 	// ! Returns the renderable entity associated with this physical object
 	// Abs_Entity* getRenderable() const { return _renderable.get(); }
 	
+	// TODO OVERRIDE IN RIDIG BODY TO GET FROM POSE PHYSX
 	virtual double getAge() const { return _age; }
 	virtual const physx::PxVec3& getPosition() const { return _transform.p; }
 	virtual const physx::PxVec3& getVelocity() const { return _velocity; }

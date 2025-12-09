@@ -822,7 +822,7 @@ IndexMesh *IndexMesh::loadMeshWithAssimp(const std::string &filePath, float scal
 	std::cout << "Number of vertices: " << aiMesh->mNumVertices << std::endl;
     for (unsigned i = 0; i < aiMesh->mNumVertices; i++)
     {
-        aiVector3D pos = aiMesh->mVertices[i] * scale;
+        aiVector3D pos = aiMesh->mVertices[i];
         mesh->vVertices.emplace_back(pos.x, pos.y, pos.z);
     }
 
@@ -1026,9 +1026,15 @@ IndexMesh *IndexMesh::loadMeshWithAssimp(const std::string &filePath, float scal
 	std::cout << "FINAL normalTex: " << mesh->normalTex << std::endl;
 
 	std::cout << "Mesh loaded successfully from " << filePath << std::endl;
+	std::cout << "Scaling mesh by factor: " << scale << std::endl;
+	// Apply scaling
+	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+		mesh->vVertices[i] *= scale;      // scale positions
+		mesh->vNormals[i]  *= scale;      // scale normals
+	}
 
 	mesh->calculateDimensions();
-    std::cout << "Mesh dimensions: " << mesh->getDimensions().x << ", " << mesh->getDimensions().y << ", " << mesh->getDimensions().z << std::endl;
+    std::cout << "Mesh dimensions calculated: " << mesh->getDimensions().x << ", " << mesh->getDimensions().y << ", " << mesh->getDimensions().z << std::endl;
 
     return mesh;
 }

@@ -34,19 +34,7 @@ void RigidBody::update(double deltaTime)
     // Rigid bodies are updated by the PhysX simulation step
     updateAge(deltaTime);
 
-    _renderableEntity->setPose(
-        glm::vec3(
-            _body->getGlobalPose().p.x,
-            _body->getGlobalPose().p.y,
-            _body->getGlobalPose().p.z
-        ),
-        glm::quat(
-            _body->getGlobalPose().q.w,
-            _body->getGlobalPose().q.x,
-            _body->getGlobalPose().q.y,
-            _body->getGlobalPose().q.z
-        )
-    );
+    updateRenderableEntityPose();
 
     onEndUpdate(deltaTime);
 }
@@ -84,3 +72,116 @@ void RigidBody::render(const glm::mat4 &modelViewMat)
         std::cerr << "RigidBody::render() - No renderable entity set!" << std::endl;
     }
 }
+
+physx::PxVec3 RigidBody::getTopCenter() const
+{
+    physx::PxBounds3 bounds = this->getBounds();
+    
+    physx::PxVec3 topCenter = physx::PxVec3(
+        (bounds.minimum.x + bounds.maximum.x) * 0.5f,
+        bounds.maximum.y,
+        (bounds.minimum.z + bounds.maximum.z) * 0.5f
+    );
+    return topCenter;
+}
+
+physx::PxVec3 RigidBody::getBottomCenter() const
+{
+    physx::PxBounds3 bounds = this->getBounds();
+    
+    physx::PxVec3 bottomCenter = physx::PxVec3(
+        (bounds.minimum.x + bounds.maximum.x) * 0.5f,
+        bounds.minimum.y,
+        (bounds.minimum.z + bounds.maximum.z) * 0.5f
+    );
+    return bottomCenter;
+}
+
+void RigidBody::updateRenderableEntityPose()
+{
+    if (_renderableEntity) {
+        _renderableEntity->setPose(
+            glm::vec3(
+                _body->getGlobalPose().p.x,
+                _body->getGlobalPose().p.y,
+                _body->getGlobalPose().p.z
+            ),
+            glm::quat(
+                _body->getGlobalPose().q.w,
+                _body->getGlobalPose().q.x,
+                _body->getGlobalPose().q.y,
+                _body->getGlobalPose().q.z
+            )
+        );
+    } else {
+        std::cerr << "RigidBody::updateRenderableEntityPose() - No renderable entity set!" << std::endl;
+    }
+}
+
+void RigidBody::rotate(const physx::PxQuat &deltaRotation)
+{
+    std::cout << "RigidBody::rotate _body = " << _body << std::endl;
+
+    physx::PxTransform pose = _body->getGlobalPose();
+    pose.q = deltaRotation * pose.q;
+    _body->setGlobalPose(pose);
+
+    updateRenderableEntityPose();
+}
+
+void RigidBody::calculateVolume(const glm::vec3& dimensions) {
+    _volume = dimensions.x * dimensions.y * dimensions.z;
+}
+
+// void RigidBody::calculateParameters()
+// {
+//     physx::PxBounds3 bounds = this->_bounds;
+//     // physx::PxBounds3 bounds = this->_body->getWorldBounds();
+//     // std::cout << "RigidBody::calculateParameters() - Calculated bounds: min(" 
+//     //           << bounds.minimum.x << ", " << bounds.minimum.y << ", " << bounds.minimum.z << ") "
+//     //           << "max(" << bounds.maximum.x << ", " << bounds.maximum.y << ", " << bounds.maximum.z << ")"
+//     //           << std::endl;
+
+//     _topCenter = physx::PxVec3(
+//         (bounds.minimum.x + bounds.maximum.x) * 0.5f,
+//         bounds.maximum.y,
+//         (bounds.minimum.z + bounds.maximum.z) * 0.5f
+//     );
+
+//     _bottomCenter = physx::PxVec3(
+//         (bounds.minimum.x + bounds.maximum.x) * 0.5f,
+//         bounds.minimum.y,
+//         (bounds.minimum.z + bounds.maximum.z) * 0.5f
+//     );
+
+//     _center = physx::PxVec3(
+//         (bounds.minimum.x + bounds.maximum.x) * 0.5f,
+//         (bounds.minimum.y + bounds.maximum.y) * 0.5f,
+//         (bounds.minimum.z + bounds.maximum.z) * 0.5f
+//     );
+
+//     _volume = (bounds.maximum.x - bounds.minimum.x) *
+//               (bounds.maximum.y - bounds.minimum.y) *
+//               (bounds.maximum.z - bounds.minimum.z);
+// }
+
+// void RigidBody::refreshParameters()
+// {
+//     physx::PxTransform pose = _body->getGlobalPose();
+//     physx::PxBounds3 bounds = this->_body->getWorldBounds();
+
+//     _bounds = physx::PxBounds3(
+//         physx::PxVec3(
+//             pose.p.x - (_bounds.maximum.x - _bounds.minimum.x) * 0.5f,
+//             pose.p.y - (_bounds.maximum.y - _bounds.minimum.y) * 0.5f,
+//             pose.p.z - (_bounds.maximum.z - _bounds.minimum.z) * 0.5f
+//         ),
+//         physx::PxVec3(
+//             pose.p.x + (_bounds.maximum.x - _bounds.minimum.x) * 0.5f,
+//             pose.p.y + (_bounds.maximum.y - _bounds.minimum.y) * 0.5f,
+//             pose.p.z + (_bounds.maximum.z - _bounds.minimum.z) * 0.5f
+//         )
+//     );
+
+//     calculateParameters();
+// }

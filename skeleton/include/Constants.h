@@ -11,7 +11,7 @@ namespace Constants
 	}
 
 	namespace Physics {
-		static inline const physx::PxVec3 Gravity = physx::PxVec3(0, -9.8f, 0);
+		static inline const physx::PxVec3 Gravity = physx::PxVec3(0, -9.81f, 0);
 		static inline const double GravitationalConstant = 6.67430e-11; // in m^3 kg^-1 s^-2
 		static inline constexpr float EarthMass = 5.972e24f; // in kg
 		static inline constexpr float EarthRadius = 6.371e6f; // in meters

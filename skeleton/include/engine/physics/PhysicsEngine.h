@@ -62,7 +62,8 @@ private:
     std::function<void(physx::PxConstraintInfo* constraints, physx::PxU32 count)>                       onConstraintBreakCallback;
     std::function<void(physx::PxActor** actors, physx::PxU32 count)>                                    onWakeCallback;
     std::function<void(physx::PxActor** actors, physx::PxU32 count)>                                    onSleepCallback;
-    std::function<void(physx::PxTriggerPair* pairs, physx::PxU32 count)>                                onTriggerCallback;
+    std::function<void(physx::PxTriggerPair* pairs, physx::PxU32 count)>                                onTriggerEnterCallback;
+    std::function<void(physx::PxTriggerPair* pairs, physx::PxU32 count)>                                onTriggerExitCallback;
     std::function<void(const physx::PxRigidBody*const*, const physx::PxTransform*, const physx::PxU32)> onAdvanceCallback;
 
 
@@ -96,7 +97,8 @@ public:
     void notifyConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count);
     void notifyWake(physx::PxActor** actors, physx::PxU32 count);
     void notifySleep(physx::PxActor** actors, physx::PxU32 count);
-    void notifyTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count);
+    void notifyTriggerEnter(physx::PxTriggerPair* pairs, physx::PxU32 count);
+    void notifyTriggerExit(physx::PxTriggerPair* pairs, physx::PxU32 count);
     void notifyAdvance(const physx::PxRigidBody*const* bodies, const physx::PxTransform* poses, const physx::PxU32 count);
 
     // Setters for user-defined callbacks
@@ -105,7 +107,8 @@ public:
     void setOnConstraintBreakCallback(std::function<void(physx::PxConstraintInfo*, physx::PxU32)> callback) { onConstraintBreakCallback = callback; }
     void setOnWakeCallback(std::function<void(physx::PxActor**, physx::PxU32)> callback) { onWakeCallback = callback; }
     void setOnSleepCallback(std::function<void(physx::PxActor**, physx::PxU32)> callback) { onSleepCallback = callback; }
-    void setOnTriggerCallback(std::function<void(physx::PxTriggerPair*, physx::PxU32)> callback) { onTriggerCallback = callback; }
+    void setOnTriggerEnterCallback(std::function<void(physx::PxTriggerPair*, physx::PxU32)> callback) { onTriggerEnterCallback = callback; }
+    void setOnTriggerExitCallback(std::function<void(physx::PxTriggerPair*, physx::PxU32)> callback) { onTriggerExitCallback = callback; }
     void setOnAdvanceCallback(std::function<void(const physx::PxRigidBody*const*, const physx::PxTransform*, const physx::PxU32)> callback) { onAdvanceCallback = callback; }
 
 private:
