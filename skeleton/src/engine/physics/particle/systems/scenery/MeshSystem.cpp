@@ -94,15 +94,15 @@ void MeshSystem::render(const glm::mat4& modelViewMat)
     }
 }
 
-void MeshSystem::load()
-{
-    _renderableEntity->load();
-}
+// void MeshSystem::load()
+// {
+//     _renderableEntity->load();
+// }
 
-void MeshSystem::unload()
-{
-    _renderableEntity->unload();
-}
+// void MeshSystem::unload()
+// {
+//     _renderableEntity->unload();
+// }
 
 void MeshSystem::initParticleGeneratorAndPool()
 {

@@ -25,8 +25,8 @@ public:
 
     virtual void setRenderableEntity(std::unique_ptr<Abs_Entity> renderable) override;
     virtual void render(const glm::mat4& modelViewMat) override;
-    virtual void load() override;
-	virtual void unload() override;
+    // virtual void load() override;
+	// virtual void unload() override;
 
     virtual ParticlePool<ParticleWithMass>* getParticlePool() {
         // For now, only one generator // ! TODO

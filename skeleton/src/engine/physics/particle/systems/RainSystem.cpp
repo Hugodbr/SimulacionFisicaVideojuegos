@@ -142,6 +142,25 @@ void RainSystem::update(double deltaTime)
 
 }
 
+void RainSystem::render(const glm::mat4 &modelViewMat)
+{
+	assert(_renderableEntity && "Renderable entity not set for RainSystem.");
+
+    auto& [generator, pool] = _generatorsAndPools[0];
+
+    for (auto& particle : pool->accessParticlePool()) 
+    {
+        if (particle->isActive()) {
+            _renderableEntity->setWPos(
+                particle->getTransform().p.x,
+                particle->getTransform().p.y,
+                particle->getTransform().p.z
+            );
+            _renderableEntity->render(modelViewMat);
+        }
+    }
+}
+
 void RainSystem::setRenderable(bool renderable)
 {
 	ParticleSystem::setRenderable(renderable);

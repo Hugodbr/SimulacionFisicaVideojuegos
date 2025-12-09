@@ -12,6 +12,8 @@
 #include "ForceManager.h"
 
 #include "MeshSystem.h"
+#include "RainSystem.h"
+
 #include "EntityRenderable.h"
 
 
@@ -45,7 +47,24 @@ void Scene01::init()
 	meshSystem->init();
 	meshSystem->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\fbx\\crate-box-free\\source\\Crate.fbx"));
 	meshSystem->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT });
+	
 	_particleSystems.push_back(std::move(meshSystem));
+
+	PhysicsEngine::getInstance().pushParticleSystem(_particleSystems.back().get());
+
+	// =========================================================================================
+	// Rain System
+	// =========================================================================================
+	float halfRegionSizeRain = 100.0f;
+	Region rainRegion(physx::PxBounds3(physx::PxVec3(-halfRegionSizeRain, -halfRegionSizeRain, -halfRegionSizeRain), physx::PxVec3(halfRegionSizeRain, halfRegionSizeRain, halfRegionSizeRain)));
+	physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.shape.box.minimum.y, 0.0f);
+	
+	std::unique_ptr<RainSystem> rs = std::make_unique<RainSystem>(rainOrigin, rainRegion);
+	rs->init();
+	rs->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\blender\\sphere.obj"));
+	rs->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT, Constants::Group::DynamicGroup::ENEMY });
+
+	_particleSystems.push_back(std::move(rs));
 
 	PhysicsEngine::getInstance().pushParticleSystem(_particleSystems.back().get());
 

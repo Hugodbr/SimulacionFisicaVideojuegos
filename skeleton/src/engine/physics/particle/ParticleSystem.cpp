@@ -81,6 +81,16 @@ bool ParticleSystem::mustSpawnParticle(double deltaTime, const ParticleGenerator
     return generator.getGenerationPolicy().shouldSpawn(generator.getDistribution(), deltaTime);
 }
 
+void ParticleSystem::load()
+{
+    _renderableEntity->load();
+}
+
+void ParticleSystem::unload()
+{
+    _renderableEntity->unload();
+}
+
 void ParticleSystem::update(double deltaTime)
 {
     if (_isActive) {
@@ -94,6 +104,11 @@ void ParticleSystem::update(double deltaTime)
 void ParticleSystem::setWorldRegion(const Region &region)
 {
 	_worldRegion = Region(region);
+}
+
+void ParticleSystem::setRenderableEntity(std::unique_ptr<Abs_Entity> renderable)
+{
+    _renderableEntity = std::move(renderable);
 }
 
 void ParticleSystem::updateSubSystems(double deltaTime)
