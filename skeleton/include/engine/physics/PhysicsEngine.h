@@ -15,6 +15,7 @@
 
 class ForceManager;
 class ParticleSystem;
+class RigidBody;
 
 class PhysicsEngine {
 
@@ -23,17 +24,8 @@ private:
     bool _interactive;
 
     // Lifecycle tracking
-    std::atomic<bool> _initialized{false};
-    std::atomic<bool> _shutdown{false};
-
-    // Protect simulate/fetchResults and shutdown ordering when called from different threads.
-    std::mutex _simMutex;
-
-    // Simulation thread control
-    std::thread _simThread;
-    std::atomic<bool> _runSimThread{false};
-    std::condition_variable _simCv;
-    std::mutex _simThreadCvMutex;
+    bool _initialized = false;
+    bool _shutdown = false;
 
     // 'Foundation' is the base for all PhysX SDK objects.
     // Handles memory allocation and error reporting.
@@ -90,10 +82,6 @@ public:
     // Reset the physics engine state, clearing all particle systems.
     void reset();
 
-    // // Simulation thread helpers
-    // void startSimulationThread(double stepSeconds);
-    // void stopSimulationThread();
-
     physx::PxPhysics* getPhysics() const { return gPhysics; }
     physx::PxScene* getScene() const { return gScene; }
     physx::PxMaterial* getMaterial() const { return gMaterial; }
@@ -101,6 +89,7 @@ public:
     physx::PxShape* createShape(const physx::PxGeometry& geo, const physx::PxMaterial* mat);
     // void pushParticle(class Particle* particle) { _particles.push_back(particle); }
     void pushParticleSystem(ParticleSystem* particleSystem) { _particleSystems.push_back(particleSystem); }
+    void pushRigidBody(RigidBody* rigidBody) { _rigidBodies.push_back(rigidBody); }
 
     // Notification methods called by ContactReportCallback
     void notifyContact(physx::PxActor* actor1, physx::PxActor* actor2);
@@ -140,5 +129,7 @@ private:
 
 private:
     std::vector<ParticleSystem*> _particleSystems = {};
+    std::vector<RigidBody*> _rigidBodies = {};
+
     ForceManager* forceManager;
 };

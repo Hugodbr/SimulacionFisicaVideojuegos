@@ -42,7 +42,7 @@ void
 RGBTriangle::render(mat4 const& modelViewMat) const
 {
 	if (mMesh != nullptr) {
-		mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
+		mat4 aMat = modelViewMat * modelMat(); // glm matrix multiplication
 		mShader->use();
 		upload(aMat);
 
@@ -84,7 +84,7 @@ void
 RGBRectangle::render(mat4 const& modelViewMat) const
 {
 	if (mMesh != nullptr) {
-		mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
+		mat4 aMat = modelViewMat * modelMat(); // glm matrix multiplication
 		mShader->use();
 		upload(aMat);
 
@@ -116,7 +116,7 @@ void
 Cube::render(mat4 const& modelViewMat) const
 {
 	if (mMesh != nullptr) {
-		mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
+		mat4 aMat = modelViewMat * modelMat(); // glm matrix multiplication
 		mShader->use();
 		upload(aMat);
 		// mMesh->render();
@@ -152,7 +152,7 @@ void
 RGBCube::render(mat4 const& modelViewMat) const
 {
 	if (mMesh != nullptr) {
-		mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
+		mat4 aMat = modelViewMat * modelMat(); // glm matrix multiplication
 		mShader->use();
 		upload(aMat);
 
@@ -202,7 +202,7 @@ BoxOutline::BoxOutline(Texture* texture, Texture* iteriorTexture, bool modulate,
 void BoxOutline::render(const glm::mat4& modelViewMat) const
 {
 	if (mMesh != nullptr) {
-		mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
+		mat4 aMat = modelViewMat * modelMat(); // glm matrix multiplication
 		mShader->use();
 
 		glEnable(GL_CULL_FACE); // Activa el renderizado solo para las caras visibles para la c?mara
@@ -248,7 +248,7 @@ void
 Star3D::render(mat4 const& modelViewMat) const
 {
 	if (mMesh != nullptr) {
-		mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
+		mat4 aMat = modelViewMat * modelMat(); // glm matrix multiplication
 		mShader->use();
 		mShader->setUniform("modulate", mModulate);
 
@@ -286,7 +286,7 @@ GlassParapet::GlassParapet(Texture* texture, bool modulate, GLdouble length)
 void GlassParapet::render(const glm::mat4& modelViewMat) const
 {
 	if (mMesh != nullptr) {
-		mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
+		mat4 aMat = modelViewMat * modelMat(); // glm matrix multiplication
 
 		mShader->use();
 
@@ -324,7 +324,7 @@ BoxCover::BoxCover(Texture* texture, Texture* iteriorTexture, bool modulate, GLd
 void BoxCover::render(const glm::mat4& modelViewMat) const
 {
 	if (mMesh != nullptr) {
-		mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
+		mat4 aMat = modelViewMat * modelMat(); // glm matrix multiplication
 		mShader->use();
 
 		glEnable(GL_CULL_FACE); // Activa el renderizado solo para las caras visibles para la c?mara
@@ -385,7 +385,7 @@ Grass::Grass(Texture* texture, bool modulate, GLdouble w, GLdouble h)
 void Grass::render(const glm::mat4& modelViewMat) const
 {
 	if (mMesh != nullptr) {
-		mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
+		mat4 aMat = modelViewMat * modelMat(); // glm matrix multiplication
 		mShader->use();
 		mShader->setUniform("modulate", mModulate);
 
@@ -439,7 +439,7 @@ void IndexedBox::render(const glm::mat4& modelViewMat) const
 {
 	if (mMesh != nullptr)
 	{
-		mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
+		mat4 aMat = modelViewMat * modelMat(); // glm matrix multiplication
 
 		assert(mShader == Shader::get("light"));
 		mShader->use();
@@ -537,7 +537,7 @@ WingAdvancedTIE::~WingAdvancedTIE()
 void WingAdvancedTIE::render(const glm::mat4& modelViewMat) const
 {
 	if (mMesh != nullptr) {
-		mat4 aMat = modelViewMat * mModelMat; // glm matrix multiplication
+		mat4 aMat = modelViewMat * modelMat(); // glm matrix multiplication
 
 		mShader->use();
 
@@ -676,7 +676,7 @@ void ModelSingleMeshMaterial::render(const glm::mat4 &modelViewMat) const
 
 	assert(mShader == Shader::get("light"));
 
-	mat4 model = mModelMat;
+	mat4 model = modelMat();
 	mat4 view  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().viewMat();
 	mat4 proj  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().projMat();
 	
@@ -723,7 +723,7 @@ void ModelSingleMeshPBR::render(const glm::mat4 &modelViewMat) const
 
 	assert(mShader == Shader::get("pbr"));
 
-	mat4 model = mModelMat;
+	mat4 model = modelMat();
 	mat4 view  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().viewMat();
 	mat4 proj  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().projMat();
 	

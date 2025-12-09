@@ -42,6 +42,8 @@ public:
 	std::vector<glm::vec3> const& vertices() const { return vVertices; };
 	std::vector<glm::vec4> const& colors() const { return vColors; };
 
+	virtual glm::vec3 getDimensions() const;
+
 	virtual void load();
 	virtual void unload();
 
@@ -84,6 +86,10 @@ protected:
 	GLuint mNBO; // en la GPU
 
 	GLuint mVAO;  // vertex array object
+
+	virtual void calculateDimensions();
+	glm::vec3 mDimensions;
+	glm::vec3 mPivotOffset = glm::vec3(0.0f);
 
 private:
 	GLuint mVBO;  // vertex buffer object

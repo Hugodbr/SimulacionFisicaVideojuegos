@@ -2,12 +2,11 @@
 
 #include "RigidBody.h"
 
-
-class WaterBody : public RigidBody
+class BoxBody : public RigidBody
 {
 public:
-    WaterBody(const physx::PxVec3& topCenter, const std::string& filePath);
-    virtual ~WaterBody() = default;
+    BoxBody(const physx::PxVec3& center, const std::string& filePath);
+    virtual ~BoxBody() = default;
 
     virtual void createRenderableEntity(const std::string& filePath) override;
     

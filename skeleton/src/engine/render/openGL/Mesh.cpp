@@ -67,8 +67,43 @@ Mesh::draw() const
 		size()); // primitive graphic, first index and number of elements to be rendered
 }
 
-void
-Mesh::load()
+void Mesh::calculateDimensions()
+{
+	if (vVertices.empty()) {
+		std::cout << "Warning: No vertices in Mesh::calculateDimensions()" << std::endl;
+		mDimensions = glm::vec3(0.0f);
+		return;
+	}
+
+	glm::vec3 minVertex = vVertices[0];
+	glm::vec3 maxVertex = vVertices[0];
+
+	for (const auto& vertex : vVertices) {
+		minVertex = glm::min(minVertex, vertex);
+		maxVertex = glm::max(maxVertex, vertex);
+	}
+
+	mDimensions = maxVertex - minVertex;
+
+	// Center pivot
+    glm::vec3 center = 0.5f * (minVertex + maxVertex);
+	mPivotOffset = center;
+
+	for (auto& vertex : vVertices) {
+		vertex -= mPivotOffset;
+	}
+
+	// std::cout << "min: " << minVertex.x << "," << minVertex.y << "," << minVertex.z << std::endl;
+	// std::cout << "max: " << maxVertex.x << "," << maxVertex.y << "," << maxVertex.z << std::endl;
+	// std::cout << "center: " << mPivotOffset.x << "," << mPivotOffset.y << "," << mPivotOffset.z << std::endl;
+}
+
+glm::vec3 Mesh::getDimensions() const
+{
+    return mDimensions;
+}
+
+void Mesh::load()
 {
 	assert(mVBO == NONE); // not already loaded
 
@@ -989,6 +1024,11 @@ IndexMesh *IndexMesh::loadMeshWithAssimp(const std::string &filePath, float scal
 	// mesh->loadBones(aiMesh); // TODO
 
 	std::cout << "FINAL normalTex: " << mesh->normalTex << std::endl;
+
+	std::cout << "Mesh loaded successfully from " << filePath << std::endl;
+
+	mesh->calculateDimensions();
+    std::cout << "Mesh dimensions: " << mesh->getDimensions().x << ", " << mesh->getDimensions().y << ", " << mesh->getDimensions().z << std::endl;
 
     return mesh;
 }

@@ -2,15 +2,29 @@
 
 #include <PxPhysicsAPI.h>
 #include "PhysicalObject.h"
+#include "EntityRenderable.h"
 
 class PhysicsEngine;
 
+// Abstract class for rigid bodies in the simulation
 class RigidBody : public PhysicalObject
 {
 public:
     RigidBody();
-    virtual ~RigidBody();
+    virtual ~RigidBody() = 0;
 
+    virtual void update(double deltaTime) override;
+    virtual void onBeginUpdate(double deltaTime) {}; // Hook for derived classes
+    virtual void onEndUpdate(double deltaTime) {}; // Hook for derived classes
+
+    virtual void setRenderableEntity(std::unique_ptr<Abs_Entity> renderable);
+    virtual void createRenderableEntity(const std::string& filePath) {};
+    virtual void load();
+	virtual void unload();
+	virtual void render(const glm::mat4& modelViewMat);
+
+protected:
+    virtual void integrate(double deltaTime) override {};
 
 protected:
     // Static members shared across all RigidBody instances
@@ -22,31 +36,7 @@ protected:
     // Specifics for RigidBody
     physx::PxMaterial* _material = nullptr;
     physx::PxShape*    _shape    = nullptr;
-    
+
+    std::unique_ptr<Abs_Entity> _renderableEntity;
+    physx::PxRigidActor* _body = nullptr;
 };
-
-
-// class SphereBody: public RigidBody
-// {
-// public:
-//     SphereBody(float size) : _physxSphereGeo(PhysxSphereGeometry(size)) {};
-//     virtual ~SphereBody() {};
-
-//     virtual Geometry* getPhysicalGeometry() override { return &_physxSphereGeo; };
-
-// private:
-//     PhysxSphereGeometry _physxSphereGeo;
-// };
-
-
-// class BoxBody: public RigidBody
-// {
-// public:
-//     BoxBody(float length) : _physxCubeGeo(PhysxCubeGeometry(length)) {};
-//     virtual ~BoxBody() {};
-
-//     virtual Geometry* getPhysicalGeometry() override { return &_physxCubeGeo; };
-
-// private:
-//     PhysxCubeGeometry _physxCubeGeo;
-// };

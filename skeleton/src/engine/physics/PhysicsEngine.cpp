@@ -5,6 +5,7 @@
 
 #include "ForceManager.h"
 #include "ParticleSystem.h"
+#include "RigidBody.h"
 
 
 using namespace physx;
@@ -17,7 +18,7 @@ PhysicsEngine::PhysicsEngine()
 
 void PhysicsEngine::init()
 {
-    if (_initialized.exchange(true)) {
+    if (_initialized) {
         return; // already initialized
     }
 
@@ -65,60 +66,17 @@ void PhysicsEngine::init()
     std::cout << "Physics Engine initialized." << std::endl;
 }
 
-// // Simple simulation thread that runs stepSimulation at a fixed timestep.
-// void PhysicsEngine::startSimulationThread(double stepSeconds)
-// {
-//     if (!_initialized)
-//         return;
-
-//     if (_runSimThread.exchange(true))
-//         return; // already running
-
-//     _simThread = std::thread([this, stepSeconds]() {
-//         using clock = std::chrono::high_resolution_clock;
-//         auto next = clock::now();
-//         while (_runSimThread.load()) {
-//             next += std::chrono::duration_cast<clock::duration>(std::chrono::duration<double>(stepSeconds));
-
-//             // run physics step
-//             this->stepSimulation(stepSeconds);
-
-//             std::this_thread::sleep_until(next);
-//         }
-
-//         // notify any waiter that thread stopped
-//         std::unique_lock<std::mutex> lk(_simThreadCvMutex);
-//         _simCv.notify_all();
-//     });
-// }
-
-// void PhysicsEngine::stopSimulationThread()
-// {
-//     if (!_runSimThread.exchange(false))
-//         return; // not running
-
-//     // Wait for thread to finish
-//     {
-//         std::unique_lock<std::mutex> lk(_simThreadCvMutex);
-//         _simCv.wait_for(lk, std::chrono::milliseconds(500));
-//     }
-
-//     if (_simThread.joinable())
-//         _simThread.join();
-// }
-
 void PhysicsEngine::stepSimulation(double deltaTime)
 {
-    // if (!_initialized || _shutdown.load())
-    //     return;
-
-    // std::lock_guard<std::mutex> lk(_simMutex);
-
     forceManager->update(deltaTime);
     
     // std::cout << "SIM STEP" << std::endl;
     for (ParticleSystem* particleSystem : _particleSystems) {
         particleSystem->update(deltaTime);
+    }
+
+    for (RigidBody* rigidBody : _rigidBodies) {
+        rigidBody->update(deltaTime);
     }
 
     if (gScene) {
@@ -133,18 +91,7 @@ void PhysicsEngine::shutdown()
 {
     reset();
 
-    // bool expected = false;
-    // if (!_shutdown.compare_exchange_strong(expected, true)) {
-    //     return; // already shutting down or shutdown
-    // }
-
-    // Stop simulation thread if any
-    // stopSimulationThread();
-
-    // Prevent simulate from running while we teardown
-    // std::lock_guard<std::mutex> lk(_simMutex);
-
-    // Release in safe order, nulling pointers after release.
+    // Release in safe order and nulling pointers after release.
     if (gScene) { gScene->release(); gScene = nullptr; }
 
     if (gDispatcher) { gDispatcher->release(); gDispatcher = nullptr; }

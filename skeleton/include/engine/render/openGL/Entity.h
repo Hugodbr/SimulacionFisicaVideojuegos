@@ -3,6 +3,8 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include "Mesh.h"
 #include "Shader.h"
@@ -15,9 +17,13 @@ class Abs_Entity // abstract class
 {
 public:
 	Abs_Entity()
-	  : mModelMat(1.0)  // 4x4 identity matrix
+	  : mModelMat(1.0f)  // 4x4 identity matrix
+	  , mWorldPosMat(1.0f)
+	  , mWorldRotMat(1.0f)
 	  , mShader(nullptr) 
-	  , mWorldPosition({0, 0, 0}) {};
+	  , mWorldPosition({0, 0, 0}) 
+	  , mWorldRotation({1, 0, 0, 0}) // identity quaternion
+	  {};
 	virtual ~Abs_Entity();
 
 	Abs_Entity(const Abs_Entity& e) = delete;            // no copy constructor
@@ -30,10 +36,14 @@ public:
 	glm::mat4 const& modelMat() const { return mModelMat; };
 	void setModelMat(glm::mat4 const& aMat) { mModelMat = aMat; };
 
-	// position modification
+	// Position modification
 	glm::vec3 getWPos();
-	void setWPos(glm::vec3 position);
+	void setWPos(const glm::vec3& position);
 	void setWPos(float x, float y, float z);
+	// Rotation modification. If args are from PhysX: use qx,qy,qz,qw
+	void setWQuat(float w, float x, float y, float z);
+
+	void setPose(const glm::vec3& position, const glm::quat& rotation);
 
 	void setTexture(Texture* tex) { mTexture = tex; }
 
@@ -45,13 +55,20 @@ public:
 	virtual void load();
 	virtual void unload();
 
+	virtual glm::vec3 getDimensions() const;
+
 protected:
 	Mesh* mMesh = nullptr; // the mesh
-	glm::mat4 mModelMat;  // modeling matrix
+
+	glm::mat4 mModelMat;    // modeling matrix
+	glm::mat4 mWorldPosMat; // world position matrix
+	glm::mat4 mWorldRotMat; // world rotation matrix
+
 	Shader* mShader; // shader
 	Texture* mTexture = nullptr;
 
 	glm::vec3 mWorldPosition; // position with axis as origin
+	glm::quat mWorldRotation; // rotation with axis as origin
 
 	bool _isVisible = true;
 

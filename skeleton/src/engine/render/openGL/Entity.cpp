@@ -8,8 +8,7 @@
 
 using namespace glm;
 
-void
-Abs_Entity::upload(const mat4& modelViewMat) const
+void Abs_Entity::upload(const mat4& modelViewMat) const
 {
 	// mShader->setUniform("modelView", modelViewMat);
 }
@@ -20,35 +19,65 @@ Abs_Entity::~Abs_Entity()
 	mMesh = nullptr;
 }
 
-void
-Abs_Entity::load()
+void Abs_Entity::load()
 {
 	mMesh->load();
 }
 
-void
-Abs_Entity::unload()
+void Abs_Entity::unload()
 {
 	mMesh->unload();
 }
 
-glm::vec3
-Abs_Entity::getWPos()
+glm::vec3 Abs_Entity::getDimensions() const
+{
+	if (mMesh) {
+		return mMesh->getDimensions();
+	} else {
+		std::cout << "Warning: Mesh is null in Abs_Entity::getDimensions()" << std::endl;
+		return glm::vec3(0.0f);
+	}
+}
+
+glm::vec3 Abs_Entity::getWPos()
 {
 	return mWorldPosition;
 }
 
-void
-Abs_Entity::setWPos(glm::vec3 position)
+// void Abs_Entity::setWPos(glm::vec3 position)
+// {
+// 	setModelMat(glm::translate(modelMat(), -mWorldPosition));
+// 	mWorldPosition = position;
+// 	setModelMat(glm::translate(modelMat(), mWorldPosition));
+// }
+
+void Abs_Entity::setWPos(const glm::vec3& position)
 {
-	setModelMat(glm::translate(modelMat(), -mWorldPosition));
-	mWorldPosition = position;
-	setModelMat(glm::translate(modelMat(), mWorldPosition));
+	setPose(position, mWorldRotation);
 }
 
 void Abs_Entity::setWPos(float x, float y, float z)
 {
 	setWPos(glm::vec3(x, y, z));
+}
+
+void Abs_Entity::setWQuat(float w, float x, float y, float z)
+{
+	setPose(mWorldPosition, glm::quat(w, x, y, z));
+}
+
+void Abs_Entity::setPose(const glm::vec3 &position, const glm::quat &rotation)
+{
+	if (position != mWorldPosition) {
+    	mWorldPosition = position;
+    	mWorldPosMat = glm::translate(glm::mat4(1.0f), mWorldPosition);
+		// std::cout << "Entity position set to: (" << position.x << ", " << position.y << ", " << position.z << ")" << std::endl;
+	}
+	if (rotation != mWorldRotation) {
+		mWorldRotation = glm::normalize(rotation);
+    	mWorldRotMat = glm::mat4_cast(mWorldRotation);
+	}
+	setModelMat(mWorldPosMat * mWorldRotMat);
 }
 
 /* ---------------------ENTITY WITH COLORS--------------------- */
