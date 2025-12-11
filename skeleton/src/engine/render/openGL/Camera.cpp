@@ -280,7 +280,7 @@ void Camera::orbit(GLdouble dx, GLdouble dy)
 void Camera::onMouseScroll(double dx, double dy)
 {
 	mEye  += mForward * dy * 0.5; // Zoom in/out
-	mLook += mForward * dy * 0.5;
+	// mLook += mForward * dy * 0.5;
 	setVM();
 }
 

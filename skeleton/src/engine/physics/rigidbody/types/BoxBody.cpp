@@ -37,13 +37,14 @@ BoxBody::BoxBody(const physx::PxVec3 &center, const std::string &filePath, float
     // _body->attachShape(*_shape); // ! Create shape already attaches it to the actor
     _shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 
-    _density = physx::PxReal(200.0f); // kg/m^3
-    physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidDynamic&>(*_body), _density);
+    // _density = physx::PxReal(200.0f); // kg/m^3
+    // physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidDynamic&>(*_body), _density);
+    setDensity(800.0f);
     std::cout << "BoxBody density set to " << _density << " kg/m^3. Has mass = " << static_cast<physx::PxRigidDynamic&>(*_body).getMass() << " and volume: " << this->_volume << std::endl;
 
     // Apply initial rotation to the box
     // ! Must be done before adding to scene !!!
-    rotate(physx::PxQuat(physx::PxPiDivTwo, physx::PxVec3(-1,0,0)));
+    // rotate(physx::PxQuat(physx::PxPiDivTwo, physx::PxVec3(-1,0,0)));
 
     _body->userData = this; // for collision callbacks
     _scene->addActor(*_body);

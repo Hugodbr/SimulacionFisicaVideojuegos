@@ -23,6 +23,10 @@ public:
 	virtual void unload();
 	virtual void render(const glm::mat4& modelViewMat);
 
+    //
+    virtual void setDensity(float density);
+    virtual float getDensity() const { return _density; }
+
     // Callbacks
     virtual void onCollision(physx::PxActor* other) {};
     virtual void onTriggerEnter(physx::PxActor* other) {};
