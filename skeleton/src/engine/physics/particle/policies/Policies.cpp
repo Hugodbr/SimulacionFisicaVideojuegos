@@ -68,6 +68,16 @@ void ParticleGenerationPolicy::setSpawnInterval(const ScalarStats& newSpawnInter
     spawnInterval = newSpawnInterval;
 }
 
+void ParticleGenerationPolicy::setEmitterOrigin(const physx::PxVec3 &origin)
+{
+    region.moveRegionTo(origin);
+}
+
+void ParticleGenerationPolicy::setVelocity(const Vector3Stats &velocity)
+{
+    this->velocity = velocity;
+}
+
 void ParticleGenerationPolicy::setRegion(const Region& r)
 {
     this->region = Region(r);
@@ -107,6 +117,10 @@ void ParticleGenerationPolicy::setColor(const ColorStats &newColor)
     color = newColor;
 }
 
+void ParticleGenerationPolicy::setCustomCallback(std::function<bool()> newCustomCallback) {
+    customCallback = std::move(newCustomCallback);
+}
+
 // Redundancy for further implementation if needed
 physx::PxVec3 ParticleGenerationPolicy::generatePosition(const std::function<double()>& distributionFunc)
 {
@@ -143,6 +157,15 @@ physx::PxVec3 ParticleGenerationPolicy::generatePosition(const std::function<dou
     //return position.mean + position.deviation * distr;
 }
 
+physx::PxVec3 ParticleGenerationPolicy::generateVelocity(const std::function<double()> &distributionFunc)
+{
+    physx::PxVec3 generatedVelocity;
+    generatedVelocity.x = velocity.mean.x + velocity.deviation.x * static_cast<float>(distributionFunc());
+    generatedVelocity.y = velocity.mean.y + velocity.deviation.y * static_cast<float>(distributionFunc());
+    generatedVelocity.z = velocity.mean.z + velocity.deviation.z * static_cast<float>(distributionFunc());
+    return generatedVelocity;
+}
+
 physx::PxVec4 ParticleGenerationPolicy::generateColor(const std::function<double()> &distributionFunc)
 {
     physx::PxVec4 generatedColor;
@@ -156,7 +179,9 @@ physx::PxVec4 ParticleGenerationPolicy::generateColor(const std::function<double
 bool ParticleGenerationPolicy::shouldSpawn(double distr, double deltaTime)
 {
     //std::cout << "ParticleGenerationPolicy -> shouldSpawn." << std::endl;
-
+    if (customCallback) {
+        return customCallback();
+    }
     if (useSpawnInterval) {
         //std::cout << "ParticleGenerationPolicy -> useSpawnInterval -> accumulator: " << accumulator << std::endl;
         currentSpawnInterval = spawnInterval.mean + spawnInterval.deviation * distr;

@@ -15,6 +15,7 @@
 
 class ForceManager;
 class ParticleSystem;
+class RigidBodySystem;
 class RigidBody;
 
 class PhysicsEngine {
@@ -86,10 +87,12 @@ public:
     physx::PxPhysics* getPhysics() const { return gPhysics; }
     physx::PxScene* getScene() const { return gScene; }
     physx::PxMaterial* getMaterial() const { return gMaterial; }
+    physx::PxTolerancesScale getTolerancesScale() const { return gPhysics->getTolerancesScale(); }
 
     physx::PxShape* createShape(const physx::PxGeometry& geo, const physx::PxMaterial* mat);
     // void pushParticle(class Particle* particle) { _particles.push_back(particle); }
     void pushParticleSystem(ParticleSystem* particleSystem) { _particleSystems.push_back(particleSystem); }
+    void pushRigidBodySystem(RigidBodySystem* rigidBodySystem) { _rigidBodySystems.push_back(rigidBodySystem); }
     void pushRigidBody(RigidBody* rigidBody) { _rigidBodies.push_back(rigidBody); }
 
     // Notification methods called by ContactReportCallback
@@ -132,7 +135,8 @@ private:
 
 private:
     std::vector<ParticleSystem*> _particleSystems = {};
+    std::vector<RigidBodySystem*> _rigidBodySystems = {};
     std::vector<RigidBody*> _rigidBodies = {};
-
+    
     ForceManager* forceManager;
 };

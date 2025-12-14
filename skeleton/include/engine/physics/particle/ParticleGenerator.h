@@ -27,6 +27,7 @@ public:
 
 	virtual int numberOfGenerations();
 	virtual physx::PxVec3 getGeneratedPosition();
+	virtual physx::PxVec3 getGeneratedVelocity();
 	virtual physx::PxVec4 getGeneratedColor();
 
 	// Setters

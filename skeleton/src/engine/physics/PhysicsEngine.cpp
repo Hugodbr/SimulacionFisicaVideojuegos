@@ -5,6 +5,7 @@
 
 #include "ForceManager.h"
 #include "ParticleSystem.h"
+#include "RigidBodySystem.h"
 #include "RigidBody.h"
 
 
@@ -73,6 +74,10 @@ void PhysicsEngine::stepSimulation(double deltaTime)
     // std::cout << "SIM STEP" << std::endl;
     for (ParticleSystem* particleSystem : _particleSystems) {
         particleSystem->update(deltaTime);
+    }
+
+    for (RigidBodySystem* rigidBodySystem : _rigidBodySystems) {
+        rigidBodySystem->update(deltaTime);
     }
 
     for (RigidBody* rigidBody : _rigidBodies) {

@@ -35,6 +35,10 @@ Scene::destroy()
 		delete light;
 
 	gLights.clear();
+
+	_particleSystems.clear();
+	_rigidBodySystems.clear();
+	_rigidBodies.clear();
 }
 
 void
@@ -43,6 +47,11 @@ Scene::load()
 	for (const auto& ps : _particleSystems) {
 		ps->load();
 	}
+
+	for (const auto& rbs : _rigidBodySystems) {
+		rbs->load();
+	}
+
 	for (const auto& rb : _rigidBodies) {
 		rb->load();
 	}
@@ -53,6 +62,10 @@ Scene::unload()
 {
 	for (const auto& ps : _particleSystems) {
 		ps->unload();
+	}
+
+	for (const auto& rbs : _rigidBodySystems) {
+		rbs->unload();
 	}
 
 	for (const auto& rb : _rigidBodies) {
@@ -128,6 +141,10 @@ Scene::render(Camera const& cam) const
 
 	for (const auto& ps : _particleSystems) {
 		ps->render(cam.viewMat());
+	}
+
+	for (const auto& rbs : _rigidBodySystems) {
+		rbs->render(cam.viewMat());
 	}
 
 	for (const auto& rb : _rigidBodies) {

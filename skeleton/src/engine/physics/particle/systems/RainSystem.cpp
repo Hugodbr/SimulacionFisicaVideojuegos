@@ -118,7 +118,8 @@ void RainSystem::update(double deltaTime)
 			auto* p = pool->activateParticle();
 			if (p) {
 				setRenderableForParticle(*p);
-				physx::PxTransform t = physx::PxTransform(0, 0, 0, physx::PxQuat(0));
+				physx::PxQuat q(physx::PxPi/2, physx::PxVec3(1, 0, 0));
+				physx::PxTransform t = physx::PxTransform(0, 0, 0, q);
 				t.p = gen->getGeneratedPosition();
 				p->setTransform(t);
 			}
@@ -151,11 +152,19 @@ void RainSystem::render(const glm::mat4 &modelViewMat)
     for (auto& particle : pool->accessParticlePool()) 
     {
         if (particle->isActive()) {
-            _renderableEntity->setWPos(
-                particle->getTransform().p.x,
-                particle->getTransform().p.y,
-                particle->getTransform().p.z
-            );
+			_renderableEntity->setPose(
+				glm::vec3(
+					particle->getPosition().x,
+					particle->getPosition().y,
+					particle->getPosition().z
+				),
+				glm::quat(
+					particle->getTransform().q.w,
+					particle->getTransform().q.x,
+					particle->getTransform().q.y,
+					particle->getTransform().q.z
+				)
+			);
             _renderableEntity->render(modelViewMat);
         }
     }

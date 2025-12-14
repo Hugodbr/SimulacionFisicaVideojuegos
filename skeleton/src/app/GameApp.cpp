@@ -6,6 +6,7 @@
 #include "app/gameplay/Scene01.h"
 #include "app/gameplay/SceneBuoyance.h"
 #include "app/gameplay/SceneSpring.h"
+#include "app/gameplay/SceneSurfer.h"
 
 
 GameApp::GameApp()
@@ -110,7 +111,8 @@ void GameApp::initSceneManager()
     _sceneManager.init();
     // _sceneManager.pushScene(new Scene01());
     // _sceneManager.pushScene(new SceneBuoyance());
-    _sceneManager.pushScene(new SceneSpring());
+    // _sceneManager.pushScene(new SceneSpring());
+    _sceneManager.pushScene(new SceneSurfer());
 }
 
 void GameApp::createViewportsAndCameras()

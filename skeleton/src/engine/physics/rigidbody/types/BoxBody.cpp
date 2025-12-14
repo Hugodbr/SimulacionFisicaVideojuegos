@@ -5,6 +5,24 @@
 BoxBody::BoxBody(const physx::PxVec3 &center, const std::string &filePath, float scale)
 {
     createRenderableEntity(filePath, scale);
+    initiallize(center);
+}
+
+BoxBody::BoxBody(const physx::PxVec3 &center, std::shared_ptr<Abs_Entity> renderableEntity)
+{
+    setRenderableEntity(renderableEntity);
+    std::cout << "BoxBody::BoxBody() called with shared_ptr renderableEntity." << std::endl;
+    initiallize(center);
+}
+
+void BoxBody::createRenderableEntity(const std::string &filePath, float scale)
+{
+    std::cout << "BoxBody::createRenderableEntity() called with filePath: " << filePath << std::endl;
+    setRenderableEntity(std::make_shared<ModelSingleMeshPBR>(filePath, scale));
+}
+
+void BoxBody::initiallize(const physx::PxVec3 &center)
+{
     glm::vec3 dimensions = _renderableEntity->getDimensions();
     calculateVolume(dimensions);
 
@@ -39,7 +57,7 @@ BoxBody::BoxBody(const physx::PxVec3 &center, const std::string &filePath, float
 
     // _density = physx::PxReal(200.0f); // kg/m^3
     // physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidDynamic&>(*_body), _density);
-    setDensity(800.0f);
+    setDensity(200.0f);
     std::cout << "BoxBody density set to " << _density << " kg/m^3. Has mass = " << static_cast<physx::PxRigidDynamic&>(*_body).getMass() << " and volume: " << this->_volume << std::endl;
 
     // Apply initial rotation to the box
@@ -50,10 +68,4 @@ BoxBody::BoxBody(const physx::PxVec3 &center, const std::string &filePath, float
     _scene->addActor(*_body);
 
     std::cout << "BoxBody created at position: (" << center.x << ", " << center.y << ", " << center.z << ")" << std::endl;
-}
-
-void BoxBody::createRenderableEntity(const std::string &filePath, float scale)
-{
-    std::cout << "BoxBody::createRenderableEntity() called with filePath: " << filePath << std::endl;
-    setRenderableEntity(std::make_unique<ModelSingleMeshPBR>(filePath, scale));
 }

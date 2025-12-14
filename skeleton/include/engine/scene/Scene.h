@@ -11,6 +11,7 @@
 #include "Light.h"
 
 #include "ParticleSystem.h"
+#include "RigidBodySystem.h"
 #include "RigidBody.h"
 
 
@@ -60,6 +61,7 @@ protected:
 	void destroy();
 
 	std::vector<std::unique_ptr<ParticleSystem>> _particleSystems;
+	std::vector<std::unique_ptr<RigidBodySystem>> _rigidBodySystems;
 	std::vector<std::unique_ptr<RigidBody>> _rigidBodies;
 
 	std::vector<std::pair<Light*, bool>> gLights; // Luces de la escena: {light, on/off}

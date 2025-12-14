@@ -707,6 +707,24 @@ ModelSingleMeshPBR::ModelSingleMeshPBR(const std::string &filePath, float scale)
 	mPBRMaterial->emissiveTex          = mMesh->emissiveTex;
 }
 
+ModelSingleMeshPBR::ModelSingleMeshPBR(const std::string& filePath, float w, float x, float y, float z, float scale)
+{
+	mShader = Shader::get("pbr");
+	mMesh = IndexMesh::loadMeshWithAssimp(filePath, scale);
+
+	mPBRMaterial = new PBRMaterial();
+
+	mPBRMaterial->albedoTex            = mMesh->albedoTex;
+	mPBRMaterial->normalTex            = mMesh->normalTex;
+	mPBRMaterial->metallicRoughnessTex = mMesh->metallicRoughnessTex;
+	mPBRMaterial->roughnessTex         = mMesh->roughnessTex;
+	mPBRMaterial->metallicTex          = mMesh->metallicTex;
+	mPBRMaterial->aoTex                = mMesh->aoTex;
+	mPBRMaterial->emissiveTex          = mMesh->emissiveTex;
+
+	// setPose( glm::vec3(0, 0, 0), glm::quat(w, x, y, z) );
+}
+
 ModelSingleMeshPBR::~ModelSingleMeshPBR()
 {
 	delete mPBRMaterial;
@@ -750,4 +768,48 @@ void ModelSingleMeshPBR::render(const glm::mat4 &modelViewMat) const
 	}
 
 
+}
+
+ModelSingleMeshTranslucid::ModelSingleMeshTranslucid(const std::string &filePath, float scale)
+{
+	mShader = Shader::get("translucid");
+	mMesh = IndexMesh::loadMeshWithAssimp(filePath, scale);
+}
+
+ModelSingleMeshTranslucid::~ModelSingleMeshTranslucid()
+{
+}
+
+void ModelSingleMeshTranslucid::render(const glm::mat4 &modelViewMat) const
+{
+	if (mMesh == nullptr) {
+		std::cerr << "ModelSingleMeshPBR::render: No mesh assigned!" << std::endl;
+	}
+
+	assert(mShader == Shader::get("translucid"));
+
+	mat4 model = modelMat();
+	mat4 view  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().viewMat();
+	mat4 proj  = static_cast<GameApp&>(GameApp::getInstance()).getCamera().projMat();
+	
+	mShader->use();
+	mShader->setUniform("modelMat", model);
+	mShader->setUniform("viewMat", view);
+	mShader->setUniform("projMat", proj);
+
+	glm::vec3 lightDirWorld = glm::normalize(glm::vec3(-1, -1, -1));
+	glm::vec3 lightDirView  = glm::mat3(view) * lightDirWorld;
+	mShader->setUniform("lightDirView", lightDirView);
+
+
+	// glEnable(GL_DEPTH_TEST);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	mMesh->render();
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	// glDisable(GL_DEPTH_TEST);
 }

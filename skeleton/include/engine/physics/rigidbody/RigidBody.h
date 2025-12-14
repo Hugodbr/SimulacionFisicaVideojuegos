@@ -5,6 +5,7 @@
 #include "EntityRenderable.h"
 
 class PhysicsEngine;
+class ForceGenerator;
 
 // Abstract class for rigid bodies in the simulation
 class RigidBody : public PhysicalObject
@@ -16,13 +17,16 @@ public:
     virtual void update(double deltaTime) override;
     virtual void onBeginUpdate(double deltaTime) {}; // Hook for derived classes
     virtual void onEndUpdate(double deltaTime) {}; // Hook for derived classes
-
-    virtual void setRenderableEntity(std::unique_ptr<Abs_Entity> renderable);
+    
+    virtual void updateRenderableEntityPose();
+    
+    virtual void setRenderableEntity(std::shared_ptr<Abs_Entity> renderable);
     virtual void createRenderableEntity(const std::string& filePath, float scale = 1.0f) {};
     virtual void load();
 	virtual void unload();
 	virtual void render(const glm::mat4& modelViewMat);
 
+    virtual void applyForce(ForceGenerator& forceGenerator);
     //
     virtual void setDensity(float density);
     virtual float getDensity() const { return _density; }
@@ -38,13 +42,13 @@ public:
     physx::PxRigidActor* getBody() const { return _body; }
     physx::PxTransform getPose() const { return _body->getGlobalPose(); }
     physx::PxBounds3 getBounds() const { return _body->getWorldBounds(); }
+    float getHeight() const { return getBounds().maximum.y - getBounds().minimum.y; }
     physx::PxVec3 getTopCenter() const;
     physx::PxVec3 getBottomCenter() const;
     float getVolume() const { return _volume; }
 
 protected:
     virtual void integrate(double deltaTime) override {};
-    virtual void updateRenderableEntityPose();
 
     // Call only before simulation starts
     virtual void rotate(const physx::PxQuat& deltaRotation);
@@ -62,7 +66,7 @@ protected:
     physx::PxMaterial* _material = nullptr;
     physx::PxShape*    _shape    = nullptr;
 
-    std::unique_ptr<Abs_Entity> _renderableEntity;
+    std::shared_ptr<Abs_Entity> _renderableEntity = nullptr;
     physx::PxRigidActor* _body = nullptr;
 
     float _volume;

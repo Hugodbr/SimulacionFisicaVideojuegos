@@ -1,6 +1,7 @@
 #include "WaterBody.h"
 
 #include "Constants.h"
+#include "SurfBoardBody.h"
 
 
 WaterBody::WaterBody(const physx::PxVec3& topCenter, const std::string& filePath, float scale)
@@ -69,6 +70,11 @@ void WaterBody::onTriggerEnter(physx::PxActor *other)
     // std::cout << "WaterBody triggered by another actor entering." << std::endl;
     if (std::find(_affectedRigidActors.begin(), _affectedRigidActors.end(), static_cast<physx::PxRigidActor*>(other)) == _affectedRigidActors.end())
     {
+        RigidBody* rb = static_cast<RigidBody*>(other->userData);
+        if (dynamic_cast<SurfBoardBody*>(rb)) {
+            SurfBoardBody* surfboard = static_cast<SurfBoardBody*>(rb);
+            surfboard->setIsJumping(false);
+        }
         _affectedRigidActors.push_back(static_cast<physx::PxRigidActor*>(other));
     }
     // std::cout << "onTriggerEnter: Total affected actors: " << _affectedRigidActors.size() << std::endl;
@@ -83,6 +89,11 @@ void WaterBody::onTriggerExit(physx::PxActor *other)
         static_cast<physx::PxRigidActor*>(other)
     );
     if (it != _affectedRigidActors.end()) {
+        RigidBody* rb = static_cast<RigidBody*>(other->userData);
+        if (dynamic_cast<SurfBoardBody*>(rb)) {
+            SurfBoardBody* surfboard = static_cast<SurfBoardBody*>(rb);
+            surfboard->setIsJumping(true);
+        }
         _affectedRigidActors.erase(it);
     }
     // std::cout << "onTriggerExit: Total affected actors: " << _affectedRigidActors.size() << std::endl;

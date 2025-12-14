@@ -197,7 +197,7 @@ void GunSystem::updateGunMesh(double deltaTime)
         _emitterOrigin.z, _emitterOrigin.x, _emitterOrigin.y
     );
     
-    float stiffness = 10.0f; // how fast it catches up (try 5–15)
+    float stiffness = 10.0f; // how fast it catches up
     float t = 1.0f - expf(-stiffness * (float)deltaTime); // framerate-independent smoothing
 
     for (auto& [gen, pool] : _gunMeshGeneratorAndPool) 
