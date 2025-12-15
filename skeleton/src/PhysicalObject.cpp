@@ -161,6 +161,11 @@ void PhysicalObject::setVelocityDirection(const physx::PxVec3 &direction)
 	_velocityPrevious = _velocity;
 }
 
+float PhysicalObject::getMass()
+{
+    return 1.0f;
+}
+
 void PhysicalObject::activate()
 {
 	_alive = true;

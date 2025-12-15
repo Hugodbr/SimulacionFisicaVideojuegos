@@ -1,0 +1,36 @@
+#pragma once
+
+#include "ForcePair.h"
+
+class RigidBody;
+class ParticleWithMass;
+
+class SpringForce : public virtual ForcePair
+{
+public:
+    SpringForce(
+        PhysicalObject* mainObject, 
+        PhysicalObject* otherObject, 
+        float k, 
+        float restingLength, 
+        float maxLength
+    );
+    virtual ~SpringForce();
+
+    virtual void updateForce(double deltaTime) override;
+    // virtual void setK(double k) { _k = k; };
+    // virtual void setRestingLength(double restingLength) { _restingLength = restingLength; };
+    // virtual void setMaxLength(double maxLength) { _maxLength = maxLength; };
+
+    virtual physx::PxVec3 getForceOnRigidBody(RigidBody& rigidBody);
+    // virtual physx::PxVec3 getForceOnParticle(ParticleWithMass& particle); // TODO
+
+protected:
+    virtual physx::PxVec3 computeForceOnRigidBody(RigidBody& rigidBody);
+    // virtual physx::PxVec3 computeForceOnParticle(ParticleWithMass& particle); // TODO
+
+protected:
+    float _k;
+    float _restingLength;
+    float _maxLength;
+};

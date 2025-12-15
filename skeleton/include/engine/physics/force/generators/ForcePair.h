@@ -2,22 +2,17 @@
 
 #include "ForceGenerator.h"
 
-class ParticleWithMass;
+class PhysicalObject;
 
-class SpringForce : public virtual ForceGenerator 
+class ForcePair : public virtual ForceGenerator 
 {
 public:
-    SpringForce(ParticleWithMass* mainParticle, double k, double restingLength);
-    virtual ~SpringForce();
+    ForcePair(PhysicalObject* mainObject, PhysicalObject* otherObject = nullptr);
+    virtual ~ForcePair();
 
-    virtual void updateForce(double deltaTime) override;
-    virtual void setK(double k) { _k = k; };
-    virtual void setOtherParticle(ParticleWithMass* otherParticle);
+    virtual void setOtherObject(PhysicalObject* otherObject);
 
-private:
-    double _k;
-    double _restingLength;
-
-    ParticleWithMass* _mainParticle;
-    ParticleWithMass* _otherParticle;
+protected:
+    PhysicalObject* _mainObject;
+    PhysicalObject* _otherObject;
 };

@@ -2,6 +2,7 @@
 
 #include "Constants.h"
 #include "ParticleSystem.h"
+#include "RigidBody.h"
 
 // Initialize static member
 uint64_t ForceGenerator::_nextId = 0;
@@ -99,7 +100,19 @@ physx::PxVec3 ForceGenerator::getForceOnParticle(ParticleWithMass &particle)
     return computeForceOnParticle(particle);
 }
 
+physx::PxVec3 ForceGenerator::getForceOnRigidBody(RigidBody &rigidBody)
+{
+    std::cerr << "ForceGenerator::getForceOnRigidBody not implemented yet." << std::endl;
+    return physx::PxVec3();
+}
+
 physx::PxVec3 ForceGenerator::computeForceOnParticle(ParticleWithMass &particle)
 {
     return _force;
+}
+
+physx::PxVec3 ForceGenerator::computeForceOnRigidBody(RigidBody &rigidBody)
+{
+    std::cerr << "ForceGenerator::computeForceOnRigidBody not implemented yet." << std::endl;
+    return physx::PxVec3();
 }

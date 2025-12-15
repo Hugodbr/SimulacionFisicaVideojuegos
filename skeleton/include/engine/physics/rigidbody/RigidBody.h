@@ -43,12 +43,15 @@ public:
     physx::PxTransform getPose() const { return _body->getGlobalPose(); }
     physx::PxBounds3 getBounds() const { return _body->getWorldBounds(); }
     float getHeight() const { return getBounds().maximum.y - getBounds().minimum.y; }
+    float getWidth() const { return getBounds().maximum.x - getBounds().minimum.x; }
+    float getDepth() const { return getBounds().maximum.z - getBounds().minimum.z; }
     physx::PxVec3 getTopCenter() const;
     physx::PxVec3 getBottomCenter() const;
     float getVolume() const { return _volume; }
+    virtual float getMass() override;
 
 protected:
-    virtual void integrate(double deltaTime) override {};
+    virtual void integrate(double deltaTime) override;
 
     // Call only before simulation starts
     virtual void rotate(const physx::PxQuat& deltaRotation);

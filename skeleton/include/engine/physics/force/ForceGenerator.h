@@ -7,7 +7,9 @@
 #include "Constants.h"
 
 class ParticleSystem;
+class RigidBodySystem;
 class ParticleWithMass;
+class RigidBody;
 
 
 class ForceGenerator
@@ -30,6 +32,7 @@ public:
     virtual void updateAge(double deltaTime);
 
     virtual physx::PxVec3 getForceOnParticle(ParticleWithMass& particle);
+    virtual physx::PxVec3 getForceOnRigidBody(RigidBody& rigidBody);
 
     uint64_t getId() const { return _id; }
 
@@ -60,9 +63,11 @@ public:
     void setParticleSystem(ParticleSystem* particleSystem) { _particleSystem = particleSystem; }
     // Getter for ParticleSystem. Caution: may return nullptr if not set.
     ParticleSystem* getParticleSystem() const { return _particleSystem; }
+    RigidBodySystem* getRigidBodySystem() const { return _rigidBodySystem; } // TODO how to handle both? Create a base System class?
 
 protected:
     virtual physx::PxVec3 computeForceOnParticle(ParticleWithMass& particle);
+    virtual physx::PxVec3 computeForceOnRigidBody(RigidBody& rigidBody);
 
 protected:
     physx::PxVec3 _force;
@@ -70,6 +75,7 @@ protected:
     physx::PxVec3 _direction;
 
     ParticleSystem* _particleSystem; // The particle system this force generator is associated with
+    RigidBodySystem* _rigidBodySystem; // The rigid body system this force generator is associated with
 
     double _age;
     double _expireTime;

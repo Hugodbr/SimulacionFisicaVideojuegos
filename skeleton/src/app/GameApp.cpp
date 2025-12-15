@@ -7,6 +7,7 @@
 #include "app/gameplay/SceneBuoyance.h"
 #include "app/gameplay/SceneSpring.h"
 #include "app/gameplay/SceneSurfer.h"
+#include "app/gameplay/SpringTestScene.h"
 
 
 GameApp::GameApp()
@@ -57,10 +58,18 @@ void GameApp::onInit()
 void GameApp::onUpdate(double deltaTime)
 {
     // std::cout << "GameApp updating..." << std::endl;
+    // std::cout << "Delta Time: " << deltaTime << " seconds." << std::endl;
 
     mCamera->update(deltaTime);
     _sceneManager.update(deltaTime);
-    _physicsEngine.stepSimulation(deltaTime);
+
+    // ! Fixed time step for physics simulation stability
+    static double accumulator = 0.0;
+    accumulator += deltaTime;
+    while (accumulator >= TIME_STEP) {
+        _physicsEngine.stepSimulation(TIME_STEP);
+        accumulator -= TIME_STEP;
+    }
 }
 
 void GameApp::onRender()
@@ -112,7 +121,8 @@ void GameApp::initSceneManager()
     // _sceneManager.pushScene(new Scene01());
     // _sceneManager.pushScene(new SceneBuoyance());
     // _sceneManager.pushScene(new SceneSpring());
-    _sceneManager.pushScene(new SceneSurfer());
+    // _sceneManager.pushScene(new SceneSurfer());
+    _sceneManager.pushScene(new SpringTestScene());
 }
 
 void GameApp::createViewportsAndCameras()
@@ -123,7 +133,7 @@ void GameApp::createViewportsAndCameras()
 	mViewPorts.push_back(mainViewPort);
 
 	// CAMARAS ------------------------------------------------------
-	Camera* mainCamera = new Camera(mainViewPort, physx::PxVec3(30.0f, 30.0f, 30.0f), physx::PxVec3(.0f, .0f, .0f));
+	Camera* mainCamera = new Camera(mainViewPort, physx::PxVec3(3.0f, 3.0f, 3.0f), physx::PxVec3(.0f, .0f, .0f));
 	mCamera = mainCamera;
 	mCameras.push_back(mainCamera);
     _windowSystem->addInputEventListener(mCamera);

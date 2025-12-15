@@ -2,7 +2,7 @@
 
 #include "PhysicsEngine.h"
 #include "RigidBody.h"
-
+#include "ForceGenerator.h"
 
 RigidBody::RigidBody()
     : PhysicalObject(
@@ -33,19 +33,20 @@ void RigidBody::update(double deltaTime)
     onBeginUpdate(deltaTime);
     // Rigid bodies are updated by the PhysX simulation step
     updateAge(deltaTime);
+    integrate(deltaTime);
 
     updateRenderableEntityPose();
 
     onEndUpdate(deltaTime);
 }
 
-void RigidBody::setRenderableEntity(std::unique_ptr<Abs_Entity> renderable)
+void RigidBody::setRenderableEntity(std::shared_ptr<Abs_Entity> renderable)
 {
     std::cout << "RigidBody::setRenderableEntity() called." << std::endl;
     if (_renderableEntity) {
         std::cout << "Warning: Overwriting existing renderable entity!" << std::endl;
     }
-    _renderableEntity = std::move(renderable);
+    _renderableEntity = renderable;
 }
 
 void RigidBody::load()
@@ -73,9 +74,24 @@ void RigidBody::render(const glm::mat4 &modelViewMat)
     }
 }
 
+void RigidBody::applyForce(ForceGenerator &forceGenerator)
+{ 
+    physx::PxVec3 force = forceGenerator.getForceOnRigidBody(*this);
+    
+    if (force != physx::PxVec3(0)) {
+        static_cast<physx::PxRigidBody*>(this->_body)->addForce(
+            force,
+            physx::PxForceMode::eFORCE
+        );
+    }
+}
+
 void RigidBody::setDensity(float density)
 {
     _density = physx::PxReal(density);
+    physx::PxRigidDynamic* dyn = _body->is<physx::PxRigidDynamic>();
+    PX_ASSERT(dyn);
+    PX_ASSERT(dyn->getNbShapes() > 0);
     physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidDynamic&>(*_body), _density);
 }
 
@@ -103,6 +119,13 @@ physx::PxVec3 RigidBody::getBottomCenter() const
     return bottomCenter;
 }
 
+float RigidBody::getMass()
+{
+    physx::PxRigidDynamic* dynamic = _body->is<physx::PxRigidDynamic>();
+    PX_ASSERT(dynamic);
+    return dynamic->getMass();
+}
+
 void RigidBody::updateRenderableEntityPose()
 {
     if (_renderableEntity) {
@@ -122,6 +145,13 @@ void RigidBody::updateRenderableEntityPose()
     } else {
         std::cerr << "RigidBody::updateRenderableEntityPose() - No renderable entity set!" << std::endl;
     }
+}
+
+void RigidBody::integrate(double deltaTime)
+{
+    // Update variables from PhysX body
+    _transform = _body->getGlobalPose();
+    _velocity = static_cast<physx::PxRigidBody*>(_body)->getLinearVelocity();
 }
 
 void RigidBody::rotate(const physx::PxQuat &deltaRotation)

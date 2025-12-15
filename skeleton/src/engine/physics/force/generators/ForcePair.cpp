@@ -2,28 +2,18 @@
 
 #include <assert.h>
 
-SpringForce::SpringForce(ParticleWithMass *mainParticle, double k, double restingLength)
+ForcePair::ForcePair(PhysicalObject* mainObject, PhysicalObject* otherObject)
     : ForceGenerator()
-    , _k(k)
-    , _restingLength(restingLength)
-    , _mainParticle()
+    , _mainObject(mainObject)
+    , _otherObject(otherObject)
 {
 }
 
-SpringForce::~SpringForce()
+ForcePair::~ForcePair()
 {
 }
 
-void SpringForce::updateForce(double deltaTime)
+void ForcePair::setOtherObject(PhysicalObject* otherObject)
 {
-    assert(_otherParticle != nullptr && "No other particle assigned!");
-
-    // physx::PxVec3 length = relativePosVector
-
-    // physx::PxVec3 length = relativePosVector
-}
-
-void SpringForce::setOtherParticle(ParticleWithMass *otherParticle)
-{
-    _otherParticle = otherParticle;
+    _otherObject = otherObject;
 }

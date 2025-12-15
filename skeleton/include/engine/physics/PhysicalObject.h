@@ -74,6 +74,7 @@ public:
 	virtual const physx::PxTransform& getTransform() const { return _transform; }
 	virtual const physx::PxTransform& getOriginalTransform() const { return _transformOriginal; }
 	virtual const physx::PxTransform& getRelativeTransform() const { return _relativeTransform; }
+	virtual float getMass();
 
 	virtual bool isActive() const { return _alive; }
 
