@@ -5,7 +5,7 @@
 class RigidBody;
 class ParticleWithMass;
 
-class SpringForce : public virtual ForcePair
+class SpringForce : public ForcePair
 {
 public:
     SpringForce(
@@ -16,6 +16,8 @@ public:
         float maxLength
     );
     virtual ~SpringForce();
+
+    virtual void setTensionOnly(bool tensionOnly) { _tensionOnly = tensionOnly; }
 
     virtual void updateForce(double deltaTime) override;
     // virtual void setK(double k) { _k = k; };
@@ -33,4 +35,7 @@ protected:
     float _k;
     float _restingLength;
     float _maxLength;
+    bool _tensionOnly = false;
+
+    float _maxForce; // To prevent extreme forces
 };

@@ -151,7 +151,9 @@ void RigidBody::integrate(double deltaTime)
 {
     // Update variables from PhysX body
     _transform = _body->getGlobalPose();
-    _velocity = static_cast<physx::PxRigidBody*>(_body)->getLinearVelocity();
+    if (_body->is<physx::PxRigidDynamic>()) {
+        _velocity = static_cast<physx::PxRigidDynamic*>(_body)->getLinearVelocity();
+    }
 }
 
 void RigidBody::rotate(const physx::PxQuat &deltaRotation)

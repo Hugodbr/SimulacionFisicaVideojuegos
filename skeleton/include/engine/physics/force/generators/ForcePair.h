@@ -11,8 +11,10 @@ public:
     virtual ~ForcePair();
 
     virtual void setOtherObject(PhysicalObject* otherObject);
+    // Vulnerable by default
+    virtual void setObjectVulnerable(PhysicalObject* object, bool vulnerable);
 
 protected:
-    PhysicalObject* _mainObject;
-    PhysicalObject* _otherObject;
+    std::pair<PhysicalObject*, bool> _mainObject;
+    std::pair<PhysicalObject*, bool> _otherObject;
 };

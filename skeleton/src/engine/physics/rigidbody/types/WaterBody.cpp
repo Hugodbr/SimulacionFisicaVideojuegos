@@ -2,6 +2,7 @@
 
 #include "Constants.h"
 #include "SurfBoardBody.h"
+#include "RopeNodeBody.h"
 
 
 WaterBody::WaterBody(const physx::PxVec3& topCenter, const std::string& filePath, float scale)
@@ -55,7 +56,7 @@ WaterBody::WaterBody(const physx::PxVec3& topCenter, const std::string& filePath
 void WaterBody::createRenderableEntity(const std::string &filePath, float scale)
 {
     std::cout << "WaterBody::createRenderableEntity() called with filePath: " << filePath << std::endl;
-    setRenderableEntity(std::make_unique<ModelSingleMeshPBR>(filePath));
+    setRenderableEntity(std::make_unique<ModelSingleMeshMaterial>(filePath));
 }
 
 void WaterBody::onEndUpdate(double deltaTime)
@@ -75,6 +76,13 @@ void WaterBody::onTriggerEnter(physx::PxActor *other)
             SurfBoardBody* surfboard = static_cast<SurfBoardBody*>(rb);
             surfboard->setIsJumping(false);
         }
+
+        if (dynamic_cast<RopeNodeBody*>(rb))
+        {
+            // std::cout << "RopeNodeBody entered water, ignoring buoyancy." << std::endl;
+            return; // Ignore rope nodes for buoyancy
+        }
+        
         _affectedRigidActors.push_back(static_cast<physx::PxRigidActor*>(other));
     }
     // std::cout << "onTriggerEnter: Total affected actors: " << _affectedRigidActors.size() << std::endl;
