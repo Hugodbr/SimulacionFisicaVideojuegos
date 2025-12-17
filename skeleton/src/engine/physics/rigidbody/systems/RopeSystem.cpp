@@ -66,7 +66,7 @@ RopeSystem::RopeSystem(
         _maxSegmentLength // max length
     );
     dynamic_cast<SpringForce*>(_internalForceGenerators[0].get())->setTensionOnly(true);
-    dynamic_cast<SpringForce*>(_internalForceGenerators[0].get())->setObjectVulnerable(_attachedRigidBodies.front(), false);
+    // dynamic_cast<SpringForce*>(_internalForceGenerators[0].get())->setObjectVulnerable(_attachedRigidBodies.front(), false);
 
     //
     // Limit of anchor
@@ -156,7 +156,7 @@ RopeSystem::RopeSystem(
         _maxSegmentLength // max length
     );
     dynamic_cast<SpringForce*>(_internalForceGenerators[i].get())->setTensionOnly(true);
-    dynamic_cast<SpringForce*>(_internalForceGenerators[i].get())->setObjectVulnerable(_attachedRigidBodies.back(), false);
+    // dynamic_cast<SpringForce*>(_internalForceGenerators[i].get())->setObjectVulnerable(_attachedRigidBodies.back(), false);
 
     // _d6Joints[i] = physx::PxD6JointCreate(
     //     *PhysicsEngine::getInstance().getPhysics(),
@@ -214,9 +214,9 @@ void RopeSystem::applyForces()
 			for (auto& rb : _rigidbodies) {
 				rb->applyForce(*internalForce);
 			}
-            // for (auto& attachedRb : _attachedRigidBodies) {
-            //     attachedRb->applyForce(*internalForce);
-            // }
+            for (auto& attachedRb : _attachedRigidBodies) {
+                attachedRb->applyForce(*internalForce);
+            }
 		}
 	}
 }

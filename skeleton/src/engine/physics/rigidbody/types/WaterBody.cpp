@@ -50,12 +50,12 @@ WaterBody::WaterBody(const physx::PxVec3& topCenter, const std::string& filePath
     _body->userData = this; // for collision callbacks
     _scene->addActor(*_body);
 
-    std::cout << "WaterBody created at position: (" << center.x << ", " << center.y << ", " << center.z << ")" << std::endl;
+    // std::cout << "WaterBody created at position: (" << center.x << ", " << center.y << ", " << center.z << ")" << std::endl;
 }
 
 void WaterBody::createRenderableEntity(const std::string &filePath, float scale)
 {
-    std::cout << "WaterBody::createRenderableEntity() called with filePath: " << filePath << std::endl;
+    // std::cout << "WaterBody::createRenderableEntity() called with filePath: " << filePath << std::endl;
     setRenderableEntity(std::make_unique<ModelSingleMeshMaterial>(filePath));
 }
 
@@ -75,14 +75,14 @@ void WaterBody::onTriggerEnter(physx::PxActor *other)
         if (dynamic_cast<SurfBoardBody*>(rb)) {
             SurfBoardBody* surfboard = static_cast<SurfBoardBody*>(rb);
             surfboard->setIsJumping(false);
+            std::cout << "SurfBoardBody entered water, setting isJumping to false: " << surfboard->isJumping() << std::endl;
         }
-
-        if (dynamic_cast<RopeNodeBody*>(rb))
+        else if (dynamic_cast<RopeNodeBody*>(rb))
         {
             // std::cout << "RopeNodeBody entered water, ignoring buoyancy." << std::endl;
             return; // Ignore rope nodes for buoyancy
         }
-        
+
         _affectedRigidActors.push_back(static_cast<physx::PxRigidActor*>(other));
     }
     // std::cout << "onTriggerEnter: Total affected actors: " << _affectedRigidActors.size() << std::endl;
@@ -114,7 +114,7 @@ void WaterBody::resolveInteractions()
         physx::PxVec3 buoyancyForce = calculateBuoyancy(*static_cast<RigidBody*>(other->userData));
 
         static_cast<physx::PxRigidBody*>(other)->addForce(
-            buoyancyForce,
+            physx::PxVec3(0.0f, buoyancyForce.y, 0.0f), // ! Only vertical
             physx::PxForceMode::eFORCE
         );
     }

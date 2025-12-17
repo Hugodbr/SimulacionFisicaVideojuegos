@@ -90,6 +90,8 @@ public:
 		// return physx::PxTransform(physx::PxVec3(mEye.x, mEye.y, mEye.z), physx::PxQuat(m));
 		return physx::PxTransform();
 	}
+
+	void setPositionParameters(const physx::PxVec3& eye, const physx::PxVec3& look, const physx::PxVec3& up);
 	
 	// // !
 

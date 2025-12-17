@@ -193,9 +193,13 @@ struct Region
         case POINT_3D:
             shape.point.mean = position;
             break;
-        case BOX:
-            shape.box.minimum = position - (shape.box.maximum - shape.box.minimum) / 2;
-            shape.box.maximum = position + (shape.box.maximum - shape.box.minimum) / 2;
+        case BOX: {
+            // std::cout << "Region::moveRegionTo BOX moving to " << position.x << ", " << position.y << ", " << position.z << std::endl;
+            physx::PxVec3 size = shape.box.maximum - shape.box.minimum;
+            physx::PxVec3 halfSize = size * 0.5f;
+            shape.box.minimum = position - halfSize;
+            shape.box.maximum = position + halfSize;
+            }
             break;
         case SPHERE:
             shape.sphere.mean = position;

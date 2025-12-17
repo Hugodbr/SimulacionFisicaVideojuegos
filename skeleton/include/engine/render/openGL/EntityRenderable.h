@@ -162,7 +162,18 @@ class ModelSingleMeshPBR : public Abs_Entity
 {
 public:
 	explicit ModelSingleMeshPBR(const std::string& filePath, float scale = 1.0f);
+	explicit ModelSingleMeshPBR(const std::string& filePath, float w, float x, float y, float z, float scale = 1.0f);
 	virtual ~ModelSingleMeshPBR();
+	virtual void render(const glm::mat4& modelViewMat) const override;
+protected:
+	PBRMaterial* mPBRMaterial = nullptr;
+};
+
+class ModelSingleMeshTranslucid : public Abs_Entity
+{
+public:
+	explicit ModelSingleMeshTranslucid(const std::string& filePath, float scale = 1.0f);
+	virtual ~ModelSingleMeshTranslucid();
 	virtual void render(const glm::mat4& modelViewMat) const override;
 protected:
 	PBRMaterial* mPBRMaterial = nullptr;

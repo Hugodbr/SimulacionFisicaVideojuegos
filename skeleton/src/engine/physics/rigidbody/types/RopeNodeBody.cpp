@@ -25,14 +25,14 @@ RopeNodeBody::RopeNodeBody(const physx::PxVec3 &center, const std::string &fileP
 RopeNodeBody::RopeNodeBody(const physx::PxVec3 &center, std::shared_ptr<Abs_Entity> renderableEntity)
 {
     setRenderableEntity(renderableEntity);
-    std::cout << "RopeNodeBody::RopeNodeBody() called with shared_ptr renderableEntity." << std::endl;
+    // std::cout << "RopeNodeBody::RopeNodeBody() called with shared_ptr renderableEntity." << std::endl;
     initiallize(center);
 }
 
 RopeNodeBody::RopeNodeBody(const physx::PxVec3 &center, std::shared_ptr<Abs_Entity> renderableEntity, float density)
 {
     setRenderableEntity(renderableEntity);
-    std::cout << "RopeNodeBody::RopeNodeBody() called with shared_ptr renderableEntity and density." << std::endl;
+    // std::cout << "RopeNodeBody::RopeNodeBody() called with shared_ptr renderableEntity and density." << std::endl;
     initiallize(center);
     // Set mass after initialization
     static_cast<physx::PxRigidDynamic&>(*_body).setMass(density * this->_volume);
@@ -40,7 +40,7 @@ RopeNodeBody::RopeNodeBody(const physx::PxVec3 &center, std::shared_ptr<Abs_Enti
 
 void RopeNodeBody::createRenderableEntity(const std::string &filePath, float scale)
 {
-    std::cout << "RopeNodeBody::createRenderableEntity() called with filePath: " << filePath << std::endl;
+    // std::cout << "RopeNodeBody::createRenderableEntity() called with filePath: " << filePath << std::endl;
     setRenderableEntity(std::make_shared<ModelSingleMeshPBR>(filePath, scale));
 }
 
@@ -65,7 +65,7 @@ void RopeNodeBody::initiallize(const physx::PxVec3 &center)
     );
     
     _body     = _physics->createRigidDynamic(physx::PxTransform(center, physx::PxQuat(0.0f, 0.0f, 0.0f, 1.0f)));
-    std::cout << "RopeNodeBody _body = " << _body << std::endl;
+    // std::cout << "RopeNodeBody _body = " << _body << std::endl;
     _material = _physics->createMaterial(0.5f, 0.5f, 0.9f);
     _shape    = _body->createShape(
         physx::PxBoxGeometry(
@@ -81,7 +81,7 @@ void RopeNodeBody::initiallize(const physx::PxVec3 &center)
     // _density = physx::PxReal(200.0f); // kg/m^3
     // physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidDynamic&>(*_body), _density);
     setDensity(200.0f);
-    std::cout << "RopeNodeBody density set to " << _density << " kg/m^3. Has mass = " << static_cast<physx::PxRigidDynamic&>(*_body).getMass() << " and volume: " << this->_volume << std::endl;
+    // std::cout << "RopeNodeBody density set to " << _density << " kg/m^3. Has mass = " << static_cast<physx::PxRigidDynamic&>(*_body).getMass() << " and volume: " << this->_volume << std::endl;
 
     // Apply initial rotation to the box
     // ! Must be done before adding to scene !!!
@@ -90,5 +90,5 @@ void RopeNodeBody::initiallize(const physx::PxVec3 &center)
     _body->userData = this; // for collision callbacks
     _scene->addActor(*_body);
 
-    std::cout << "RopeNodeBody created at position: (" << center.x << ", " << center.y << ", " << center.z << ")" << std::endl;
+    // std::cout << "RopeNodeBody created at position: (" << center.x << ", " << center.y << ", " << center.z << ")" << std::endl;
 }

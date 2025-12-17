@@ -8,11 +8,35 @@ BoxBody::BoxBody(const physx::PxVec3 &center, const std::string &filePath, float
     initiallize(center);
 }
 
+BoxBody::BoxBody(const physx::PxVec3 &center, const std::string &filePath, double mass, float scale)
+{
+    createRenderableEntity(filePath, scale);
+    initiallize(center);
+    // Set mass after initialization
+    setDensity(static_cast<float>(mass) / this->_volume); // ! doesnt work, creo
+}
+
+BoxBody::BoxBody(const physx::PxVec3 &center, const std::string &filePath, float density, float scale)
+{
+    createRenderableEntity(filePath, scale);
+    initiallize(center);
+    static_cast<physx::PxRigidDynamic&>(*_body).setMass(density * this->_volume);
+}
+
 BoxBody::BoxBody(const physx::PxVec3 &center, std::shared_ptr<Abs_Entity> renderableEntity)
 {
     setRenderableEntity(renderableEntity);
     std::cout << "BoxBody::BoxBody() called with shared_ptr renderableEntity." << std::endl;
     initiallize(center);
+}
+
+BoxBody::BoxBody(const physx::PxVec3 &center, std::shared_ptr<Abs_Entity> renderableEntity, float density)
+{
+    setRenderableEntity(renderableEntity);
+    std::cout << "BoxBody::BoxBody() called with shared_ptr renderableEntity and density." << std::endl;
+    initiallize(center);
+    // Set mass after initialization
+    static_cast<physx::PxRigidDynamic&>(*_body).setMass(density * this->_volume);
 }
 
 void BoxBody::createRenderableEntity(const std::string &filePath, float scale)

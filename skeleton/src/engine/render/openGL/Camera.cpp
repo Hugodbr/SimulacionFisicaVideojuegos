@@ -277,6 +277,15 @@ void Camera::orbit(GLdouble dx, GLdouble dy)
 
 // ===============================================================================
 
+void Camera::setPositionParameters(const physx::PxVec3 &eye, const physx::PxVec3 &look, const physx::PxVec3 &up)
+{
+	mEye  = glm::dvec3(eye.x, eye.y, eye.z);
+	mLook = glm::dvec3(look.x, look.y, look.z);
+	mUp   = glm::dvec3(up.x, up.y, up.z);
+
+	setVM();
+}
+
 void Camera::onMouseScroll(double dx, double dy)
 {
 	mEye  += mForward * dy * 0.5; // Zoom in/out

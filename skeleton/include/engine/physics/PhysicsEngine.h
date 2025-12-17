@@ -24,6 +24,7 @@ private:
     // Whether the physics engine is running in interactive mode (with rendering) or not.
     bool _interactive;
 
+    static constexpr int PHYSICS_SUBSTEPS = 15;
     // Lifecycle tracking
     bool _initialized = false;
     bool _shutdown = false;

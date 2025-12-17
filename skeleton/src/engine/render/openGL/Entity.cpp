@@ -206,7 +206,7 @@ EntityWithMaterial::EntityWithMaterial(const glm::vec4& color)
 {
 	mShader = Shader::get("light");
 	mMaterial = Material(glm::vec3(color.r, color.g, color.b), 32.0f);
-	mMaterial.setGold();
+	mMaterial.setTurquoise();
 }
 
 void EntityWithMaterial::render(const glm::mat4& modelViewMat) const

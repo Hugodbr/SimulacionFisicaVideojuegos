@@ -5,6 +5,8 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <iostream>
 
+#include <assimp/material.h>
+
 #include "Texture.h"
 
 #include <filesystem>
@@ -885,8 +887,47 @@ IndexMesh *IndexMesh::loadMeshWithAssimp(const std::string &filePath, float scal
     // ======================================================================
     //  --- MATERIAL LOADING (Diffuse, Normal, Roughness, Metalness, AO) ---
     // ======================================================================
+	aiMaterial* aiMat = scene->mMaterials[aiMesh->mMaterialIndex];
+	aiColor4D baseColor;
+	if (aiMat->Get(
+			"$mat.gltf.pbrMetallicRoughness.baseColorFactor",
+			0, 0,
+			baseColor
+		) == AI_SUCCESS)
+	{
+		mesh->albedoColor = {
+			baseColor.r,
+			baseColor.g,
+			baseColor.b,
+			baseColor.a
+		};
+	}
 
-    aiMaterial* aiMat = scene->mMaterials[aiMesh->mMaterialIndex];
+	// ---- Metallic ----
+	float metallic = 0.0f;
+	aiMat->Get(
+		"$mat.gltf.pbrMetallicRoughness.metallicFactor",
+		0, 0,
+		metallic
+	);
+	mesh->metallicValue = metallic;
+
+	// ---- Roughness ----
+	float roughness = 1.0f;
+	aiMat->Get(
+		"$mat.gltf.pbrMetallicRoughness.roughnessFactor",
+		0, 0,
+		roughness
+	);
+	mesh->roughnessValue = roughness;
+
+	// ---- Emissive ----
+	aiColor3D emissive;
+	if (aiMat->Get(AI_MATKEY_COLOR_EMISSIVE, emissive) == AI_SUCCESS)
+	{
+		mesh->emissiveColor = { emissive.r, emissive.g, emissive.b };
+	}
+
     aiString texPath;
 
 	auto loadTex = [&](aiTextureType type) -> Texture*
@@ -972,10 +1013,10 @@ IndexMesh *IndexMesh::loadMeshWithAssimp(const std::string &filePath, float scal
 		mesh->metallicRoughnessTex = mrCombined;
 	}
 
-	// ----------------------------------------------------------------------
-	// 1. glTF metallic-roughness *combined* texture (G = roughness, B = metallic)
-	// ----------------------------------------------------------------------
-	mesh->metallicRoughnessTex = loadTex(aiTextureType_UNKNOWN);
+	// // ----------------------------------------------------------------------
+	// // 1. glTF metallic-roughness *combined* texture (G = roughness, B = metallic)
+	// // ----------------------------------------------------------------------
+	// mesh->metallicRoughnessTex = loadTex(aiTextureType_UNKNOWN);
 
 	// ----------------------------------------------------------------------
 	// 2. Albedo / Base Color
@@ -1030,7 +1071,6 @@ IndexMesh *IndexMesh::loadMeshWithAssimp(const std::string &filePath, float scal
 	// Apply scaling
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 		mesh->vVertices[i] *= scale;      // scale positions
-		mesh->vNormals[i]  *= scale;      // scale normals
 	}
 
 	mesh->calculateDimensions();

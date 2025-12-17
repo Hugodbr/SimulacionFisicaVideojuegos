@@ -69,6 +69,7 @@ public:
 
 	virtual void setWorldRegion(const Region& region);
 	virtual void setEmitterOrigin(const physx::PxVec3& origin) {};
+	virtual void setCustomGenerationTriggerCallback(std::function<bool()> callback) {};
 
 	virtual void setRenderableEntity(std::unique_ptr<Abs_Entity> renderable);
 	virtual void render(const glm::mat4& modelViewMat);

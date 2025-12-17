@@ -51,7 +51,7 @@ void SceneBuoyance::init()
 		// ROOT_DIR + "\\resources\\blender\\sphere.obj"
 		// ROOT_DIR + "\\resources\\glb\\klk-17_pistol.obj"
 		// ROOT_DIR + "\\resources\\glb\\surfboard__tabla_de_surf.glb", 0.05f
-		ROOT_DIR + "\\resources\\glb\\silver_surfer.glb", 1.0f
+		ROOT_DIR + "\\resources\\glb\\silver_surfer.glb", 1.0f, 1.0f
 	);
 	boxBody->init();
     // boxBody->setDensity(800.0f);

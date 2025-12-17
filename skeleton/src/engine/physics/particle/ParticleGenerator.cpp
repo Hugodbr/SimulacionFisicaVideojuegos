@@ -20,6 +20,7 @@ void ParticleGenerator::init(
 
 void ParticleGenerator::setEmitterOrigin(const physx::PxVec3& emitterOrigin) {
     _emitterOrigin = emitterOrigin;
+    _generationPolicy->setEmitterOrigin(emitterOrigin);
 }
 
 void ParticleGenerator::setMeanVelocity(const physx::PxVec3& meanVel) {
@@ -31,6 +32,8 @@ void ParticleGenerator::setVelocityDeviation(const physx::PxVec3& velDeviation) 
 }
 void ParticleGenerator::setGenerationPolicy(const ParticleGenerationPolicy& genPolicy) {
     _generationPolicy = std::make_unique<ParticleGenerationPolicy>(genPolicy);
+    _generationPolicy->setEmitterOrigin(_emitterOrigin);
+    _generationPolicy->setVelocity(Vector3Stats(_meanVelocity, _velocityDeviation));
 }
 
 void ParticleGenerator::setLifetimePolicy(const ParticleLifetimePolicy& lifePolicy) {
@@ -44,6 +47,13 @@ int ParticleGenerator::numberOfGenerations() {
 physx::PxVec3 ParticleGenerator::getGeneratedPosition()
 {
     return _generationPolicy->generatePosition([this]() {
+            return getDistribution();
+            });
+}
+
+physx::PxVec3 ParticleGenerator::getGeneratedVelocity()
+{
+    return _generationPolicy->generateVelocity([this]() {
             return getDistribution();
             });
 }

@@ -69,27 +69,51 @@ void PhysicsEngine::init()
 
 void PhysicsEngine::stepSimulation(double deltaTime)
 {
-    forceManager->update(deltaTime);
+    // forceManager->update(deltaTime);
     
-    // std::cout << "SIM STEP" << std::endl;
-    for (ParticleSystem* particleSystem : _particleSystems) {
-        particleSystem->update(deltaTime);
-    }
+    // // std::cout << "SIM STEP" << std::endl;
+    // for (ParticleSystem* particleSystem : _particleSystems) {
+    //     particleSystem->update(deltaTime);
+    // }
 
-    for (RigidBodySystem* rigidBodySystem : _rigidBodySystems) {
-        rigidBodySystem->update(deltaTime);
-    }
+    // for (RigidBodySystem* rigidBodySystem : _rigidBodySystems) {
+    //     rigidBodySystem->update(deltaTime);
+    // }
 
-    for (RigidBody* rigidBody : _rigidBodies) {
-        rigidBody->update(deltaTime);
-    }
+    // for (RigidBody* rigidBody : _rigidBodies) {
+    //     rigidBody->update(deltaTime);
+    // }
 
-    if (gScene) {
-        gScene->simulate(deltaTime);
-        gScene->fetchResults(true);
-    }
+    // if (gScene) {
+    //     gScene->simulate(deltaTime);
+    //     gScene->fetchResults(true);
+    // }
 
-	// std::this_thread::sleep_for(std::chrono::microseconds(10));
+	// // std::this_thread::sleep_for(std::chrono::microseconds(10));
+
+    const double h = deltaTime / (double)PHYSICS_SUBSTEPS;
+
+    for (int i = 0; i < PHYSICS_SUBSTEPS; ++i) {
+
+        forceManager->update(h);
+
+        for (ParticleSystem* particleSystem : _particleSystems) {
+            particleSystem->update(h);
+        }
+
+        for (RigidBodySystem* rigidBodySystem : _rigidBodySystems) {
+            rigidBodySystem->update(h);
+        }
+
+        for (RigidBody* rigidBody : _rigidBodies) {
+            rigidBody->update(h);
+        }
+
+        if (gScene) {
+            gScene->simulate(h);
+            gScene->fetchResults(true);
+        }
+    }
 }
 
 void PhysicsEngine::shutdown()

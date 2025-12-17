@@ -23,15 +23,19 @@ struct ParticleGenerationPolicy
     ScalarStats spawnInterval;     // 
 
     Vector3Stats position;    // mean = center, deviation = extents or radius
+    Vector3Stats velocity;    // mean = center, deviation = extents or radius
     ColorStats color;
 
     Region region;
 
-    std::function<bool(double, const Particle&)> customCallback; // custom callback to given particle
+    // std::function<bool(double, const Particle*)> customCallback; // custom callback to given particle
+    std::function<bool()> customCallback; // custom callback to given particle
 
 private:
     double currentSpawnInterval = INT_MAX;
     double accumulator = 0.0; // auxiliar to interval evaluation
+
+    void updatePositionFromRegion();
 
 public:
 
@@ -52,10 +56,14 @@ public:
     // METHODS -----------------------------------------------------------------------------------------
     void setSpawnCount(const ScalarStats& newSpawnCount);
     void setSpawnInterval(const ScalarStats& newSpawnInterval);
+    void setEmitterOrigin(const physx::PxVec3& origin);
+    void setVelocity(const Vector3Stats& velocity);
     void setRegion(const Region& r);
     void setColor(const ColorStats& newColor);
+    void setCustomCallback(std::function<bool()> newCustomCallback);
 
     physx::PxVec3 generatePosition(const std::function<double()>& distributionFunc); // generate a random spawn point
+    physx::PxVec3 generateVelocity(const std::function<double()>& distributionFunc); // generate a random spawn point
     physx::PxVec4 generateColor(const std::function<double()>& distributionFunc); // generate a random color
     
     bool shouldSpawn(double distr, double deltaTime); // If should spawn at a frame when using spawn interval

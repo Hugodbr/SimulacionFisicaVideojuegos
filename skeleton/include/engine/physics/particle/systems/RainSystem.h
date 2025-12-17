@@ -21,7 +21,6 @@ private:
 	IntensityLevel _intensityLevel;
 	
 public:
-
 	RainSystem(const physx::PxVec3 &origin, const Region& region);
 	~RainSystem() = default;
 
@@ -38,7 +37,6 @@ public:
 	}
 
 protected:
-
     void initParticleGeneratorAndPool();
 
 	// void createForceGenerator(std::unique_ptr<ForceGenerator>& forceGen);

@@ -125,6 +125,9 @@ namespace Constants
 		namespace Rain {
 			static inline constexpr uint64_t ReserveCountPerGenerator = 10000;
 		};
+		namespace Trash {
+			static inline constexpr uint64_t ReserveCountPerGenerator = 3;
+		};
 
 		namespace Gun {
 			static inline constexpr uint64_t ReserveCountPerBulletGenerator = 30;

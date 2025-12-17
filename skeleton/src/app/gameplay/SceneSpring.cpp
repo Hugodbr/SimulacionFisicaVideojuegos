@@ -26,7 +26,7 @@ SceneSpring::~SceneSpring()
 void SceneSpring::init()
 {
 	Scene::init();
-
+/*
 	// =========================================================================================
 	// Spring System
 	// =========================================================================================
@@ -53,7 +53,8 @@ void SceneSpring::init()
 
 	std::unique_ptr<RigidBody> boxBody1 = std::make_unique<BoxBody>(
 		_originAnchor.p,
-		ROOT_DIR + "\\resources\\blender\\sphere.obj", 0.1f
+		ROOT_DIR + "\\resources\\blender\\sphere.obj", 
+        0.1f
 	);
 	boxBody1->init();
 
@@ -62,7 +63,8 @@ void SceneSpring::init()
 
     std::unique_ptr<RigidBody> boxBody2 = std::make_unique<BoxBody>(
 		_looseEnd.p,
-		ROOT_DIR + "\\resources\\blender\\sphere.obj", 0.1f
+		ROOT_DIR + "\\resources\\blender\\sphere.obj", 
+        0.1f
 	);
 	boxBody2->init();
 
@@ -129,7 +131,7 @@ void SceneSpring::init()
     _boxBody2 = static_cast<BoxBody*>(_rigidBodies.back().get());
 	PhysicsEngine::getInstance().pushRigidBody(_rigidBodies.back().get());
 
-
+*/
 }
 
 void SceneSpring::update()

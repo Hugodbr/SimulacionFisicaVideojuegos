@@ -7,16 +7,15 @@
 //=========================================================================================================
 // PARTICLE GENERATION POLICY
 //=========================================================================================================
-
 ParticleGenerationPolicy::ParticleGenerationPolicy()
     : useSpawnCount(false),
-    spawnCount(ScalarStats(0.0, 0.0)),
-    useSpawnInterval(false),
-    spawnInterval(ScalarStats(0.0, 0.0)),
-    region(Region(POINT_3D, Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0)))),
-    position(Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0))),
-    currentSpawnInterval(INT_MAX),
-    accumulator(0.0)
+      spawnCount(ScalarStats(0.0, 0.0)),
+      useSpawnInterval(false),
+      spawnInterval(ScalarStats(0.0, 0.0)),
+      region(Region(POINT_3D, Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0)))),
+      position(Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0))),
+      currentSpawnInterval(INT_MAX),
+      accumulator(0.0)
 { }
 
 ParticleGenerationPolicy::ParticleGenerationPolicy(
@@ -71,6 +70,7 @@ void ParticleGenerationPolicy::setSpawnInterval(const ScalarStats& newSpawnInter
 void ParticleGenerationPolicy::setEmitterOrigin(const physx::PxVec3 &origin)
 {
     region.moveRegionTo(origin);
+    updatePositionFromRegion();
 }
 
 void ParticleGenerationPolicy::setVelocity(const Vector3Stats &velocity)
@@ -82,7 +82,12 @@ void ParticleGenerationPolicy::setRegion(const Region& r)
 {
     this->region = Region(r);
 
-    switch (r.type) 
+    updatePositionFromRegion();
+}
+
+void ParticleGenerationPolicy::updatePositionFromRegion()
+{
+    switch (region.type) 
     {
     case POINT_3D: {
         position.mean = this->region.shape.point.mean;
@@ -124,17 +129,17 @@ void ParticleGenerationPolicy::setCustomCallback(std::function<bool()> newCustom
 // Redundancy for further implementation if needed
 physx::PxVec3 ParticleGenerationPolicy::generatePosition(const std::function<double()>& distributionFunc)
 {
-    //if (regionType == SpawnRegionType::POINT) {
-    //    return position.mean;
-    //}
-    //else if (regionType == SpawnRegionType::BOX) {
+    if (region.type == POINT_3D) {
+       return position.mean;
+    }
+    // else if (region.type == BOX) {
     //    physx::PxVec3 generatedPosition;
     //    generatedPosition.x = position.mean.x + position.deviation.x * distributionFunc();
     //    generatedPosition.y = position.mean.y + position.deviation.y * distributionFunc();
     //    generatedPosition.z = position.mean.z + position.deviation.z * distributionFunc();
-    //    std::cout << "ParticleGenerationPolicy -> generatePosition: (" << generatedPosition.x << "," << generatedPosition.y << "," << generatedPositionpos.z << ")" << std::endl;
+    //    std::cout << "ParticleGenerationPolicy -> generatePosition: (" << generatedPosition.x << "," << generatedPosition.y << "," << generatedPosition.z << ")" << std::endl;
     //    return generatedPosition;
-    //}
+    // }
     //else if (regionType == SpawnRegionType::SPHERE) {
     //    return position.mean + position.deviation * distr;
     //}

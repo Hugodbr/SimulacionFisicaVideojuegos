@@ -44,16 +44,16 @@ void SpringTestScene::init()
     springSystem->init();
 
     _rigidBodySystems.push_back(std::move(springSystem));
-
+    _springSystem = _rigidBodySystems.back().get();
 	PhysicsEngine::getInstance().pushRigidBodySystem(_rigidBodySystems.back().get());
 
-
+    _endObject = static_cast<SpringSystem*>(_springSystem)->getEnd();
 }
 
 void SpringTestScene::update()
 {
-    // static_cast<physx::PxRigidBody*>(_rigidBodies.back().get()->getBody())->addForce(
-    //     physx::PxVec3(100000.0f, .0f, 0.0f),
+    // static_cast<physx::PxRigidBody*>(static_cast<RigidBody*>(_endObject)->getBody())->addForce(
+    //     physx::PxVec3(100.0f, 0.2f, 60.0f),
     //     physx::PxForceMode::eFORCE
     // );
 
@@ -65,6 +65,7 @@ void SpringTestScene::update()
     // physx::PxQuat q = physx::PxShortestRotation(physx::PxVec3(1,0,0), dir);
     // _b1b2Joint->setLocalPose(physx::PxJointActorIndex::eACTOR0, physx::PxTransform(physx::PxVec3(0), q));
     // _b1b2Joint->setLocalPose(physx::PxJointActorIndex::eACTOR1, physx::PxTransform(physx::PxVec3(0), q.getConjugate()));
+
 
     // std::cout << "Applying force to the last box body." << std::endl;
 	// ! physx is updating rigid bodies and particle systems at simulation step

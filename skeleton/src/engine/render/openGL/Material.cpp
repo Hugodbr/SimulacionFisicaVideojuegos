@@ -89,3 +89,19 @@ void Material::setObsidian()
     specular = { 0.332741f, 0.328634f, 0.346435f };
     expF = 38.4f;
 }
+
+void Material::setOceanBlue()
+{
+    ambient = { 0.0f, 0.1f, 0.2f };
+    diffuse = { 0.0f, 0.5f, 0.7f };
+    specular = { 0.5f, 0.7f, 0.9f };
+    expF = 25.0f;
+}
+
+void Material::setTurquoise()
+{
+    ambient = { 0.1f, 0.3f, 0.3f };
+    diffuse = { 0.0f, 0.5f, 0.5f };
+    specular = { 0.5f, 0.7f, 0.7f };
+    expF = 32.0f;
+}

@@ -8,6 +8,8 @@
 #include "app/gameplay/SceneSpring.h"
 #include "app/gameplay/SceneSurfer.h"
 #include "app/gameplay/SpringTestScene.h"
+#include "app/gameplay/RopeTestScene.h"
+#include "app/gameplay/WakeboardScene.h"
 
 
 GameApp::GameApp()
@@ -51,8 +53,8 @@ void GameApp::onInit()
     // Uses TIME_STEP defined elsewhere in the project.
     // _physicsEngine.startSimulationThread(TIME_STEP);
 
-    initSceneManager();
     createViewportsAndCameras();
+    initSceneManager();
 }
 
 void GameApp::onUpdate(double deltaTime)
@@ -101,7 +103,7 @@ void GameApp::initPhysicsEngine()
 
     // Set up collision callbacks
     _physicsEngine.setOnCollisionCallback([](physx::PxActor* actor1, physx::PxActor* actor2) {
-        std::cout << "Collision detected between actors. Callback triggered." << std::endl;
+        // std::cout << "Collision detected between actors. Callback triggered." << std::endl;
         static_cast<RigidBody*>(actor1->userData)->onCollision(actor2);
         static_cast<RigidBody*>(actor2->userData)->onCollision(actor1);
     });
@@ -122,7 +124,9 @@ void GameApp::initSceneManager()
     // _sceneManager.pushScene(new SceneBuoyance());
     // _sceneManager.pushScene(new SceneSpring());
     // _sceneManager.pushScene(new SceneSurfer());
-    _sceneManager.pushScene(new SpringTestScene());
+    // _sceneManager.pushScene(new SpringTestScene());
+    // _sceneManager.pushScene(new RopeTestScene());
+    _sceneManager.pushScene(new WakeboardScene());
 }
 
 void GameApp::createViewportsAndCameras()

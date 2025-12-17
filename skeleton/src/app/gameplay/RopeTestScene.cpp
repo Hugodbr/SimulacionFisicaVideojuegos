@@ -128,7 +128,7 @@ void RopeTestScene::init()
         surfer.get(), // end body
         endAttachPoint,  // end attach point
 
-        6,   // number of rigid bodies
+        20,   // number of rigid bodies
         2.0f, // body mass
         10.0f, // spring constant k
         2.0f * totalLength,  // TODO max stretch

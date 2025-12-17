@@ -686,9 +686,21 @@ void ModelSingleMeshMaterial::render(const glm::mat4 &modelViewMat) const
 	mShader->setUniform("projMat", proj);
 	mMaterial.upload(*mShader);
 
+
+	// glDepthMask(GL_FALSE);
+	// glEnable(GL_BLEND);
+	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	// mMesh->render();
+	// glDepthMask(GL_TRUE);
+	// glDisable(GL_BLEND);
+
+	// glDepthMask(GL_FALSE);
+	// glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	mMesh->render();
 	glDisable(GL_DEPTH_TEST);
+	// glDisable(GL_BLEND);
+	// glDepthMask(GL_TRUE);
 }
 
 ModelSingleMeshPBR::ModelSingleMeshPBR(const std::string &filePath, float scale)
@@ -721,6 +733,12 @@ ModelSingleMeshPBR::ModelSingleMeshPBR(const std::string& filePath, float w, flo
 	mPBRMaterial->metallicTex          = mMesh->metallicTex;
 	mPBRMaterial->aoTex                = mMesh->aoTex;
 	mPBRMaterial->emissiveTex          = mMesh->emissiveTex;
+
+	mPBRMaterial->albedoColor      = mMesh->albedoColor;
+	mPBRMaterial->metallicValue    = mMesh->metallicValue;
+	mPBRMaterial->roughnessValue   = mMesh->roughnessValue;
+	mPBRMaterial->aoValue          = mMesh->aoValue;
+
 
 	// setPose( glm::vec3(0, 0, 0), glm::quat(w, x, y, z) );
 }

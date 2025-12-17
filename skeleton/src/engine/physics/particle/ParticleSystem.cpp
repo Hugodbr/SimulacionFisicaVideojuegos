@@ -97,7 +97,7 @@ void ParticleSystem::update(double deltaTime)
         updateSubSystems(deltaTime); 
     }
     else {
-        std::cout << "ParticleSystem " << _id << " is inactive. Skipping update." << std::endl;
+        // std::cout << "ParticleSystem " << _id << " is inactive. Skipping update." << std::endl;
     }
 }
 
@@ -109,6 +109,14 @@ void ParticleSystem::setWorldRegion(const Region &region)
 void ParticleSystem::setRenderableEntity(std::unique_ptr<Abs_Entity> renderable)
 {
     _renderableEntity = std::move(renderable);
+}
+
+void ParticleSystem::render(const glm::mat4 &modelViewMat)
+{
+    if (!isActive() || !isRenderable() || !_renderableEntity) {
+        return;
+    }
+    onRender(modelViewMat);
 }
 
 void ParticleSystem::updateSubSystems(double deltaTime)

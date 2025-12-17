@@ -98,16 +98,16 @@ void SpringSystem::createRigidBodies(const std::string& filePath, float scale)
         _rigidbodies[i]->init();
 
         // Create D6 joint between previous and current rigid body
-        physx::PxD6Joint* joint = _d6Joints[i];
+        // physx::PxD6Joint* joint = _d6Joints[i];
 
-        joint = physx::PxD6JointCreate(
-            *PhysicsEngine::getInstance().getPhysics(),
-            _rigidbodies[i - 1]->getBody(),
-            physx::PxTransform(physx::PxVec3(0.0f, -_renderableEntity->getDimensions().y, 0.0f)), // where the joint is attached in the body space
-            _rigidbodies[i]->getBody(),
-            physx::PxTransform(physx::PxVec3(0.0f, _renderableEntity->getDimensions().y, 0.0f)) // where the joint is attached in the body space
-        );
-        joint->setMotion(physx::PxD6Axis::eY, physx::PxD6Motion::eLIMITED);
+        // joint = physx::PxD6JointCreate(
+        //     *PhysicsEngine::getInstance().getPhysics(),
+        //     _rigidbodies[i - 1]->getBody(),
+        //     physx::PxTransform(physx::PxVec3(0.0f, -_renderableEntity->getDimensions().y, 0.0f)), // where the joint is attached in the body space
+        //     _rigidbodies[i]->getBody(),
+        //     physx::PxTransform(physx::PxVec3(0.0f, _renderableEntity->getDimensions().y, 0.0f)) // where the joint is attached in the body space
+        // );
+        // joint->setMotion(physx::PxD6Axis::eY, physx::PxD6Motion::eLIMITED);
 
         // Lock all other DOFs
         // joint->setMotion(physx::PxD6Axis::eX, physx::PxD6Motion::eLOCKED);
@@ -116,7 +116,7 @@ void SpringSystem::createRigidBodies(const std::string& filePath, float scale)
         // joint->setMotion(physx::PxD6Axis::eSWING1, physx::PxD6Motion::eLOCKED);
         // joint->setMotion(physx::PxD6Axis::eSWING2, physx::PxD6Motion::eLOCKED);
 
-        joint->setLinearLimit(hardLimit);
+        // joint->setLinearLimit(hardLimit);
 
 		//Create spring forces
 		_internalForceGenerators[i - 1] = std::make_unique<SpringForce>(
@@ -137,11 +137,6 @@ void SpringSystem::createRigidBodies(const std::string& filePath, float scale)
     //     nullptr,
     //     physx::PxTransform(_rigidbodies.back()->getBottomCenter()) // where the joint is attached in the world space
     // );
-
-}
-
-void SpringSystem::createForceGenerator()
-{
 
 }
 
@@ -194,6 +189,11 @@ void SpringSystem::update(double deltaTime)
 void SpringSystem::attachObject(RigidBody* rb)
 {
     _looseEndJoint->setActors(_rigidbodies.back()->getBody(), rb->getBody());
+}
+
+PhysicalObject *SpringSystem::getEnd()
+{
+    return _rigidbodies.back().get();
 }
 
 // void SpringSystem::setRenderable(bool renderable)

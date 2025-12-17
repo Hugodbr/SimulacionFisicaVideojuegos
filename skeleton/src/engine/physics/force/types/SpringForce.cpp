@@ -49,7 +49,7 @@ void SpringForce::updateForce(double deltaTime)
 
     float extension = currentLength - _restingLength;
     // std::cout << "Current Length: " << currentLength << ", Resting Length: " << _restingLength << ", Extension: " << extension << std::endl;
-    extension = physx::PxClamp(extension, -_maxLength, _maxLength);
+    // extension = physx::PxClamp(extension, -_maxLength, _maxLength);
 
     if (_tensionOnly && extension <= 0.0f) {
         // Compression - no force applied

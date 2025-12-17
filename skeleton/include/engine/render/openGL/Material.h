@@ -27,6 +27,8 @@ public:
 	void setPearl();
 	void setPlasticRed();
 	void setObsidian();
+	void setOceanBlue();
+	void setTurquoise();
 
 protected:
 	// Coeficientes de reflexión

@@ -55,6 +55,13 @@ public:
 	Texture* metallicRoughnessTex = nullptr;
 	Texture* albedoTex = nullptr;
 
+	glm::vec4 albedoColor;
+    float metallicValue;
+    float roughnessValue;
+    float aoValue;
+    glm::vec3 emissiveColor;
+
+
 	// skeletal animation support /
 	struct BoneInfo {
 		std::string name;
