@@ -1,8 +1,9 @@
 #include "WaterBody.h"
 
 #include "Constants.h"
-#include "SurfBoardBody.h"
 #include "RopeNodeBody.h"
+#include "SurfBoardBody.h"
+#include "SurferBody.h"
 
 
 WaterBody::WaterBody(const physx::PxVec3& topCenter, const std::string& filePath, float scale)
@@ -76,6 +77,12 @@ void WaterBody::onTriggerEnter(physx::PxActor *other)
             SurfBoardBody* surfboard = static_cast<SurfBoardBody*>(rb);
             surfboard->setIsJumping(false);
             // std::cout << "SurfBoardBody entered water, setting isJumping to false: " << surfboard->isJumping() << std::endl;
+        }
+        else if (dynamic_cast<SurferBody*>(rb))
+        {
+            SurferBody* surfer = static_cast<SurferBody*>(rb);
+            surfer->undoJoint();
+            return; // Ignore surfboards for buoyancy
         }
         else if (dynamic_cast<RopeNodeBody*>(rb))
         {

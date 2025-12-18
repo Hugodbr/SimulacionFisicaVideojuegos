@@ -38,6 +38,15 @@ physx::PxVec3 SurferBody::getDirectionUp() const
     return direction.getNormalized();
 }
 
+void SurferBody::undoJoint()
+{
+//     if (_boardJoint)
+//     {
+//         _boardJoint->release();
+//         _boardJoint = nullptr;
+//     }
+}
+
 void SurferBody::initiallize(const physx::PxVec3 &center)
 {
     glm::vec3 dimensions = _renderableEntity->getDimensions();

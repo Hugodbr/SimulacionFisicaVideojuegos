@@ -80,7 +80,7 @@ void WakeboardScene::init()
 	);
 	board->init();
 
-    physx::PxD6Joint* joint = physx::PxD6JointCreate(
+    surfer_board_joint = physx::PxD6JointCreate(
         *PhysicsEngine::getInstance().getPhysics(),
         surfer->getBody(),
         physx::PxTransform(physx::PxVec3(0.0f, -surfer->getHeight()/2.0f + 0.4f, 0.0f)),
@@ -201,6 +201,9 @@ void WakeboardScene::init()
     _rigidBodySystems.push_back(std::move(ropeSystem));
     PhysicsEngine::getInstance().pushRigidBodySystem(_rigidBodySystems.back().get());
 
+    // Surfer and board with joint rewgister
+    _surferBody->setJoint(surfer_board_joint);
+
     // =========================================================================================
     // Trash System
     // =========================================================================================
@@ -300,21 +303,29 @@ void WakeboardScene::updateSurfer()
         );
     }
 
-    float torqueAmount = 10000.0f;
+    float torqueAmount = 100000.0f;
     float forceAmount = 500000.0f;
 
 	if(InputManager::getInstance().isKeyPressed(KeyCode::A))
     {
         static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addForce(
-            -forceAmount * _surferBody->getDirectionRight(),
-            physx::PxForceMode::eFORCE
+            physx::PxVec3(0.5f, 0.0f, 0.0f),
+            physx::PxForceMode::eVELOCITY_CHANGE
+        );
+        static_cast<physx::PxRigidBody*>(_surfBoardBody->getBody())->addForce(
+            physx::PxVec3(0.5f, 0.0f, 0.0f),
+            physx::PxForceMode::eVELOCITY_CHANGE
         );
     }
 	if(InputManager::getInstance().isKeyPressed(KeyCode::D))
     {
         static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addForce(
-            forceAmount * _surferBody->getDirectionRight(),
-            physx::PxForceMode::eFORCE
+            physx::PxVec3(-0.5f, 0.0f, 0.0f),
+            physx::PxForceMode::eVELOCITY_CHANGE
+        );
+        static_cast<physx::PxRigidBody*>(_surfBoardBody->getBody())->addForce(
+            physx::PxVec3(-0.5f, 0.0f, 0.0f),
+            physx::PxForceMode::eVELOCITY_CHANGE
         );
     }
 

@@ -17,7 +17,7 @@ Scene::init()
 	// allocate memory and load resources
 	// Lights
 	mGlobalLight = new DirLight(getDirLightID());
-	mGlobalLight->setDirection(glm::vec3(-1, -1, -1));
+	mGlobalLight->setDirection(glm::vec3(0, -1, 1));
 	gLights.push_back({ mGlobalLight, ON });
 	
 	// gLights.push_back({ new SpotLightYZ(getSpotLightID()), ON });

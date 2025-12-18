@@ -16,9 +16,11 @@ public:
     virtual physx::PxVec3 getDirectionRight() const;
     virtual physx::PxVec3 getDirectionUp() const;
 
-
+    virtual void setJoint(physx::PxJoint* joint) { _boardJoint = joint; }
+    virtual void undoJoint();
 
 protected:
     virtual void initiallize(const physx::PxVec3 &center);
 
+    physx::PxJoint* _boardJoint = nullptr;
 };

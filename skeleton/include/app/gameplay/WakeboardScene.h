@@ -44,4 +44,6 @@ private:
 
     int _splashBaseEmissionRate_Boat = 90;
     int _splashBaseEmissionRate_Surfer = 50;
+
+    physx::PxD6Joint* surfer_board_joint;
 };
