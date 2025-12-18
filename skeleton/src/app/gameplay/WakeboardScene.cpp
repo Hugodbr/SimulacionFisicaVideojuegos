@@ -197,7 +197,7 @@ void WakeboardScene::init()
         40,   // number of rigid bodies
         2.0f, // body mass
         1000.0f, // spring constant k
-        1.5f * totalLength,  // TODO max stretch
+        1.5f * totalLength, 
         ROOT_DIR + "\\resources\\blender\\sphere.obj",
         0.15f // scale
     );
