@@ -129,30 +129,10 @@ void WaterBody::resolveInteractions()
 
 physx::PxVec3 WaterBody::calculateBuoyancy(RigidBody& affectedBody)
 {
-    // std::cout << "FROM PHYSICS : -------------------------------------------------" << std::endl;
-    // physx::PxBounds3 affectedBodyBounds = static_cast<physx::PxRigidBody*>(affectedBody.getBody())->getWorldBounds();
-    // std::cout << "Affected body bounds: minY=" << affectedBodyBounds.minimum.y 
-    //       << " maxY=" << affectedBodyBounds.maximum.y << std::endl;
-    // physx::PxBounds3 b = static_cast<physx::PxRigidBody*>(this->getBody())->getWorldBounds();
-    // std::cout << "Water Trigger bounds: minY=" << b.minimum.y 
-    //       << " maxY=" << b.maximum.y << std::endl;
-    // std::cout << "FROM GAME LOGIC : ----------------------------------------------" << std::endl;
-    // std::cout << "Affected body bounds: minY=" << affectedBody.getBounds().minimum.y 
-    //       << " maxY=" << affectedBody.getBounds().maximum.y << std::endl;
-    // std::cout << "Water Trigger bounds: minY=" << this->getBounds().minimum.y 
-    //       << " maxY=" << this->getBounds().maximum.y << std::endl;
-    // std::cout << "Affected body centers: botcenterY=" << affectedBody.getBottomCenter().y 
-    //       << " topcenterY=" << affectedBody.getTopCenter().y << std::endl;
-    // std::cout << "Water Trigger centers: botcenterY=" << this->getBottomCenter().y 
-    //       << " topcenterY=" << this->getTopCenter().y << std::endl;
-
-    // std::cout << "Water level Y: " << _bounds.maximum.y << std::endl;
-    // std::cout << "Water bottom Y: " << _bounds.minimum.y << std::endl;
     physx::PxVec3 buoyantForce(0.0f, 0.0f, 0.0f);
     physx::PxVec3 gravity = Constants::Physics::Gravity;
     physx::PxVec3 affectedBodyVelocity = static_cast<physx::PxRigidBody*>(affectedBody.getBody())->getLinearVelocity();
     float bodyVolume = affectedBody.getVolume();
-    // std::cout << "Affected body volume: " << bodyVolume << " m^3" << std::endl;
     float bodySubmergedVolume = bodyVolume;
 
     if (affectedBodyVelocity.magnitude() < 0.01f) {
@@ -161,11 +141,7 @@ physx::PxVec3 WaterBody::calculateBuoyancy(RigidBody& affectedBody)
     }
     // Calculate drag forces
     float affectedBodyArea = bodyVolume / (affectedBody.getTopCenter().y - affectedBody.getBottomCenter().y); // approximate cross-sectional area
-    // std::cout << "Affected body approximate cross-sectional area: " << affectedBodyArea << " m^2" << std::endl;
-    physx::PxVec3 dragForce = - 0.5f * (_Cd * this->_density * affectedBodyArea * affectedBodyVelocity.getNormalized() * affectedBodyVelocity.magnitudeSquared()); // the - sign indicates that the drag force opposes the velocity
-
-    // physx::PxVec3 linearDragForce = -_k1 * affectedBodyVelocity; // the - sign indicates that the drag force opposes the velocity
-    // physx::PxVec3 quadraticDragForce = -_k2 * affectedBodyVelocity * affectedBodyVelocity.magnitude(); // quadratic drag
+    physx::PxVec3 dragForce = - 0.5f * (_Cd * this->_density * affectedBodyArea * affectedBodyVelocity.getNormalized() * affectedBodyVelocity.magnitudeSquared()); // the 
 
     // Calculate buoyant force based on submerged bounding box volume
     if (affectedBody.getBottomCenter().y > this->getBounds().maximum.y) {
@@ -178,29 +154,15 @@ physx::PxVec3 WaterBody::calculateBuoyancy(RigidBody& affectedBody)
     }
     // Body is partially submerged
     else {
-        // std::cout << "Body is partially submerged. Calculating partial buoyant force." << std::endl;
-        // std::cout << "Affected body top center Y: " << affectedBody.getTopCenter().y << ", bottom center Y: " << affectedBody.getBottomCenter().y << std::endl;
+
         float submergedHeight = this->getBounds().maximum.y - affectedBody.getBottomCenter().y;
         float totalHeight = affectedBody.getTopCenter().y - affectedBody.getBottomCenter().y;
         float submergedFraction = submergedHeight / totalHeight;
-        // std::cout << "Submerged height: " << submergedHeight << " m, Total height: " << totalHeight << " m, Submerged fraction: " << submergedFraction << std::endl;
         submergedFraction = physx::PxClamp(submergedFraction, 0.0f, 1.0f);
-        // linearDragForce *= submergedFraction;
-        // quadraticDragForce *= submergedFraction;
         bodySubmergedVolume *= submergedFraction;
     }
-    // std::cout << "TopCenter - WaterLevel = " << (affectedBody.getTopCenter().y - _bounds.maximum.y) << std::endl;
-    // std::cout << "BottomCenter - WaterLevel = " << (affectedBody.getBottomCenter().y - _bounds.maximum.y) << std::endl;
 
-    // std::cout << "Affected body submerged volume: " << bodySubmergedVolume << " m^3" << std::endl;
-    // std::cout << "drag greater than buoyant force: " << ((((-1) * _density * gravity * bodySubmergedVolume).abs().y) < ((linearDragForce + quadraticDragForce).abs()).y) << std::endl;
-    // // Calculate total buoyant force
+    // Calculate total buoyant force
     buoyantForce = ((-1) * _density * gravity * bodySubmergedVolume) + dragForce;
-    // buoyantForce = ((-1) * _density * gravity * bodySubmergedVolume) + linearDragForce + quadraticDragForce;
-    // std::cout << "Calculated buoyant force: (" << buoyantForce.x << ", " << buoyantForce.y << ", " << buoyantForce.z << ")" << std::endl;
-    // // ! teste Calculate total buoyant force
-    // std::cout << "Density: " << _density << " kg/m^3, Gravity: (" << gravity.x << ", " << gravity.y << ", " << gravity.z << "), Submerged Volume: " << bodySubmergedVolume << " m^3" << std::endl;
-    // buoyantForce = ((-1) * _density * gravity * bodySubmergedVolume);
-    // std::cout << "Calculated buoyant force: (" << buoyantForce.x << ", " << buoyantForce.y << ", " << buoyantForce.z << ")" << std::endl;
     return buoyantForce;
 }
