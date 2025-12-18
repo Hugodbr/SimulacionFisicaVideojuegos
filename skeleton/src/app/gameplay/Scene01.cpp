@@ -73,13 +73,13 @@ void Scene01::init()
 	// =========================================================================================
 	float halfRegionSizeRain = 100.0f;
 	Region rainRegion(physx::PxBounds3(physx::PxVec3(-halfRegionSizeRain, -halfRegionSizeRain, -halfRegionSizeRain), physx::PxVec3(halfRegionSizeRain, halfRegionSizeRain, halfRegionSizeRain)));
-	physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.shape.box.minimum.y, 0.0f);
+	physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.shape.box.maximum.y, 0.0f);
 	
 	std::unique_ptr<RainSystem> rs = std::make_unique<RainSystem>(rainOrigin, rainRegion);
 	rs->init();
 	// rs->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\blender\\sphere.obj"));
-	rs->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\glb\\low_poly_water_drop.glb",0.4f));
-	// rs->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\fbx\\crate-box-free\\source\\Crate.fbx"));
+	// rs->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\glb\\low_poly_water_drop.glb",0.4f));
+	rs->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\fbx\\crate-box-free\\source\\Crate.fbx"));
 	rs->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT, Constants::Group::DynamicGroup::ENEMY });
 
 	_particleSystems.push_back(std::move(rs));

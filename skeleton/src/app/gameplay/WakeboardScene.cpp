@@ -222,32 +222,6 @@ void WakeboardScene::init()
     _surferBody->setJoint(surfer_board_joint);
 
     // =========================================================================================
-    // Trash System
-    // =========================================================================================
-    // float halfRegionSizeTrash_X = 10.0f;
-	// float halfRegionSizeTrash_Y = 0.1f;
-	// float halfRegionSizeTrash_Z = 10.0f;
-	// Region trashRegion(
-	// 	physx::PxBounds3(
-	// 		physx::PxVec3(-halfRegionSizeTrash_X, -halfRegionSizeTrash_Y, -halfRegionSizeTrash_Z), 
-	// 		physx::PxVec3(halfRegionSizeTrash_X, halfRegionSizeTrash_Y, halfRegionSizeTrash_Z)
-	// 	)
-	// );
-
-    // physx::PxVec3 trashOrigin = _surfBoardBody->getPosition();
-    // std::unique_ptr<RigidBodySystem> trashSystem = std::make_unique<TrashSystem>(
-    //     trashOrigin,
-    //     trashRegion,
-    //     ROOT_DIR + "\\resources\\fbx\\crate-box-free\\source\\Crate.fbx",
-    //     1.0f
-    // );
-    // trashSystem->init();
-
-    // static_cast<TrashSystem*>(trashSystem.get())->setFollowTarget(*_boat);
-    // _rigidBodySystems.push_back(std::move(trashSystem));
-    // PhysicsEngine::getInstance().pushRigidBodySystem(_rigidBodySystems.back().get());
-
-    // =========================================================================================
     // Set initial camera position and orientation
     // =========================================================================================
     setCamera();
