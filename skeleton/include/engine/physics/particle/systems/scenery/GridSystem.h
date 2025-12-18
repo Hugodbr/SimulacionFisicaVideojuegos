@@ -16,6 +16,8 @@ public:
     void init() override;
     void update(double deltaTime) override;
 
+    virtual void onRender(const glm::mat4& modelViewMat) override;
+
     void setRenderable(bool renderable) override;
 
 protected:

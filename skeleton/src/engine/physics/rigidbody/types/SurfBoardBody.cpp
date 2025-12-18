@@ -77,5 +77,6 @@ void SurfBoardBody::initiallize(const physx::PxVec3 &center)
     // std::cout << "  Height: " << (updatedBounds.maximum.y - updatedBounds.minimum.y) << std::endl;
     // std::cout << "  Depth: " << (updatedBounds.maximum.z - updatedBounds.minimum.z) << std::endl;
 
+    updateRenderableEntityPose();
     // std::cout << "SurfBoardBody created at position: (" << center.x << ", " << center.y << ", " << center.z << ")" << std::endl;
 }

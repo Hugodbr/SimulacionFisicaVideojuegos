@@ -3,7 +3,10 @@
 #include "ConstantParticleGenerator.h"
 #include "StaticParticle.h"
 #include "ForceGenerator.h"
+#include "ParticlePool.h"
 
+#include "ParticleGenerationPolicy.h"
+#include "ParticleLifetimePolicy.h"
 
 GridSystem::GridSystem(const Region &region, float pointSize, double scale, const physx::PxVec4& color)
     : ParticleSystem()
@@ -33,6 +36,34 @@ void GridSystem::update(double deltaTime)
 	if (!isActive()) {
 		return;
 	}
+}
+
+void GridSystem::onRender(const glm::mat4 &modelViewMat)
+{
+    assert(_renderableEntity && "Renderable entity not set for GridSystem.");
+
+    for (auto& [generator, pool] : _generatorsAndPools) 
+    {
+        for (auto& particle : pool->accessParticlePool()) 
+        {
+            if (particle->isActive()) {
+                _renderableEntity->setPose(
+                    glm::vec3(
+                        particle->getPosition().x,
+                        particle->getPosition().y,
+                        particle->getPosition().z
+                    ),
+                    glm::quat(
+                        particle->getTransform().q.w,
+                        particle->getTransform().q.x,
+                        particle->getTransform().q.y,
+                        particle->getTransform().q.z
+                    )
+                );
+                _renderableEntity->render(modelViewMat);
+            }
+        }
+    }
 }
 
 void GridSystem::setRenderable(bool renderable)

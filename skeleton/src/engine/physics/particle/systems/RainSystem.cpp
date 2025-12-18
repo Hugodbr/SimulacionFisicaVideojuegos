@@ -6,8 +6,10 @@
 #include "Particle.h"
 #include "RainParticle.h"
 #include "MeshData.h"
-#include "HurricaneForce.h"
-#include "ExplosionForce.h"
+#include "ParticlePool.h"
+
+#include "ParticleGenerationPolicy.h"
+#include "ParticleLifetimePolicy.h"
 
 
 RainSystem::RainSystem(const physx::PxVec3& origin, const Region& region)
@@ -135,7 +137,7 @@ void RainSystem::update(double deltaTime)
 			particles[i]->update(deltaTime);
 
 			if (mustKillParticle(*particles[i], *gen)) {
-				pool->deactivate(i);
+				pool->deactivateParticle(i);
 				--i; // Adjust index after deactivation
 			}
 		}
@@ -143,7 +145,7 @@ void RainSystem::update(double deltaTime)
 
 }
 
-void RainSystem::render(const glm::mat4 &modelViewMat)
+void RainSystem::onRender(const glm::mat4 &modelViewMat)
 {
 	assert(_renderableEntity && "Renderable entity not set for RainSystem.");
 

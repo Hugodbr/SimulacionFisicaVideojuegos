@@ -75,7 +75,7 @@ void WaterBody::onTriggerEnter(physx::PxActor *other)
         if (dynamic_cast<SurfBoardBody*>(rb)) {
             SurfBoardBody* surfboard = static_cast<SurfBoardBody*>(rb);
             surfboard->setIsJumping(false);
-            std::cout << "SurfBoardBody entered water, setting isJumping to false: " << surfboard->isJumping() << std::endl;
+            // std::cout << "SurfBoardBody entered water, setting isJumping to false: " << surfboard->isJumping() << std::endl;
         }
         else if (dynamic_cast<RopeNodeBody*>(rb))
         {

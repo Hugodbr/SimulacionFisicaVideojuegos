@@ -91,5 +91,9 @@ void BoxBody::initiallize(const physx::PxVec3 &center)
     _body->userData = this; // for collision callbacks
     _scene->addActor(*_body);
 
+    // this->_transform.p = center;
+
+    // updateRenderableEntityPose();
+
     std::cout << "BoxBody created at position: (" << center.x << ", " << center.y << ", " << center.z << ")" << std::endl;
 }

@@ -44,13 +44,6 @@ glm::vec3 Abs_Entity::getWPos()
 	return mWorldPosition;
 }
 
-// void Abs_Entity::setWPos(glm::vec3 position)
-// {
-// 	setModelMat(glm::translate(modelMat(), -mWorldPosition));
-// 	mWorldPosition = position;
-// 	setModelMat(glm::translate(modelMat(), mWorldPosition));
-// }
-
 void Abs_Entity::setWPos(const glm::vec3& position)
 {
 	setPose(position, mWorldRotation);

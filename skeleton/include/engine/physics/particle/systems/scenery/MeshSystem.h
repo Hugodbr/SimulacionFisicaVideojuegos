@@ -5,6 +5,7 @@
 #include <string>
 
 #include "ParticleSystem.h"
+#include "ParticlePool.h"
 #include "ParticleWithMass.h"
 #include "MeshData.h"
 
@@ -23,7 +24,9 @@ public:
     virtual void init() override;
     virtual void update(double deltaTime) override;
 
-    virtual void setRenderableEntity(std::unique_ptr<Abs_Entity> renderable) override;
+    virtual void onRender(const glm::mat4& modelViewMat) override;
+
+    virtual void setRenderableEntity(std::shared_ptr<Abs_Entity> renderable) override;
     virtual void render(const glm::mat4& modelViewMat) override;
     // virtual void load() override;
 	// virtual void unload() override;

@@ -2,12 +2,12 @@
 
 #include <algorithm>
 
-
+#include "PhysicalObject.h"
 
 //=========================================================================================================
-// PARTICLE GENERATION POLICY
+// OBJECT GENERATION POLICY
 //=========================================================================================================
-ParticleGenerationPolicy::ParticleGenerationPolicy()
+ObjectGenerationPolicy::ObjectGenerationPolicy()
     : useSpawnCount(false),
       spawnCount(ScalarStats(0.0, 0.0)),
       useSpawnInterval(false),
@@ -18,7 +18,7 @@ ParticleGenerationPolicy::ParticleGenerationPolicy()
       accumulator(0.0)
 { }
 
-ParticleGenerationPolicy::ParticleGenerationPolicy(
+ObjectGenerationPolicy::ObjectGenerationPolicy(
     bool useSpawnCount,    ScalarStats spawnCount,
     bool useSpawnInterval, ScalarStats spawnInterval)
     : useSpawnCount(useSpawnCount)
@@ -28,7 +28,7 @@ ParticleGenerationPolicy::ParticleGenerationPolicy(
     , region(Region(POINT_3D, Vector3Stats(physx::PxVec3(0, 0, 0), physx::PxVec3(0, 0, 0))))
 { }
 
-ParticleGenerationPolicy::ParticleGenerationPolicy(SpawnMode mode, ScalarStats spawnStats)
+ObjectGenerationPolicy::ObjectGenerationPolicy(SpawnMode mode, ScalarStats spawnStats)
     : useSpawnCount(mode == SpawnMode::Count)
     , spawnCount(mode == SpawnMode::Count ? spawnStats : ScalarStats(0, 0))
     , useSpawnInterval(mode == SpawnMode::Interval)
@@ -39,11 +39,11 @@ ParticleGenerationPolicy::ParticleGenerationPolicy(SpawnMode mode, ScalarStats s
     , accumulator(0.0)
 { }
 
-ParticleGenerationPolicy::ParticleGenerationPolicy(int constantSpawnCount)
-    : ParticleGenerationPolicy(false, ScalarStats(constantSpawnCount, 0.0), false, ScalarStats())
+ObjectGenerationPolicy::ObjectGenerationPolicy(int constantSpawnCount)
+    : ObjectGenerationPolicy(false, ScalarStats(constantSpawnCount, 0.0), false, ScalarStats())
 { }
 
-ParticleGenerationPolicy::ParticleGenerationPolicy(const ParticleGenerationPolicy& other)
+ObjectGenerationPolicy::ObjectGenerationPolicy(const ObjectGenerationPolicy& other)
     : useSpawnCount(other.useSpawnCount)
     , spawnCount(other.spawnCount)
     , useSpawnInterval(other.useSpawnInterval)
@@ -55,37 +55,37 @@ ParticleGenerationPolicy::ParticleGenerationPolicy(const ParticleGenerationPolic
     , color(other.color)
 { }
 
-void ParticleGenerationPolicy::setSpawnCount(const ScalarStats& newSpawnCount)
+void ObjectGenerationPolicy::setSpawnCount(const ScalarStats& newSpawnCount)
 {
     useSpawnCount = true;
     spawnCount = newSpawnCount;
 }
 
-void ParticleGenerationPolicy::setSpawnInterval(const ScalarStats& newSpawnInterval)
+void ObjectGenerationPolicy::setSpawnInterval(const ScalarStats& newSpawnInterval)
 {
     useSpawnInterval = true;
     spawnInterval = newSpawnInterval;
 }
 
-void ParticleGenerationPolicy::setEmitterOrigin(const physx::PxVec3 &origin)
+void ObjectGenerationPolicy::setEmitterOrigin(const physx::PxVec3 &origin)
 {
     region.moveRegionTo(origin);
     updatePositionFromRegion();
 }
 
-void ParticleGenerationPolicy::setVelocity(const Vector3Stats &velocity)
+void ObjectGenerationPolicy::setVelocity(const Vector3Stats &velocity)
 {
     this->velocity = velocity;
 }
 
-void ParticleGenerationPolicy::setRegion(const Region& r)
+void ObjectGenerationPolicy::setRegion(const Region& r)
 {
     this->region = Region(r);
 
     updatePositionFromRegion();
 }
 
-void ParticleGenerationPolicy::updatePositionFromRegion()
+void ObjectGenerationPolicy::updatePositionFromRegion()
 {
     switch (region.type) 
     {
@@ -117,37 +117,23 @@ void ParticleGenerationPolicy::updatePositionFromRegion()
     }
 }
 
-void ParticleGenerationPolicy::setColor(const ColorStats &newColor)
+void ObjectGenerationPolicy::setColor(const ColorStats &newColor)
 {
     color = newColor;
 }
 
-void ParticleGenerationPolicy::setCustomCallback(std::function<bool()> newCustomCallback) {
+void ObjectGenerationPolicy::setCustomCallback(std::function<bool()> newCustomCallback) {
     customCallback = std::move(newCustomCallback);
 }
 
 // Redundancy for further implementation if needed
-physx::PxVec3 ParticleGenerationPolicy::generatePosition(const std::function<double()>& distributionFunc)
+physx::PxVec3 ObjectGenerationPolicy::generatePosition(const std::function<double()>& distributionFunc)
 {
     if (region.type == POINT_3D) {
        return position.mean;
     }
-    // else if (region.type == BOX) {
-    //    physx::PxVec3 generatedPosition;
-    //    generatedPosition.x = position.mean.x + position.deviation.x * distributionFunc();
-    //    generatedPosition.y = position.mean.y + position.deviation.y * distributionFunc();
-    //    generatedPosition.z = position.mean.z + position.deviation.z * distributionFunc();
-    //    std::cout << "ParticleGenerationPolicy -> generatePosition: (" << generatedPosition.x << "," << generatedPosition.y << "," << generatedPosition.z << ")" << std::endl;
-    //    return generatedPosition;
-    // }
-    //else if (regionType == SpawnRegionType::SPHERE) {
-    //    return position.mean + position.deviation * distr;
-    //}
-    //else if (regionType == SpawnRegionType::DISC) {
-    //    return position.mean + position.deviation * distr;
-    //}
-    if (region.type == MESH) {
-        // std::cout << "ParticleGenerationPolicy -> generatePosition: MESH region." << std::endl;
+    else if (region.type == MESH) {
+        // std::cout << "ObjectGenerationPolicy -> generatePosition: MESH region." << std::endl;
         return region.shape.mesh.randomPointOnMesh(distributionFunc);
     }
 
@@ -155,14 +141,11 @@ physx::PxVec3 ParticleGenerationPolicy::generatePosition(const std::function<dou
     generatedPosition.x = position.mean.x + position.deviation.x * distributionFunc();
     generatedPosition.y = position.mean.y + position.deviation.y * distributionFunc();
     generatedPosition.z = position.mean.z + position.deviation.z * distributionFunc();
-    // std::cout << "ParticleGenerationPolicy -> generatePosition: (" << generatedPosition.x << "," << generatedPosition.y << "," << generatedPosition.z << ")" << std::endl;
+    // std::cout << "ObjectGenerationPolicy -> generatePosition: (" << generatedPosition.x << "," << generatedPosition.y << "," << generatedPosition.z << ")" << std::endl;
     return generatedPosition;
-
-
-    //return position.mean + position.deviation * distr;
 }
 
-physx::PxVec3 ParticleGenerationPolicy::generateVelocity(const std::function<double()> &distributionFunc)
+physx::PxVec3 ObjectGenerationPolicy::generateVelocity(const std::function<double()> &distributionFunc)
 {
     physx::PxVec3 generatedVelocity;
     generatedVelocity.x = velocity.mean.x + velocity.deviation.x * static_cast<float>(distributionFunc());
@@ -171,7 +154,7 @@ physx::PxVec3 ParticleGenerationPolicy::generateVelocity(const std::function<dou
     return generatedVelocity;
 }
 
-physx::PxVec4 ParticleGenerationPolicy::generateColor(const std::function<double()> &distributionFunc)
+physx::PxVec4 ObjectGenerationPolicy::generateColor(const std::function<double()> &distributionFunc)
 {
     physx::PxVec4 generatedColor;
     generatedColor.x = color.mean.x + color.deviation.x * static_cast<float>(distributionFunc());
@@ -181,14 +164,14 @@ physx::PxVec4 ParticleGenerationPolicy::generateColor(const std::function<double
     return generatedColor;
 }
 
-bool ParticleGenerationPolicy::shouldSpawn(double distr, double deltaTime)
+bool ObjectGenerationPolicy::shouldSpawn(double distr, double deltaTime)
 {
-    //std::cout << "ParticleGenerationPolicy -> shouldSpawn." << std::endl;
+    //std::cout << "ObjectGenerationPolicy -> shouldSpawn." << std::endl;
     if (customCallback) {
         return customCallback();
     }
     if (useSpawnInterval) {
-        //std::cout << "ParticleGenerationPolicy -> useSpawnInterval -> accumulator: " << accumulator << std::endl;
+        //std::cout << "ObjectGenerationPolicy -> useSpawnInterval -> accumulator: " << accumulator << std::endl;
         currentSpawnInterval = spawnInterval.mean + spawnInterval.deviation * distr;
         accumulator += deltaTime;
         if (accumulator < currentSpawnInterval) {
@@ -201,9 +184,9 @@ bool ParticleGenerationPolicy::shouldSpawn(double distr, double deltaTime)
     return true;
 }
 
-int ParticleGenerationPolicy::spawnNumber(double distr) const
+int ObjectGenerationPolicy::spawnNumber(double distr) const
 {
-    //std::cout << "ParticleGenerationPolicy -> spawnNumber -> distr: " << distr << std::endl;
+    //std::cout << "ObjectGenerationPolicy -> spawnNumber -> distr: " << distr << std::endl;
 
     if (useSpawnCount) {
         return static_cast<int>(spawnCount.mean + spawnCount.deviation * distr);
@@ -214,10 +197,10 @@ int ParticleGenerationPolicy::spawnNumber(double distr) const
 }
 
 //=========================================================================================================
-// PARTICLE LIFETIME POLICY
+// OBJECT LIFETIME POLICY
 //=========================================================================================================
 
-ParticleLifetimePolicy::ParticleLifetimePolicy()
+ObjectLifetimePolicy::ObjectLifetimePolicy()
     : useLifetime(false)
     , lifetime(ScalarStats())
     , useVolumeBounds(false)
@@ -228,69 +211,28 @@ ParticleLifetimePolicy::ParticleLifetimePolicy()
 {
 }
 
-ParticleLifetimePolicy::ParticleLifetimePolicy(const ScalarStats& lifetime)
-    : ParticleLifetimePolicy()
+ObjectLifetimePolicy::ObjectLifetimePolicy(const ScalarStats& lifetime)
+    : ObjectLifetimePolicy()
 {
     setLifetime(lifetime);
 }
 
-ParticleLifetimePolicy::ParticleLifetimePolicy(const Region &region, BoundType boundType)
-    : ParticleLifetimePolicy()
+ObjectLifetimePolicy::ObjectLifetimePolicy(const Region &region, BoundType boundType)
+    : ObjectLifetimePolicy()
 {
     useVolumeBounds = true;
     setVolumeRegion(region);
     this->boundType = boundType;
 }
 
-// ParticleLifetimePolicy::ParticleLifetimePolicy(const physx::PxBounds3& box, BoundType boundType)
-//     : ParticleLifetimePolicy()
-// {
-//     useVolumeBounds = true;
-//     region.shape.box = box;
-//     this->boundType = boundType;
-// }
-
-// ParticleLifetimePolicy::ParticleLifetimePolicy(const Vector3Stats& sphere, BoundType boundType)
-//     : ParticleLifetimePolicy()
-// {
-//     useVolumeBounds = true;
-//     region.shape.sphere = sphere;
-//     this->boundType = boundType;
-// }
-
-ParticleLifetimePolicy::ParticleLifetimePolicy(std::function<bool(double, const Particle&)> callback)
-    : ParticleLifetimePolicy()
+ObjectLifetimePolicy::ObjectLifetimePolicy(std::function<bool()> callback)
+    : ObjectLifetimePolicy()
 {
     useCustomCondition = true;
     customCallback = callback;
 }
 
-// ParticleLifetimePolicy::ParticleLifetimePolicy(
-//     const ScalarStats& lifetime,
-//     const physx::PxBounds3& box,
-//     BoundType boundType)
-//     : ParticleLifetimePolicy(box, boundType)
-// {
-//     region.shape.box = box;
-//     useLifetime = true;
-//     this->lifetime = lifetime;
-// }
-
-// ParticleLifetimePolicy::ParticleLifetimePolicy(
-//     const ScalarStats& lifetime,
-//     const Vector3Stats& sphere,
-//     BoundType boundType,
-//     std::function<bool(double, const Particle&)> callback)
-//     : ParticleLifetimePolicy(sphere, boundType)
-// {
-//     region.shape.sphere = sphere;
-//     useLifetime = true;
-//     this->lifetime = lifetime;
-//     useCustomCondition = true;
-//     customCallback = callback;
-// }
-
-ParticleLifetimePolicy::ParticleLifetimePolicy(const ParticleLifetimePolicy& other)
+ObjectLifetimePolicy::ObjectLifetimePolicy(const ObjectLifetimePolicy& other)
     : useLifetime(other.useLifetime)
     , lifetime(other.lifetime)
     , useVolumeBounds(other.useVolumeBounds)
@@ -302,29 +244,13 @@ ParticleLifetimePolicy::ParticleLifetimePolicy(const ParticleLifetimePolicy& oth
 {
 }
 
-void ParticleLifetimePolicy::setLifetime(const ScalarStats& newLifetime)
+void ObjectLifetimePolicy::setLifetime(const ScalarStats& newLifetime)
 {
     useLifetime = true;
     lifetime = newLifetime;
 }
 
-// void ParticleLifetimePolicy::setVolumeBoundsBox(const physx::PxBounds3& newBox)
-// {
-//     assert(this->region.type == VolumeType::BOX && "Lifetime volume not a box!");
-
-//     useVolumeBounds = true;
-//     shape.box = newBox;
-// }
-
-// void ParticleLifetimePolicy::setVolumeBoundsSphere(const Vector3Stats& newSphere)
-// {
-//     assert(this->volumeType == VolumeType::SPHERE && "Lifetime volume not a sphere!");
-
-//     useVolumeBounds = true;
-//     shape.sphere = newSphere;
-// }
-
-void ParticleLifetimePolicy::setVolumeRegion(const Region &r)
+void ObjectLifetimePolicy::setVolumeRegion(const Region &r)
 {
     useVolumeBounds = true;
 
@@ -351,32 +277,32 @@ void ParticleLifetimePolicy::setVolumeRegion(const Region &r)
     }
 }
 
-void ParticleLifetimePolicy::setVolumeBoundsFadeSize(const ScalarStats &newFade)
+void ObjectLifetimePolicy::setVolumeBoundsFadeSize(const ScalarStats &newFade)
 {
     assert(this->boundType == BoundType::FADE && "Lifetime bound type not fade!");
 
     fade = newFade;
 }
 
-void ParticleLifetimePolicy::setCustomCondition(std::function<bool(double, const Particle&)>& newCustomCallback)
+void ObjectLifetimePolicy::setCustomCallback(std::function<bool()> newCustomCallback)
 {
     useCustomCondition = true;
     customCallback = newCustomCallback;
 }
 
-void ParticleLifetimePolicy::unsetLifetime() {
+void ObjectLifetimePolicy::unsetLifetime() {
     useLifetime = false;
 }
 
-void ParticleLifetimePolicy::unsetVolumeBounds() {
+void ObjectLifetimePolicy::unsetVolumeBounds() {
     useVolumeBounds = false;
 }
 
-void ParticleLifetimePolicy::unsetCustomCondition() {
+void ObjectLifetimePolicy::unsetCustomCondition() {
     useCustomCondition = false;
 }
 
-bool ParticleLifetimePolicy::shouldDelete(double distr, const Particle& p) const
+bool ObjectLifetimePolicy::shouldDelete(double distr, const PhysicalObject& p) const
 {
     if (hasLeftBounds(distr, p) || hasExpired(distr, p) || hasCustom(distr, p)) {
         return true;
@@ -384,7 +310,7 @@ bool ParticleLifetimePolicy::shouldDelete(double distr, const Particle& p) const
     return false;
 }
 
-bool ParticleLifetimePolicy::hasLeftBounds(double distr, const Particle& p) const
+bool ObjectLifetimePolicy::hasLeftBounds(double distr, const PhysicalObject& p) const
 {
     if (useVolumeBounds) {
 
@@ -450,7 +376,7 @@ bool ParticleLifetimePolicy::hasLeftBounds(double distr, const Particle& p) cons
     return false;
 }
 
-bool ParticleLifetimePolicy::hasExpired(double distr, const Particle& p) const
+bool ObjectLifetimePolicy::hasExpired(double distr, const PhysicalObject& p) const
 {
     if (useLifetime) {
         double lifetimeLimit = lifetime.mean + lifetime.deviation * distr;
@@ -461,10 +387,10 @@ bool ParticleLifetimePolicy::hasExpired(double distr, const Particle& p) const
     return false;
 }
 
-bool ParticleLifetimePolicy::hasCustom(double distr, const Particle& p) const
+bool ObjectLifetimePolicy::hasCustom(double distr, const PhysicalObject& p) const
 {
     if (useCustomCondition) {
-        return customCallback(distr, p);
+        return customCallback();
     }
     return false;
 }

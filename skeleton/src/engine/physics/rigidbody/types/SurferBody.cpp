@@ -89,16 +89,17 @@ void SurferBody::initiallize(const physx::PxVec3 &center)
     _scene->addActor(*_body);
 
     // Print bounds for debugging
-    std::cout << "SurferBody bounds after initialization: " << std::endl;
-    std::cout << "  Min: (" << _body->getWorldBounds().minimum.x << ", " << _body->getWorldBounds().minimum.y << ", " << _body->getWorldBounds().minimum.z << ")" << std::endl;
-    std::cout << "  Max: (" << _body->getWorldBounds().maximum.x << ", " << _body->getWorldBounds().maximum.y << ", " << _body->getWorldBounds().maximum.z << ")" << std::endl;
+    // std::cout << "SurferBody bounds after initialization: " << std::endl;
+    // std::cout << "  Min: (" << _body->getWorldBounds().minimum.x << ", " << _body->getWorldBounds().minimum.y << ", " << _body->getWorldBounds().minimum.z << ")" << std::endl;
+    // std::cout << "  Max: (" << _body->getWorldBounds().maximum.x << ", " << _body->getWorldBounds().maximum.y << ", " << _body->getWorldBounds().maximum.z << ")" << std::endl;
 
     // Print dimensions based on bounds
     physx::PxBounds3 updatedBounds = _body->getWorldBounds();
-    std::cout << "SurferBody dimensions after initialization: " << std::endl;
-    std::cout << "  Width: " << (updatedBounds.maximum.x - updatedBounds.minimum.x) << std::endl;
-    std::cout << "  Height: " << (updatedBounds.maximum.y - updatedBounds.minimum.y) << std::endl;
-    std::cout << "  Depth: " << (updatedBounds.maximum.z - updatedBounds.minimum.z) << std::endl;
-
-    std::cout << "SurferBody created at position: (" << center.x << ", " << center.y << ", " << center.z << ")" << std::endl;
+    // std::cout << "SurferBody dimensions after initialization: " << std::endl;
+    // std::cout << "  Width: " << (updatedBounds.maximum.x - updatedBounds.minimum.x) << std::endl;
+    // std::cout << "  Height: " << (updatedBounds.maximum.y - updatedBounds.minimum.y) << std::endl;
+    // std::cout << "  Depth: " << (updatedBounds.maximum.z - updatedBounds.minimum.z) << std::endl;
+    
+    updateRenderableEntityPose();
+    // std::cout << "SurferBody created at position: (" << center.x << ", " << center.y << ", " << center.z << ")" << std::endl;
 }

@@ -87,7 +87,7 @@ void SpringSystem::createRigidBodies(const std::string& filePath, float scale)
     {
         physx::PxVec3 position = physx::PxVec3(
             _originAnchor.x,
-            _originAnchor.y - (i * _segmentLength - 2.0f * _renderableEntity->getDimensions().y),
+            _originAnchor.y - (i * _segmentLength - 0.1f),
             _originAnchor.z
         );
         _rigidbodies[i] = std::make_unique<BoxBody>(
@@ -123,7 +123,7 @@ void SpringSystem::createRigidBodies(const std::string& filePath, float scale)
 			static_cast<PhysicalObject*>(_rigidbodies[i - 1].get()), // main object
 			static_cast<PhysicalObject*>(_rigidbodies[i].get()), // other object
 			_k, // spring constant
-			_segmentLength/2.0f, // resting length
+			_segmentLength, // resting length
 			_maxSegmentLength // max length
 		);
         

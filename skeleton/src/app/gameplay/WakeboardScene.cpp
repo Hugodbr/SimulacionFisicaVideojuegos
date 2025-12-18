@@ -134,7 +134,7 @@ void WakeboardScene::init()
         surfer.get(), // end body
         endAttachPoint,  // end attach point
 
-        20,   // number of rigid bodies
+        35,   // number of rigid bodies
         2.0f, // body mass
         1000.0f, // spring constant k
         1.5f * totalLength,  // TODO max stretch

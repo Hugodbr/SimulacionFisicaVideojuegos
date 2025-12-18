@@ -6,9 +6,9 @@
 #include "GaussianParticleGenerator.h"
 #include "Particle.h"
 #include "RainParticle.h"
-#include "MeshData.h"
-#include "HurricaneForce.h"
-#include "ExplosionForce.h"
+
+#include "ParticleGenerationPolicy.h"
+#include "ParticleLifetimePolicy.h"
 
 
 SplashSystem::SplashSystem(const physx::PxVec3& origin, const Region& region)
@@ -30,7 +30,7 @@ void SplashSystem::initParticleGeneratorAndPool()
 	_generatorsAndPools.push_back({
         std::make_unique<GaussianParticleGenerator>(),
         std::make_unique<ParticlePool<RainParticle>>(
-			1000,  // Pool size
+			Constants::System::Splash::ReserveCountPerGenerator,  // Pool size
 			physx::PxTransform(0, 0, 0, physx::PxQuat(0)) // Initial transform particle
 		)
     });
@@ -59,7 +59,7 @@ void SplashSystem::initParticleGeneratorAndPool()
     generator->setGenerationPolicy(genPolicy);
 
     // Create lifetime policy
-    ParticleLifetimePolicy lifePolicy = ParticleLifetimePolicy(ScalarStats(1.0f, 0.15f));
+    ParticleLifetimePolicy lifePolicy = ParticleLifetimePolicy(ScalarStats(0.7f, 0.15f));
 
 	generator->setLifetimePolicy(lifePolicy);
 }
@@ -136,7 +136,7 @@ void SplashSystem::update(double deltaTime)
 			particles[i]->update(deltaTime);
 
 			if (mustKillParticle(*particles[i], *gen)) {
-				pool->deactivate(i);
+				pool->deactivateParticle(i);
 				--i; // Adjust index after deactivation
 			}
 		}

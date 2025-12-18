@@ -63,7 +63,7 @@ public:
     void setParticleSystem(ParticleSystem* particleSystem) { _particleSystem = particleSystem; }
     // Getter for ParticleSystem. Caution: may return nullptr if not set.
     ParticleSystem* getParticleSystem() const { return _particleSystem; }
-    RigidBodySystem* getRigidBodySystem() const { return _rigidBodySystem; } // TODO how to handle both? Create a base System class?
+    RigidBodySystem* getRigidBodySystem() const { return _rigidBodySystem; }
 
 protected:
     virtual physx::PxVec3 computeForceOnParticle(ParticleWithMass& particle);

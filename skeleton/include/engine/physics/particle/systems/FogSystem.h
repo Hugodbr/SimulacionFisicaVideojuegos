@@ -19,14 +19,14 @@ public:
 
 	void init() override;
 	void update(double deltaTime) override;
-	virtual void render(const glm::mat4& modelViewMat) override;
+	virtual void onRender(const glm::mat4& modelViewMat) override;
 
 	// Sets all active particles to renderable or not
 	void setRenderable(bool renderable) override;
 
 	// Returns the reserve count per generator for this system
 	virtual uint64_t getReserveCountPerGenerator() const override { 
-		return Constants::System::Rain::ReserveCountPerGenerator; 
+		return Constants::System::Fog::ReserveCountPerGenerator; 
 	}
 
 protected:

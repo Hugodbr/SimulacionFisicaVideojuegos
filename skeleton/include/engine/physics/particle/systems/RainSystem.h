@@ -26,7 +26,8 @@ public:
 
 	void init() override;
 	void update(double deltaTime) override;
-	virtual void render(const glm::mat4& modelViewMat) override;
+	
+	virtual void onRender(const glm::mat4& modelViewMat) override;
 
 	// Sets all active particles to renderable or not
 	void setRenderable(bool renderable) override;

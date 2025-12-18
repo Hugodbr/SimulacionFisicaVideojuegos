@@ -125,14 +125,27 @@ namespace Constants
 		namespace Rain {
 			static inline constexpr uint64_t ReserveCountPerGenerator = 10000;
 		};
-		namespace Trash {
-			static inline constexpr uint64_t ReserveCountPerGenerator = 3;
+		namespace Fog {
+			static inline constexpr uint64_t ReserveCountPerGenerator = 10000;
 		};
-
+		namespace Splash {
+			static inline constexpr uint64_t ReserveCountPerGenerator = 1000;
+		};
 		namespace Gun {
 			static inline constexpr uint64_t ReserveCountPerBulletGenerator = 30;
 			static inline constexpr uint64_t ReserveCountPerMuzzleGenerator = 3000;
 		};
+
+		namespace Trash {
+			static inline constexpr uint64_t ReserveCountPerGenerator = 3;
+		};
+		namespace Rope {
+			static inline constexpr uint64_t ReserveCountPerGenerator = 50;
+		};
+		namespace Spring {
+			static inline constexpr uint64_t ReserveCountPerGenerator = 40;
+		};
+
 	};
 };
 

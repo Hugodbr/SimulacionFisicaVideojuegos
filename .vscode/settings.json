@@ -83,5 +83,9 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "memory_resource": "cpp"
+    },
+
+    "cmake.environment": {
+        "VSLANG": "1033"
     }
 }

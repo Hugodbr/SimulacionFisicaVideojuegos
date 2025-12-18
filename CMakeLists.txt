@@ -33,6 +33,7 @@ set(MY_INCLUDE_DIRECTORIES
     "${SKELETON_INCLUDE_DIR}/app/gameplay"
 
     "${SKELETON_INCLUDE_DIR}/core"
+    "${SKELETON_INCLUDE_DIR}/core/generators"
 
     "${SKELETON_INCLUDE_DIR}/framework"
     "${SKELETON_INCLUDE_DIR}/framework/glfw"
@@ -55,6 +56,7 @@ set(MY_INCLUDE_DIRECTORIES
     "${SKELETON_INCLUDE_DIR}/engine/physics/rigidbody"
     "${SKELETON_INCLUDE_DIR}/engine/physics/rigidbody/types"
     "${SKELETON_INCLUDE_DIR}/engine/physics/rigidbody/systems"
+    "${SKELETON_INCLUDE_DIR}/engine/physics/rigidbody/generators"
 
     "${SKELETON_INCLUDE_DIR}/engine/render"
     "${SKELETON_INCLUDE_DIR}/engine/render/openGL"

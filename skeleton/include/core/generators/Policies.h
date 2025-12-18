@@ -6,15 +6,15 @@
 
 #include "Region.h"
 
-#include "Particle.h"
+class PhysicalObject;
 
 //========================================================================================
-// PARTICLE GENERATION POLICY
+// OBJECT GENERATION POLICY
 //========================================================================================
 
 enum class SpawnMode { Count, Interval }; // for distinguishing constructors
 
-struct ParticleGenerationPolicy
+struct ObjectGenerationPolicy
 {
     bool useSpawnCount;     // set true to spawn according to prob distribution
     ScalarStats spawnCount;
@@ -28,30 +28,27 @@ struct ParticleGenerationPolicy
 
     Region region;
 
-    // std::function<bool(double, const Particle*)> customCallback; // custom callback to given particle
-    std::function<bool()> customCallback; // custom callback to given particle
+    std::function<bool()> customCallback;
 
-private:
+protected:
     double currentSpawnInterval = INT_MAX;
     double accumulator = 0.0; // auxiliar to interval evaluation
 
     void updatePositionFromRegion();
 
 public:
-
     // CONSTRUCTORS --------------------------------------------------------------------------
-    // No default constructor
-    ParticleGenerationPolicy(); 
+    ObjectGenerationPolicy(); 
     // Spawn count and spawn interval
-    ParticleGenerationPolicy(
+    ObjectGenerationPolicy(
         bool useSpawnCount,    ScalarStats spawnCount,
         bool useSpawnInterval, ScalarStats spawnInterval);
     // Only spawn count or only interval
-    ParticleGenerationPolicy(SpawnMode mode, ScalarStats spawnStats);
+    ObjectGenerationPolicy(SpawnMode mode, ScalarStats spawnStats);
     // For constant spawn count
-    ParticleGenerationPolicy(int constantSpawnCount);
+    ObjectGenerationPolicy(int constantSpawnCount);
     // Copy constructor
-    ParticleGenerationPolicy(const ParticleGenerationPolicy& other);
+    ObjectGenerationPolicy(const ObjectGenerationPolicy& other);
 
     // METHODS -----------------------------------------------------------------------------------------
     void setSpawnCount(const ScalarStats& newSpawnCount);
@@ -72,7 +69,7 @@ public:
 
 
 //=========================================================================================================
-// PARTICLE LIFETIME POLICY
+// OBJECT LIFETIME POLICY
 //=========================================================================================================
 
 enum class BoundType { 
@@ -81,8 +78,8 @@ enum class BoundType {
     FADE   // there`s a region around bounds where a particle has a probability to disappear
 }; 
 
-// Lifetime policy struct to ditacte how a ParticleGenerator manages the deletion of its particles 
-struct ParticleLifetimePolicy
+// Lifetime policy struct to ditacte how a ObjectGenerator manages the deletion of its objects 
+struct ObjectLifetimePolicy
 {
     bool useLifetime;        // set to expire after time
     ScalarStats lifetime;    // statistics to determine lifetime (OBS: the particle has the information of its lifetime accumulation)
@@ -95,52 +92,35 @@ struct ParticleLifetimePolicy
     ScalarStats fade;
 
     bool useCustomCondition; // user-defined callback
-    std::function<bool(double, const Particle&)> customCallback; // custom callback to given particle
+    std::function<bool()> customCallback;
 
     // CONSTRUCTORS ------------------------------------------------------------------------------------
     // Default constructor: everything disabled (full custom)
-    ParticleLifetimePolicy();
+    ObjectLifetimePolicy();
     // Lifetime only
-    ParticleLifetimePolicy(const ScalarStats& lifetime);
-    ParticleLifetimePolicy(const Region& region, BoundType boundType = BoundType::SOLID);
-    // // Box only (solid by default)
-    // ParticleLifetimePolicy(const physx::PxBounds3& box, BoundType boundType = BoundType::SOLID);
-    // // Sphere only (solid by default)
-    // ParticleLifetimePolicy(const Vector3Stats& sphere, BoundType boundType = BoundType::SOLID);
+    ObjectLifetimePolicy(const ScalarStats& lifetime);
+    // Volume bounds
+    ObjectLifetimePolicy(const Region& region, BoundType boundType = BoundType::SOLID);
     // Callback only
-    ParticleLifetimePolicy(std::function<bool(double, const Particle&)> callback);
-    // // Combined constructor (lifetime + bounds)
-    // ParticleLifetimePolicy(
-    //     const ScalarStats& lifetime,
-    //     const physx::PxBounds3& box,
-    //     BoundType boundType = BoundType::SOLID);
-    // // Combined constructor (lifetime + sphere + callback)
-    // ParticleLifetimePolicy(
-    //     const ScalarStats& lifetime,
-    //     const Vector3Stats& sphere,
-    //     BoundType boundType,
-    //     std::function<bool(double, const Particle&)> callback);
+    ObjectLifetimePolicy(std::function<bool()> callback);
     // Copy constructor
-    ParticleLifetimePolicy(const ParticleLifetimePolicy& other);
+    ObjectLifetimePolicy(const ObjectLifetimePolicy& other);
 
     // METHODS -----------------------------------------------------------------------------------------
     void setLifetime(const ScalarStats& newLifetime);
-    // void setVolumeBoundsBox(const physx::PxBounds3& newBox);
-    // void setVolumeBoundsSphere(const Vector3Stats& newSphere);
     void setVolumeRegion(const Region& r);
     void setVolumeBoundsFadeSize(const ScalarStats& newFade);
-    void setCustomCondition(std::function<bool(double, const Particle&)>& newCustomCallback);
-    // void setVolumeMeshRegion(const MeshData& mesh); // to be implemented
+    void setCustomCallback(std::function<bool()> newCustomCallback);
 
     void unsetLifetime();
     void unsetVolumeBounds();
     void unsetCustomCondition();
 
-    bool shouldDelete(double distr, const Particle& p) const;
+    bool shouldDelete(double distr, const PhysicalObject& p) const;
 
-private:
-    bool hasLeftBounds(double distr, const Particle& p) const;
-    bool hasExpired(double distr, const Particle& p) const;
-    bool hasCustom(double distr, const Particle& p) const;
+protected:
+    bool hasLeftBounds(double distr, const PhysicalObject& p) const;
+    bool hasExpired(double distr, const PhysicalObject& p) const;
+    bool hasCustom(double distr, const PhysicalObject& p) const;
 };
 

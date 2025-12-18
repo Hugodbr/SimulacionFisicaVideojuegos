@@ -8,6 +8,10 @@
 #include "MeshData.h"
 #include "HurricaneForce.h"
 #include "ExplosionForce.h"
+#include "ParticlePool.h"
+
+#include "ParticleGenerationPolicy.h"
+#include "ParticleLifetimePolicy.h"
 
 
 FogSystem::FogSystem(const physx::PxVec3& origin, const Region& region)
@@ -133,7 +137,7 @@ void FogSystem::update(double deltaTime)
 			particles[i]->update(deltaTime);
 
 			if (mustKillParticle(*particles[i], *gen)) {
-				pool->deactivate(i);
+				pool->deactivateParticle(i);
 				--i; // Adjust index after deactivation
 			}
 		}
@@ -141,7 +145,7 @@ void FogSystem::update(double deltaTime)
 
 }
 
-void FogSystem::render(const glm::mat4 &modelViewMat)
+void FogSystem::onRender(const glm::mat4 &modelViewMat)
 {
 	assert(_renderableEntity && "Renderable entity not set for FogSystem.");
 

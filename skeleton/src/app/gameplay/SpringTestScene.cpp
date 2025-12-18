@@ -30,13 +30,13 @@ void SpringTestScene::init()
 	// =========================================================================================
 	// Spring System
 	// =========================================================================================
-    float totalLength = 2.0f;
+    float totalLength = 50.0f;
     std::unique_ptr<RigidBodySystem> springSystem = std::make_unique<SpringSystem>(
         physx::PxVec3(0.0f, 2.0f, 0.0f), // origin anchor
         totalLength, // total length
-        5,   // number of rigid bodies
-        10.0f, // body mass
-        10.0f, // spring constant k
+        30,   // number of rigid bodies
+        5.0f, // body mass
+        50.0f, // spring constant k
         2.0f * totalLength,  // TODO max stretch
         ROOT_DIR + "\\resources\\blender\\sphere.obj",
         0.1f // scale

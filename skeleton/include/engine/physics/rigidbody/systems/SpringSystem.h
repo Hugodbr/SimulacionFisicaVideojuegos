@@ -8,11 +8,6 @@ class SpringSystem : public RigidBodySystem
 {
 public:
 	SpringSystem(const physx::PxVec3 &originAnchor, float totalLength, int numRigidBodies, float bodyMass, float k, float maxStretch, const std::string& filePath, float scale = 1.0f);
-	// SpringSystem(
-    //     const physx::PxVec3 &beginning, RigidBody& beginningBody, const physx::PxVec3 &beginningAttachPoint,
-    //     const physx::PxVec3 &end, RigidBody& endBody, const physx::PxVec3 &endAttachPoint,
-    //     int numRigidBodies, float bodyMass, float k, float maxStretch, const std::string& filePath, float scale = 1.0f
-    // );
 
 	~SpringSystem();
 

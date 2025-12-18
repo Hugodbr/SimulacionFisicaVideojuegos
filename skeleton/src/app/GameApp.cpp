@@ -34,7 +34,7 @@ GameApp::~GameApp()
 
 void GameApp::runInteractive()
 {
-    ApplicationContext::init("Game", "GLFW");
+    ApplicationContext::init("SimulacionFisicaVideojuegos", "GLFW");
     ApplicationContext::run();
 }
 

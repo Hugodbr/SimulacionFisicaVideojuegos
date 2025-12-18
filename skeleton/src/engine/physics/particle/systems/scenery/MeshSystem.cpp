@@ -7,6 +7,9 @@
 #include "ParticleWithMass.h"
 #include "ForceGenerator.h"
 
+#include "ParticleGenerationPolicy.h"
+#include "ParticleLifetimePolicy.h"
+
 
 MeshSystem::MeshSystem(const std::string &filename)
     : _pointSize(3.0f)
@@ -70,7 +73,34 @@ void MeshSystem::update(double deltaTime)
     }
 }
 
-void MeshSystem::setRenderableEntity(std::unique_ptr<Abs_Entity> renderable)
+void MeshSystem::onRender(const glm::mat4 &modelViewMat)
+{
+    assert(_renderableEntity && "Renderable entity not set for MeshSystem.");
+
+    auto& [generator, pool] = _generatorsAndPools[0];
+
+    for (auto& particle : pool->accessParticlePool()) 
+    {
+        if (particle->isActive()) {
+            _renderableEntity->setPose(
+                glm::vec3(
+                    particle->getPosition().x,
+                    particle->getPosition().y,
+                    particle->getPosition().z
+                ),
+                glm::quat(
+                    particle->getTransform().q.w,
+                    particle->getTransform().q.x,
+                    particle->getTransform().q.y,
+                    particle->getTransform().q.z
+                )
+            );
+            _renderableEntity->render(modelViewMat);
+        }
+    }
+}
+
+void MeshSystem::setRenderableEntity(std::shared_ptr<Abs_Entity> renderable)
 {
     _renderableEntity = std::move(renderable);
 }

@@ -78,6 +78,7 @@ void RopeNodeBody::initiallize(const physx::PxVec3 &center)
     // _body->attachShape(*_shape); // ! Create shape already attaches it to the actor
     _shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 
+    // static_cast<physx::PxRigidDynamic*>(_body)->setLinearDamping(0.9f);
     // _density = physx::PxReal(200.0f); // kg/m^3
     // physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidDynamic&>(*_body), _density);
     setDensity(200.0f);

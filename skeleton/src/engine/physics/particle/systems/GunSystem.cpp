@@ -8,8 +8,13 @@
 #include "GaussianParticleGenerator.h"
 #include "ConstantParticleGenerator.h"
 #include "StaticParticle.h"
+#include "ParticleWithMass.h"
 #include "Bullet.h"
 #include "Camera.h"
+
+#include "ParticlePool.h"
+#include "ParticleGenerationPolicy.h"
+#include "ParticleLifetimePolicy.h"
 
 
 GunSystem::GunSystem(const physx::PxVec3 &position, Camera* cam, const std::string& gunMeshFilename)
@@ -231,7 +236,7 @@ void GunSystem::updateGunBullets(double deltaTime)
                 p->update(deltaTime);
                 // std::cout << "Bullet Position: " << p->getPosition().x << ", " << p->getPosition().y << ", " << p->getPosition().z << std::endl;
                 if (gen->getLifetimePolicy().shouldDelete(gen->getDistribution(), *p)) {
-                    pool->deactivate(i);
+                    pool->deactivateParticle(i);
                     --i; // Adjust index after deactivation
                 }
             }
@@ -281,7 +286,7 @@ void GunSystem::updateMuzzleFlash(double deltaTime)
             particles[i]->update(deltaTime);
 
             if (gen->getLifetimePolicy().shouldDelete(gen->getDistribution(), *particles[i])) {
-                pool->deactivate(i);
+                pool->deactivateParticle(i);
                 --i; // Adjust index after deactivation
             }
         }
@@ -306,6 +311,39 @@ void GunSystem::update(double deltaTime)
         isShooting = false;
     }
     updateMuzzleFlash(deltaTime);
+}
+
+void GunSystem::onRender(const glm::mat4 &modelViewMat)
+{
+    // // Render gun mesh particles
+    // for (auto& [gen, pool] : _gunMeshGeneratorAndPool) 
+    // {
+    //     auto& particles = pool->accessParticlePool();
+    //     for (int i = 0; i < pool->getActiveCount(); ++i) 
+    //     {
+    //         particles[i]->render(modelViewMat);
+    //     }
+    // }
+
+    // // Render muzzle flash particles
+    // for (auto& [gen, pool] : _gunMuzzleGeneratorAndPool) 
+    // {
+    //     auto& particles = pool->accessParticlePool();
+    //     for (int i = 0; i < pool->getActiveCount(); ++i) 
+    //     {
+    //         particles[i]->render(modelViewMat);
+    //     }
+    // }
+
+    // // Render bullet particles
+    // for (auto& [gen, pool] : _gunBulletsGeneratorAndPool) 
+    // {
+    //     auto& particles = pool->accessParticlePool();
+    //     for (int i = 0; i < pool->getActiveCount(); ++i) 
+    //     {
+    //         particles[i]->render(modelViewMat);
+    //     }
+    // }
 }
 
 void GunSystem::setRenderable(bool renderable)

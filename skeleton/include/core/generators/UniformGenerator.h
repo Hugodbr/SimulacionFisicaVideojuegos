@@ -1,16 +1,15 @@
 #pragma once
 
-#include "ParticleGenerator.h"
+#include "ObjectGenerator.h"
 
-
-class UniformParticleGenerator : public ParticleGenerator
+class UniformGenerator : public ObjectGenerator
 {
 protected:
 	mutable std::uniform_real_distribution<double> _u{ -1.0, 1.0 }; // defines the range of random values
 
 public:
-	UniformParticleGenerator() = default;
-	~UniformParticleGenerator() = default;
+	UniformGenerator() = default;
+	~UniformGenerator() = default;
 
 	double getDistribution() const override {
 		return _u(_mt);
