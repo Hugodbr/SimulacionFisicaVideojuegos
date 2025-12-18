@@ -1,8 +1,11 @@
 # SimulacionFisicaVideojuegos
 Repositorio de las prácticas de la asignatura de Simulación Física de Videojuegos
 
-En la carpeta skeleton estará vuestro código fuente
+Wakeboard game
+Teclas
 
-Necesitaréis además descomprimir el archivo que se indica a continuación en la raíz del repositorio:
+W-S : cambio de velocidad del barco +- A-D : desplazamiento del surfista izquierda-derecha (eje Z) Espacio: salto
 
-Carpetas bin y common https://ucomplutense-my.sharepoint.com/:f:/g/personal/liagar05_ucm_es/ElNxHPmZVj9Ni9-8FKTKp7cBJHAarnL3vvEvG50z0QMrzg
+Flechas: <- -> giro en eje Y del surfista ^ v gira en eje X del surfista
+
+C: free camera
