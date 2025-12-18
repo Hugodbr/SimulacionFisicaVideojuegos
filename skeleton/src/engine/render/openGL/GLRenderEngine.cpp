@@ -43,9 +43,10 @@ bool GLRenderEngine::initialize(void *windowHandle)
     }
 
     // Error message callback (all messages)
-	glEnable(GL_DEBUG_OUTPUT);
-	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0u, 0, GL_TRUE);
-	glDebugMessageCallback(debugCallback, nullptr);
+	// glEnable(GL_DEBUG_OUTPUT);
+	// glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0u, 0, GL_TRUE);
+	// glDebugMessageCallback(debugCallback, nullptr);
+    glDisable(GL_DEBUG_OUTPUT);
 
 	std::cout << "Version: " << glGetString(GL_VERSION) << '\n';
 	std::cout << "Vendor: " << glGetString(GL_VENDOR) << '\n';
