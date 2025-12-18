@@ -5,10 +5,10 @@
 
 #include "engine/physics/PhysicsEngine.h"
 
-#include "GravitationalForce.h"
 #include "ForceManager.h"
+#include "GravitationalForce.h"
+#include "WindForce.h"
 
-#include "MeshSystem.h"
 #include "RainSystem.h"
 #include "SplashSystem.h"
 #include "RopeSystem.h"
@@ -33,6 +33,20 @@ void WakeboardScene::init()
 {
 	Scene::init();
 
+    // =========================================================================================
+	// Global Forces
+	// =========================================================================================
+	// Create and register a gravitational force for system of group ENVIRONMENT
+	std::unique_ptr<ForceGenerator> gravForce = std::make_unique<GravitationalForce>();
+	gravForce->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
+	ForceManager::getInstance().registerGlobalForce(std::move(gravForce));
+
+	std::unique_ptr<ForceGenerator> windForce = std::make_unique<WindForce>(physx::PxVec3(20.0f, 0.0f, 0.0f));
+	windForce->setGroup(Constants::Group::DynamicGroup::ENVIRONMENT);
+	ForceManager::getInstance().registerGlobalForce(std::move(windForce));
+
+    // =========================================================================================
+    // Rigid Bodies
 	// =========================================================================================
 	// Water Body
 	// =========================================================================================
@@ -72,9 +86,23 @@ void WakeboardScene::init()
     ); 
     _surferBoardMass = surfer->getMass() + board->getMass();
 
+    // =========================================================================================
+    // Boat
+    // =========================================================================================
+    physx::PxVec3 boatPos = physx::PxVec3(0.0f, 0.0f, 25.0f);
+	std::unique_ptr<RigidBody> boat = std::make_unique<BoxBody>(
+        boatPos,
+		ROOT_DIR + "\\resources\\glb\\boat.glb",
+        100.0f, // density
+		0.025f
+	);
+	boat->init();
+    _boatMass = boat->getMass();
+
 	// =========================================================================================
+    // Particle Systems
 	// =========================================================================================
-	// Splash System
+	// Splash System Surfer
 	// =========================================================================================
 	float halfRegionSizeSplash_X = board->getBounds().getExtents().x/1.5f;
 	float halfRegionSizeSplash_Y = board->getBounds().getExtents().y/1.5f;
@@ -94,25 +122,41 @@ void WakeboardScene::init()
     splashSys->setCustomGenerationTriggerCallback([&]() {
         return !_surfBoardBody->isJumping();
     });
+    splashSys->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT });
 
 	_particleSystems.push_back(std::move(splashSys));
 	_splashSystem = static_cast<SplashSystem*>(_particleSystems.back().get());
 	PhysicsEngine::getInstance().pushParticleSystem(_particleSystems.back().get());
 
-    // =========================================================================================
-    // Boat
-    // =========================================================================================
-    physx::PxVec3 boatPos = physx::PxVec3(0.0f, 0.0f, 25.0f);
-	std::unique_ptr<RigidBody> boat = std::make_unique<BoxBody>(
-        boatPos,
-		ROOT_DIR + "\\resources\\glb\\boat.glb",
-        100.0f, // density
-		0.025f
+	// =========================================================================================
+	// Splash System Boat
+	// =========================================================================================
+	halfRegionSizeSplash_X = boat->getBounds().getExtents().x;
+	halfRegionSizeSplash_Y = boat->getBounds().getExtents().y;
+	halfRegionSizeSplash_Z = boat->getBounds().getExtents().z;
+	Region splashRegionBoat(
+		physx::PxBounds3(
+			physx::PxVec3(-halfRegionSizeSplash_X, -halfRegionSizeSplash_Y, -halfRegionSizeSplash_Z), 
+			physx::PxVec3(halfRegionSizeSplash_X, halfRegionSizeSplash_Y, halfRegionSizeSplash_Z)
+		)
 	);
-	boat->init();
-    _boatMass = boat->getMass();
+	splashOrigin = physx::PxVec3(0.0f, splashRegionBoat.shape.box.minimum.y, -boat->getBounds().getExtents().z/2.0f);
+	
+	std::unique_ptr<SplashSystem> splashSysBoat = std::make_unique<SplashSystem>(splashOrigin, splashRegionBoat);
+	splashSysBoat->init();
+	splashSysBoat->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>(ROOT_DIR + "\\resources\\blender\\sphere.obj", 0.05f));
+	splashSysBoat->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT });
+    // splashSysBoat->setCustomGenerationTriggerCallback([&]() {
+    //     return !_surfBoardBody->isJumping();
+    // });
+    splashSysBoat->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT });
 
+	_particleSystems.push_back(std::move(splashSysBoat));
+	_splashSystemBoat = static_cast<SplashSystem*>(_particleSystems.back().get());
+	PhysicsEngine::getInstance().pushParticleSystem(_particleSystems.back().get());
 
+	// =========================================================================================
+    // Rigid Body Systems
     // =========================================================================================
     // Rope System
     // =========================================================================================
@@ -158,12 +202,12 @@ void WakeboardScene::init()
     _rigidBodySystems.push_back(std::move(ropeSystem));
     PhysicsEngine::getInstance().pushRigidBodySystem(_rigidBodySystems.back().get());
 
-    // setCamera();
+    setCamera();
 }
 
 void WakeboardScene::update()
 {
-    // updateCamera();
+    updateCamera();
 
     updateTraversal();
     updateSurfer();
@@ -187,7 +231,7 @@ void WakeboardScene::updateTraversal()
 	// if(InputManager::getInstance().isKeyPressed(KeyCode::A))
     // {
 
-    _traversalVelocity = physx::PxVec3(0.0f, 0.0f, 1.0f);
+    _traversalVelocity = physx::PxVec3(0.0f, 0.0f, 5.0f);
 
     if (static_cast<physx::PxRigidBody*>(_boat->getBody())->getLinearVelocity().z < 1.0f)
     {
@@ -256,20 +300,21 @@ void WakeboardScene::updateSurfer()
     }
 
     float torqueAmount = 10000.0f;
+    float forceAmount = 5000.0f;
 
 	if(InputManager::getInstance().isKeyPressedThisFrame(KeyCode::ArrowRight))
     {
         std::cout << "Applying TORQUE to surfer!" << std::endl;
-        static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addTorque(
-            torqueAmount * _surferBody->getDirectionForward(),
+        static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addForce(
+            -forceAmount * _surferBody->getDirectionRight(),
             physx::PxForceMode::eIMPULSE
         );
     }
 	if(InputManager::getInstance().isKeyPressedThisFrame(KeyCode::ArrowLeft))
     {
         std::cout << "Applying TORQUE to surfer!" << std::endl;
-        static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addTorque(
-            -torqueAmount * _surferBody->getDirectionForward(),
+        static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addForce(
+            forceAmount * _surferBody->getDirectionRight(),
             physx::PxForceMode::eIMPULSE
         );
     }
@@ -298,16 +343,9 @@ void WakeboardScene::updateSplash()
 	_splashSystem->setEmitterOrigin(
 		static_cast<physx::PxRigidBody*>(_surfBoardBody->getBody())->getGlobalPose().p
 	);
-
-	// if (_surfBoardBody->isJumping()) {
-	// 	// std::cout << "Surfer is jumping, disabling splash system." << std::endl;
-	//     _splashSystem->setActive(false);
-	// }
-	// else {
-	// 	// std::cout << "Surfer is NOT jumping, enabling splash system." << std::endl;
-	//     _splashSystem->setActive(true);
-	// }
-
+    _splashSystemBoat->setEmitterOrigin(
+        static_cast<physx::PxRigidBody*>(_boat->getBody())->getGlobalPose().p - physx::PxVec3(0.0f, 0.0f, _boat->getDepth()/2.0f)
+    );
 }
 
 void WakeboardScene::setCamera()
@@ -322,5 +360,17 @@ void WakeboardScene::setCamera()
 
 void WakeboardScene::updateCamera()
 {
+    if(InputManager::getInstance().isKeyPressedThisFrame(KeyCode::C)) {
+        freeCameraControl();
+    }
+
+    if (_freeCamera)
+        return;
+
     setCamera();
+}
+
+void WakeboardScene::freeCameraControl()
+{
+    _freeCamera = !_freeCamera;
 }

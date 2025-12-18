@@ -126,9 +126,9 @@ void GameApp::initSceneManager()
     // _sceneManager.pushScene(new SceneSpring());
     // _sceneManager.pushScene(new SceneSurfer());
     // _sceneManager.pushScene(new SpringTestScene());
-    _sceneManager.pushScene(new CylinderTestScene());
+    // _sceneManager.pushScene(new CylinderTestScene());
     // _sceneManager.pushScene(new RopeTestScene());
-    // _sceneManager.pushScene(new WakeboardScene());
+    _sceneManager.pushScene(new WakeboardScene());
 }
 
 void GameApp::createViewportsAndCameras()

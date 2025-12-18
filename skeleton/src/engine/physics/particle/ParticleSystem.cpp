@@ -23,3 +23,18 @@ bool ParticleSystem::mustSpawnParticle(double deltaTime, const ParticleGenerator
 {
     return ObjectSystem::mustSpawnObject(deltaTime, generator);
 }
+
+bool ParticleSystem::doForceAffectsSystem(const ForceGenerator &forceGen) const
+{
+    for (const auto &group : _groups) {
+        if (group == Constants::Group::DynamicGroup::NONE) {
+            return false;
+        }
+        if (forceGen.getGroup() == group 
+        || forceGen.getGroup() == Constants::Group::DynamicGroup::ALL 
+        || (forceGen.getParticleSystem() != nullptr && forceGen.getParticleSystem()->getId() == this->getId())) {
+            return true;
+        }
+    }
+    return false;
+}
