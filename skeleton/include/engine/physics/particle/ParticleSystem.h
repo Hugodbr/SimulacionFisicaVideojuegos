@@ -25,6 +25,9 @@ public:
 	bool mustKillParticle(const Particle &p, const ParticleGenerator &generator) const;
 	bool mustSpawnParticle(double deltaTime, const ParticleGenerator &generator) const;
 
+	virtual void setEmissionRate(int spawnMeanRate) {};
+	virtual int getEmissionRate() const;
+
 protected:
 	virtual bool doForceAffectsSystem(const ForceGenerator& forceGen) const override;
 };

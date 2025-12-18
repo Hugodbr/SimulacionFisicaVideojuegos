@@ -1,37 +1,39 @@
-// #pragma once
+#pragma once
 
-// #include "ParticleSystem.h"
-// #include "ParticlePool.h"
-// #include "Region.h"
+#include "RigidBodySystem.h"
+#include "Region.h"
+#include "GaussianRBGenerator.h"
+#include "RigidBodyPool.h"
+#include "BoxBody.h"
 
-// class GaussianParticleGenerator;
-// class ForceGenerator;
+class ForceGenerator;
 
-// class TrashSystem : public ParticleSystem
-// {
-// private:
-// 	Region _region;
+class TrashSystem : public RigidBodySystem
+{
+private:
+	Region _region;
 	
-// public:
-// 	TrashSystem(const physx::PxVec3 &origin, const Region& region);
-// 	~TrashSystem() = default;
+public:
+	TrashSystem(const physx::PxVec3 &origin, const Region& region, const std::string& filePath, float scale = 1.0f);
+	~TrashSystem() = default;
 
-// 	void init() override;
-// 	void update(double deltaTime) override;
-// 	virtual void render(const glm::mat4& modelViewMat) override;
+	void init() override;
+	void update(double deltaTime) override;
 
-// 	// Sets all active particles to renderable or not
-// 	void setRenderable(bool renderable) override;
+    virtual void render(const glm::mat4& modelViewMat) override;
 
-// 	// Returns the reserve count per generator for this system
-// 	virtual uint64_t getReserveCountPerGenerator() const override { 
-// 		return Constants::System::Trash::ReserveCountPerGenerator; 
-// 	}
+    void setFollowTarget(PhysicalObject& target);
 
-// protected:
-//     void initGenerator();
+protected:
+    virtual void initRigidBodyGeneratorAndPool(const std::string& filePath, float scale);
+	virtual void applyForces() override;
 
-// protected:
+protected:
+    std::pair<
+        std::unique_ptr<GaussianRigidBodyGenerator>,
+        std::unique_ptr<RigidBodyPool<BoxBody>>
+            >_generatorAndPool;
 
-// 	std::unique_ptr<GaussianParticleGenerator> _generator;
-// };
+    physx::PxVec3 _origin;
+    PhysicalObject* _followTarget = nullptr;
+};

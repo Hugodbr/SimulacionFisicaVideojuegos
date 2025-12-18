@@ -12,7 +12,7 @@ RopeNodeBody::RopeNodeBody(const physx::PxVec3 &center, const std::string &fileP
     createRenderableEntity(filePath, scale);
     initiallize(center);
     // Set mass after initialization
-    setDensity(static_cast<float>(mass) / this->_volume); // ! doesnt work, creo
+    setDensity(static_cast<float>(mass) / this->_volume);
 }
 
 RopeNodeBody::RopeNodeBody(const physx::PxVec3 &center, const std::string &filePath, float density, float scale)
@@ -83,6 +83,12 @@ void RopeNodeBody::initiallize(const physx::PxVec3 &center)
     // physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidDynamic&>(*_body), _density);
     setDensity(200.0f);
     // std::cout << "RopeNodeBody density set to " << _density << " kg/m^3. Has mass = " << static_cast<physx::PxRigidDynamic&>(*_body).getMass() << " and volume: " << this->_volume << std::endl;
+
+    // ! Sphere inertia
+    float Ixx = (1.0f / 5.0f) * static_cast<physx::PxRigidDynamic&>(*_body).getMass() * (( 0.5f * dimensions.x) * ( 0.5f * dimensions.x));
+    float Iyy = Ixx;
+    float Izz = Ixx;
+    this->setMassSpaceInertiaTensor(physx::PxVec3(Ixx, Iyy, Izz));
 
     // Apply initial rotation to the box
     // ! Must be done before adding to scene !!!

@@ -68,10 +68,9 @@ void SpringForce::updateForce(double deltaTime)
 
     // std::cout << "Force with damping: " << _force.x << ", " << _force.y << ", " << _force.z << std::endl;
 
-    if (_force.magnitude() > _maxForce) {
-        _force = _force.getNormalized() * _maxForce;
-    }
-    
+    // if (_force.magnitude() > _maxForce) {
+    //     _force = _force.getNormalized() * _maxForce;
+    // }
 }
 
 physx::PxVec3 SpringForce::getForceOnRigidBody(RigidBody &rigidBody)

@@ -29,6 +29,7 @@ public:
 	void setObsidian();
 	void setOceanBlue();
 	void setTurquoise();
+	void setSeaBlue();
 
 protected:
 	// Coeficientes de reflexión

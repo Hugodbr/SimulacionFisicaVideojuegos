@@ -24,6 +24,12 @@ bool ParticleSystem::mustSpawnParticle(double deltaTime, const ParticleGenerator
     return ObjectSystem::mustSpawnObject(deltaTime, generator);
 }
 
+int ParticleSystem::getEmissionRate() const
+{
+    std::cout << "ParticleSystem::getEmissionRate() called but not overridden." << std::endl;
+    return 0;
+}
+
 bool ParticleSystem::doForceAffectsSystem(const ForceGenerator &forceGen) const
 {
     for (const auto &group : _groups) {

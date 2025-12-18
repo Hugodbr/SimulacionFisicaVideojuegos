@@ -48,7 +48,7 @@ public:
 
     virtual ObjectType* activateObject() {
         if (_activeCount >= _maxObjects) {
-            std::cout << "Pool full.\n";
+            // std::cout << "Pool full.\n";
             return nullptr;
         }
         ObjectType* obj = _objects[_activeCount++];

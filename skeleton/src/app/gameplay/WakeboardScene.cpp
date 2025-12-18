@@ -9,9 +9,12 @@
 #include "GravitationalForce.h"
 #include "WindForce.h"
 
+#include "Stats.h"
+
 #include "RainSystem.h"
 #include "SplashSystem.h"
 #include "RopeSystem.h"
+#include "TrashSystem.h"
 
 #include "EntityRenderable.h"
 
@@ -146,10 +149,6 @@ void WakeboardScene::init()
 	splashSysBoat->init();
 	splashSysBoat->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>(ROOT_DIR + "\\resources\\blender\\sphere.obj", 0.05f));
 	splashSysBoat->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT });
-    // splashSysBoat->setCustomGenerationTriggerCallback([&]() {
-    //     return !_surfBoardBody->isJumping();
-    // });
-    splashSysBoat->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT });
 
 	_particleSystems.push_back(std::move(splashSysBoat));
 	_splashSystemBoat = static_cast<SplashSystem*>(_particleSystems.back().get());
@@ -178,7 +177,7 @@ void WakeboardScene::init()
         surfer.get(), // end body
         endAttachPoint,  // end attach point
 
-        35,   // number of rigid bodies
+        40,   // number of rigid bodies
         2.0f, // body mass
         1000.0f, // spring constant k
         1.5f * totalLength,  // TODO max stretch
@@ -202,7 +201,44 @@ void WakeboardScene::init()
     _rigidBodySystems.push_back(std::move(ropeSystem));
     PhysicsEngine::getInstance().pushRigidBodySystem(_rigidBodySystems.back().get());
 
+    // =========================================================================================
+    // Trash System
+    // =========================================================================================
+    // float halfRegionSizeTrash_X = 10.0f;
+	// float halfRegionSizeTrash_Y = 0.1f;
+	// float halfRegionSizeTrash_Z = 10.0f;
+	// Region trashRegion(
+	// 	physx::PxBounds3(
+	// 		physx::PxVec3(-halfRegionSizeTrash_X, -halfRegionSizeTrash_Y, -halfRegionSizeTrash_Z), 
+	// 		physx::PxVec3(halfRegionSizeTrash_X, halfRegionSizeTrash_Y, halfRegionSizeTrash_Z)
+	// 	)
+	// );
+
+    // physx::PxVec3 trashOrigin = _surfBoardBody->getPosition();
+    // std::unique_ptr<RigidBodySystem> trashSystem = std::make_unique<TrashSystem>(
+    //     trashOrigin,
+    //     trashRegion,
+    //     ROOT_DIR + "\\resources\\fbx\\crate-box-free\\source\\Crate.fbx",
+    //     1.0f
+    // );
+    // trashSystem->init();
+
+    // static_cast<TrashSystem*>(trashSystem.get())->setFollowTarget(*_boat);
+    // _rigidBodySystems.push_back(std::move(trashSystem));
+    // PhysicsEngine::getInstance().pushRigidBodySystem(_rigidBodySystems.back().get());
+
+    // =========================================================================================
+    // Set initial camera position and orientation
+    // =========================================================================================
     setCamera();
+
+    _lastEye = static_cast<physx::PxRigidBody*>(_surferBody->getBody())->getGlobalPose().p + physx::PxVec3(0.0f, 5.0f, -15.0f);
+
+    _traversalVelocity = physx::PxVec3(0.0f, 0.0f, 5.0f);
+    _lastTraversalVelocity = _traversalVelocity;
+
+    _splashSystem->setEmissionRate(_splashBaseEmissionRate_Surfer);
+    _splashSystemBoat->setEmissionRate(_splashBaseEmissionRate_Boat);
 }
 
 void WakeboardScene::update()
@@ -219,21 +255,17 @@ void WakeboardScene::update()
 
 void WakeboardScene::updateTraversal()
 {
-    // if(InputManager::getInstance().isKeyPressedThisFrame(KeyCode::V))
-    // {
-    //     std::cout << "Applying impulse to surfer!" << std::endl;
-    //     static_cast<physx::PxRigidBody*>(_surfBoardBody->getBody())->addForce(
-    //         physx::PxVec3(0.0f, 0.0f, 100000.0f),
-    //         physx::PxForceMode::eFORCE
-    //     );
-    // }
+    if (InputManager::getInstance().isKeyPressedThisFrame(KeyCode::W))
+    {
+        _traversalVelocity.z += 1.0f;
+        // std::cout << "Increasing traversal velocity to " << _traversalVelocity.z << std::endl;
+    }
+    else if (InputManager::getInstance().isKeyPressedThisFrame(KeyCode::S))
+    {
+        _traversalVelocity.z -= 1.0f;
+    }
 
-	// if(InputManager::getInstance().isKeyPressed(KeyCode::A))
-    // {
-
-    _traversalVelocity = physx::PxVec3(0.0f, 0.0f, 5.0f);
-
-    if (static_cast<physx::PxRigidBody*>(_boat->getBody())->getLinearVelocity().z < 1.0f)
+    if (static_cast<physx::PxRigidBody*>(_boat->getBody())->getLinearVelocity().z < abs(_traversalVelocity.z))
     {
         static_cast<physx::PxRigidBody*>(_boat->getBody())->addForce(
             _traversalVelocity,
@@ -241,7 +273,7 @@ void WakeboardScene::updateTraversal()
         );
     }
     
-    if (static_cast<physx::PxRigidBody*>(_surferBody->getBody())->getLinearVelocity().z < 1.0f)
+    if (static_cast<physx::PxRigidBody*>(_surferBody->getBody())->getLinearVelocity().z < abs(_traversalVelocity.z))
     {
         static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addForce(
             _traversalVelocity * 0.8f,
@@ -249,89 +281,68 @@ void WakeboardScene::updateTraversal()
         );
     }
     
-    if (static_cast<physx::PxRigidBody*>(_surfBoardBody->getBody())->getLinearVelocity().z < 1.0f)
+    if (static_cast<physx::PxRigidBody*>(_surfBoardBody->getBody())->getLinearVelocity().z < abs(_traversalVelocity.z))
     {
         static_cast<physx::PxRigidBody*>(_surfBoardBody->getBody())->addForce(
             _traversalVelocity * 0.8f,
             physx::PxForceMode::eVELOCITY_CHANGE
         );
     }
-    // }
-
-
-    // static_cast<physx::PxRigidBody*>(_surfBoardBody->getBody())->addForce(
-    //     _traversalForcePerMass * _surferBoardMass,
-    //     physx::PxForceMode::eFORCE
-    // );
-
-    // static_cast<physx::PxRigidBody*>(_boat->getBody())->addForce(
-    //     _traversalForcePerMass * _boatMass,
-    //     physx::PxForceMode::eFORCE
-    // );
-
-    // static_cast<physx::PxRigidBody*>(_surfBoardBody->getBody())->addForce(
-    //     _traversalForcePerMass/5.0f,
-    //     physx::PxForceMode::eACCELERATION
-    // );
-
-    // static_cast<physx::PxRigidBody*>(_boat->getBody())->addForce(
-    //     _traversalForcePerMass/5.0f,
-    //     physx::PxForceMode::eACCELERATION
-    // );
-
-    // static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addForce(
-    //     _traversalForcePerMass/5.0f,
-    //     physx::PxForceMode::eACCELERATION
-    // );
-
-
-
 }
 
 void WakeboardScene::updateSurfer()
 {
     if(InputManager::getInstance().isKeyPressedThisFrame(KeyCode::Space) && !_surfBoardBody->isJumping())
     {
-        std::cout << "Applying impulse to surfer!" << std::endl;
         static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addForce(
-            physx::PxVec3(0.0f, 40000.0f, 0.0f),
+            physx::PxVec3(0.0f, 60000.0f, 0.0f),
             physx::PxForceMode::eIMPULSE
         );
     }
 
     float torqueAmount = 10000.0f;
-    float forceAmount = 5000.0f;
+    float forceAmount = 500000.0f;
 
-	if(InputManager::getInstance().isKeyPressedThisFrame(KeyCode::ArrowRight))
+	if(InputManager::getInstance().isKeyPressed(KeyCode::A))
     {
-        std::cout << "Applying TORQUE to surfer!" << std::endl;
         static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addForce(
             -forceAmount * _surferBody->getDirectionRight(),
-            physx::PxForceMode::eIMPULSE
+            physx::PxForceMode::eFORCE
         );
     }
-	if(InputManager::getInstance().isKeyPressedThisFrame(KeyCode::ArrowLeft))
+	if(InputManager::getInstance().isKeyPressed(KeyCode::D))
     {
-        std::cout << "Applying TORQUE to surfer!" << std::endl;
         static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addForce(
             forceAmount * _surferBody->getDirectionRight(),
-            physx::PxForceMode::eIMPULSE
+            physx::PxForceMode::eFORCE
         );
     }
 
-	if(InputManager::getInstance().isKeyPressedThisFrame(KeyCode::ArrowUp))
+	if(InputManager::getInstance().isKeyPressed(KeyCode::ArrowUp))
     {
-        std::cout << "Applying TORQUE to surfer!" << std::endl;
         static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addTorque(
             torqueAmount * _surferBody->getDirectionRight(),
             physx::PxForceMode::eIMPULSE
         );
     }
-	if(InputManager::getInstance().isKeyPressedThisFrame(KeyCode::ArrowDown))
+	if(InputManager::getInstance().isKeyPressed(KeyCode::ArrowDown))
     {
-        std::cout << "Applying TORQUE to surfer!" << std::endl;
         static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addTorque(
             -torqueAmount * _surferBody->getDirectionRight(),
+            physx::PxForceMode::eIMPULSE
+        );
+    }
+	if(InputManager::getInstance().isKeyPressed(KeyCode::ArrowLeft))
+    {
+        static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addTorque(
+            torqueAmount * _surferBody->getDirectionUp(),
+            physx::PxForceMode::eIMPULSE
+        );
+    }
+	if(InputManager::getInstance().isKeyPressed(KeyCode::ArrowRight))
+    {
+        static_cast<physx::PxRigidBody*>(_surferBody->getBody())->addTorque(
+            -torqueAmount * _surferBody->getDirectionUp(),
             physx::PxForceMode::eIMPULSE
         );
     }
@@ -343,19 +354,40 @@ void WakeboardScene::updateSplash()
 	_splashSystem->setEmitterOrigin(
 		static_cast<physx::PxRigidBody*>(_surfBoardBody->getBody())->getGlobalPose().p
 	);
+
     _splashSystemBoat->setEmitterOrigin(
         static_cast<physx::PxRigidBody*>(_boat->getBody())->getGlobalPose().p - physx::PxVec3(0.0f, 0.0f, _boat->getDepth()/2.0f)
     );
+
+    float diff = _traversalVelocity.z - _lastTraversalVelocity.z;
+    if (diff > 0.01f || diff < -0.01f) {
+        int newRateSurfer = _splashBaseEmissionRate_Surfer * _traversalVelocity.z / 5.0f;
+        _splashSystem->setEmissionRate(newRateSurfer);
+
+        int newRateBoat = _splashBaseEmissionRate_Boat * _traversalVelocity.z / 5.0f;
+        _splashSystemBoat->setEmissionRate(newRateBoat);
+    }
+
+    _lastTraversalVelocity = _traversalVelocity;
 }
 
 void WakeboardScene::setCamera()
 {
     Camera& camera = dynamic_cast<GameApp&>(GameApp::getInstance()).getCamera();
 
+
     physx::PxVec3 eye = static_cast<physx::PxRigidBody*>(_surferBody->getBody())->getGlobalPose().p + physx::PxVec3(0.0f, 5.0f, -15.0f);
+
+    if (_surfBoardBody->isJumping()) {
+        eye.y = _lastEye.y;
+        _lastEye = eye;
+    }
+
     physx::PxVec3 look = static_cast<physx::PxRigidBody*>(_surferBody->getBody())->getGlobalPose().p + physx::PxVec3(0.0f, 0.0f, 5.0f);
     physx::PxVec3 up = physx::PxVec3(0.0f, 1.0f, 0.0f);
+
     camera.setPositionParameters(eye, look, up);
+
 }
 
 void WakeboardScene::updateCamera()

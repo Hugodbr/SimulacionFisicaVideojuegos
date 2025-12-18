@@ -72,7 +72,7 @@ void SurferBody::initiallize(const physx::PxVec3 &center)
     // _body->attachShape(*_shape); // ! Create shape already attaches it to the actor
     _shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
     // static_cast<physx::PxRigidDynamic*>(_body)->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
-    static_cast<physx::PxRigidDynamic*>(_body)->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z);
+    // static_cast<physx::PxRigidDynamic*>(_body)->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z);
 
     // static_cast<physx::PxRigidDynamic*>(_body)->setLinearDamping(0.4f);
 

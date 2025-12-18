@@ -27,6 +27,9 @@ public:
 	// Sets all active particles to renderable or not
 	void setRenderable(bool renderable) override;
 
+	virtual void setEmissionRate(int spawnMeanRate) override;
+	virtual int getEmissionRate() const override;
+
 	// Returns the reserve count per generator for this system
 	virtual uint64_t getReserveCountPerGenerator() const override { 
 		return Constants::System::Rain::ReserveCountPerGenerator; 

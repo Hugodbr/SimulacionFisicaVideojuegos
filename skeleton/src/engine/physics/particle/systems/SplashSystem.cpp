@@ -197,3 +197,14 @@ void SplashSystem::setRenderable(bool renderable)
 		}
 	}
 }
+
+void SplashSystem::setEmissionRate(int spawnMeanRate)
+{
+	auto& generator = _generatorsAndPools[0].first;
+	generator->getGenerationPolicy().spawnCount.mean = spawnMeanRate;
+}
+
+int SplashSystem::getEmissionRate() const
+{
+    return _generatorsAndPools[0].first->getGenerationPolicy().spawnCount.mean;
+}

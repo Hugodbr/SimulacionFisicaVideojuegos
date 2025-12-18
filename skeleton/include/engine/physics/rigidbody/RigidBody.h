@@ -50,6 +50,12 @@ public:
     float getVolume() const { return _volume; }
     virtual float getMass() override;
 
+    // Set
+    virtual void setPose(const physx::PxTransform& pose);
+
+    virtual void activate() override;
+    virtual void deactivate() override;
+
 protected:
     virtual void integrate(double deltaTime) override;
 

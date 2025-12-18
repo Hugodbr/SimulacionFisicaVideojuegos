@@ -4,6 +4,7 @@
 #include "ParticleWithMass.h"
 #include "ForceGenerator.h"
 #include "ForceManager.h"
+#include "RigidBodyGenerator.h"
 
 
 // Initialize static member
@@ -17,14 +18,7 @@ RigidBodySystem::RigidBodySystem()
     , _isActive(true)
     , _isDead(false)
     , _isRenderable(true)
-    // , _worldRegion(Region(physx::PxBounds3(
-    //     physx::PxVec3(-1000.0f, -1000.0f, -1000.0f),
-    //     physx::PxVec3(1000.0f, 1000.0f, 1000.0f)
-    // )))
-    // , _subSystemActiveCount(0)
-    // , _maxSubSystems(Constants::System::MaxSubSystems)
 {
-    // _subSystems.reserve(_maxSubSystems);
 }
 
 void RigidBodySystem::setRenderable(bool renderable)
@@ -32,26 +26,10 @@ void RigidBodySystem::setRenderable(bool renderable)
 	_isRenderable = renderable;
 }
 
-// void RigidBodySystem::setRenderableForParticle(Particle &particle)
-// {
-//     if (_isRenderable && !particle.isVisible()) {
-//         particle.setVisibility(true);
-//     }
-//     else if (!_isRenderable) {
-//         particle.setVisibility(false);
-//     }
-// }
-
 void RigidBodySystem::setDead()
 {
 	_isDead = true;
     setActive(false);
-    
-    // for (auto& subSystem : _subSystems) {
-    //     if (subSystem) {
-    //         subSystem->setDead();
-    //     }
-    // }
 
     deregisterAllForceGensAtForceManager();
 }
@@ -71,15 +49,15 @@ bool RigidBodySystem::doForceAffectsSystem(const ForceGenerator &forceGen) const
     return false;
 }
 
-// bool RigidBodySystem::mustKillParticle(const Particle &p, const ParticleGenerator &generator) const
-// {
-//     return generator.getLifetimePolicy().shouldDelete(generator.getDistribution(), p);
-// }
+bool RigidBodySystem::mustKillRigidBody(const RigidBody &p, const RigidBodyGenerator &generator) const
+{
+    return generator.getLifetimePolicy().shouldDelete(generator.getDistribution(), p);
+}
 
-// bool RigidBodySystem::mustSpawnParticle(double deltaTime, const ParticleGenerator &generator) const
-// {
-//     return generator.getGenerationPolicy().shouldSpawn(generator.getDistribution(), deltaTime);
-// }
+bool RigidBodySystem::mustSpawnRigidBody(double deltaTime, const RigidBodyGenerator &generator) const
+{
+    return generator.getGenerationPolicy().shouldSpawn(generator.getDistribution(), deltaTime);
+}
 
 void RigidBodySystem::load()
 {
@@ -104,11 +82,6 @@ void RigidBodySystem::update(double deltaTime)
     }
 }
 
-// void RigidBodySystem::setWorldRegion(const Region &region)
-// {
-// 	_worldRegion = Region(region);
-// }
-
 void RigidBodySystem::setRenderableEntity(std::shared_ptr<Abs_Entity> renderable)
 {
     _renderableEntity = renderable;
@@ -122,21 +95,16 @@ void RigidBodySystem::render(const glm::mat4 &modelViewMat)
     }
 }
 
-// void RigidBodySystem::updateSubSystems(double deltaTime)
-// {
-//     for (int i = 0; i < _subSystemActiveCount; ++i) 
-//     {
-//         assert(_subSystems[i] != nullptr && "Sub-system inside particle system is null");
-
-//         if (_subSystems[i]->isActive()) {
-//             _subSystems[i]->update(deltaTime);
-//         }
-//         else if (_subSystems[i]->isDead()) {
-//             deregisterSubSystem(i);
-//             --i; // Adjust index after deregistration
-//         }
-//     }
-// }
+void RigidBodySystem::setRenderableForRigidBody(RigidBody &rigidBody)
+{
+    // std::cout << "isRenderable: " << _isRenderable << " isVisible: " << rigidBody.isVisible() << std::endl;
+    if (_isRenderable && !rigidBody.isVisible()) {
+        rigidBody.setVisibility(true);
+    }
+    else if (!_isRenderable) {
+        rigidBody.setVisibility(false);
+    }
+}
 
 void RigidBodySystem::setActivateForceGenAtForceManager(fGenId forceGenId, bool active)
 {
@@ -146,26 +114,11 @@ void RigidBodySystem::setActivateForceGenAtForceManager(fGenId forceGenId, bool 
     }
 }
 
-// void RigidBodySystem::registerSubSystem(std::unique_ptr<RigidBodySystem> subSystem)
-// {
-//     _subSystems.push_back(std::move(subSystem));
-//     _subSystemActiveCount++;
-// }
-
 void RigidBodySystem::registerForceGenAtForceManager(std::unique_ptr<ForceGenerator> forceGen)
 {
     _registeredForceGenIds.push_back(forceGen->getId());
     _forceManager.registerForceGenerator(_id, std::move(forceGen));
 }
-
-// void RigidBodySystem::deregisterSubSystem(int subSystemIdx)
-// {
-//     assert(subSystemIdx >= 0 && subSystemIdx < _subSystemActiveCount && "Sub-system index out of range");
-
-//     std::swap(_subSystems[subSystemIdx], _subSystems[_subSystemActiveCount - 1]);
-//     _subSystems[_subSystemActiveCount - 1] = nullptr; // Destroys the unique_ptr
-//     --_subSystemActiveCount;
-// }
 
 void RigidBodySystem::deregisterForceGenAtForceManager(fGenId forceGenId)
 {

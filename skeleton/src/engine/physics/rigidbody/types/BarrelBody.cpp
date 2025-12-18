@@ -77,19 +77,7 @@ void BarrelBody::initiallize(const physx::PxVec3 &center)
         physx::PxCapsuleGeometry(physx::PxReal(radius), physx::PxReal(halfHeight)),
         *_material
     );
-    float offset = halfHeight + radius;
 
-    // _shape->setLocalPose(
-    //     physx::PxTransform(physx::PxVec3(0.0f, +radius/2.0f, 0.0f))
-    // );
-    // _shape    = _body->createShape(
-    //     physx::PxBoxGeometry(
-    //         (bounds.maximum.x - bounds.minimum.x) * 0.5f,
-    //         (bounds.maximum.y - bounds.minimum.y) * 0.5f,
-    //         (bounds.maximum.z - bounds.minimum.z) * 0.5f
-    //     ),
-    //     *_material
-    // );
     // _body->attachShape(*_shape); // ! Create shape already attaches it to the actor
     _shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 

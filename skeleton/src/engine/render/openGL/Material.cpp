@@ -105,3 +105,11 @@ void Material::setTurquoise()
     specular = { 0.5f, 0.7f, 0.7f };
     expF = 32.0f;
 }
+
+void Material::setSeaBlue()
+{
+    ambient = { 0.0f, 0.2f, 0.3f };
+    diffuse = { 0.0f, 0.4f, 0.6f };
+    specular = { 0.3f, 0.5f, 0.7f };
+    expF = 20.0f;
+}

@@ -37,6 +37,11 @@ private:
     float _boatMass;
 
     physx::PxVec3 _traversalVelocity;
+    physx::PxVec3 _lastTraversalVelocity;
 
     bool _freeCamera = false;
+    physx::PxVec3 _lastEye;
+
+    int _splashBaseEmissionRate_Boat = 90;
+    int _splashBaseEmissionRate_Surfer = 50;
 };

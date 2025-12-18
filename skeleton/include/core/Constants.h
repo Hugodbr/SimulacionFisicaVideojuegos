@@ -137,7 +137,7 @@ namespace Constants
 		};
 
 		namespace Trash {
-			static inline constexpr uint64_t ReserveCountPerGenerator = 3;
+			static inline constexpr uint64_t ReserveCountPerGenerator = 1;
 		};
 		namespace Rope {
 			static inline constexpr uint64_t ReserveCountPerGenerator = 50;

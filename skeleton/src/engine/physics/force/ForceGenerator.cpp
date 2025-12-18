@@ -19,7 +19,7 @@ ForceGenerator::ForceGenerator()
     , _timer(0.0)
     , _particleSystem(nullptr)
 {
-    std::cout << "Creating ForceGenerator with no associated ParticleSystem! ID: " << _id << std::endl;
+    // std::cout << "Creating ForceGenerator with no associated ParticleSystem! ID: " << _id << std::endl;
 }
 
 ForceGenerator::ForceGenerator(const ParticleSystem *particleSystem)

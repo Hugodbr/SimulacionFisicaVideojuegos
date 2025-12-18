@@ -42,7 +42,7 @@ void RigidBody::update(double deltaTime)
 
 void RigidBody::setRenderableEntity(std::shared_ptr<Abs_Entity> renderable)
 {
-    std::cout << "RigidBody::setRenderableEntity() called." << std::endl;
+    // std::cout << "RigidBody::setRenderableEntity() called." << std::endl;
     if (_renderableEntity) {
         std::cout << "Warning: Overwriting existing renderable entity!" << std::endl;
     }
@@ -137,6 +137,44 @@ float RigidBody::getMass()
     physx::PxRigidDynamic* dynamic = _body->is<physx::PxRigidDynamic>();
     PX_ASSERT(dynamic);
     return dynamic->getMass();
+}
+
+void RigidBody::setPose(const physx::PxTransform &pose)
+{
+    _scene->lockWrite();
+    _scene->removeActor(*_body);
+    _body->setGlobalPose(pose);
+    _scene->addActor(*_body);
+    _scene->unlockWrite();
+}
+
+void RigidBody::activate()
+{
+    PhysicalObject::activate();
+
+    PX_ASSERT(_body->getScene() == nullptr);
+    PX_ASSERT(!_scene->isSimulating());
+
+    _scene->lockWrite();
+    _body->setGlobalPose(_transform);
+    _scene->addActor(*_body);
+    _scene->unlockWrite();
+
+    static_cast<physx::PxRigidDynamic*>(_body)->setLinearVelocity(physx::PxVec3(0));
+    static_cast<physx::PxRigidDynamic*>(_body)->setAngularVelocity(physx::PxVec3(0));
+    static_cast<physx::PxRigidDynamic*>(_body)->wakeUp();
+}
+
+void RigidBody::deactivate()
+{
+    PhysicalObject::deactivate();
+
+    if (_scene) {
+        PX_ASSERT(!_scene->isSimulating());
+        _scene->lockWrite();
+        _scene->removeActor(*_body);
+        _scene->unlockWrite();
+    }
 }
 
 void RigidBody::updateRenderableEntityPose()

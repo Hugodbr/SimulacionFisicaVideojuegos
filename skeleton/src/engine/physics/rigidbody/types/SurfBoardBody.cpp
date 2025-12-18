@@ -54,7 +54,7 @@ void SurfBoardBody::initiallize(const physx::PxVec3 &center)
     setDensity(400.0f);
     // std::cout << "SurfBoardBody density set to " << _density << " kg/m^3. Has mass = " << static_cast<physx::PxRigidDynamic&>(*_body).getMass() << " and volume: " << this->_volume << std::endl;
 
-    static_cast<physx::PxRigidDynamic*>(_body)->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z);
+    // static_cast<physx::PxRigidDynamic*>(_body)->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z);
 
 
     // static_cast<physx::PxRigidDynamic*>(_body)->setLinearDamping(0.4f);

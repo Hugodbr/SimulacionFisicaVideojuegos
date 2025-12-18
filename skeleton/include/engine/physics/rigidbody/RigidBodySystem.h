@@ -10,6 +10,7 @@
 
 class ForceManager;
 class ForceGenerator;
+class RigidBodyGenerator;
 class Abs_Entity;
 
 // class ForceGenerator;
@@ -58,6 +59,8 @@ public:
 	virtual void setRenderableEntity(std::shared_ptr<Abs_Entity> renderable);
 	virtual void render(const glm::mat4& modelViewMat);
 
+	void setRenderableForRigidBody(RigidBody &rigidBody);
+
 	uint64_t getId() const { return _id; }
 	// Group management
 	virtual void addGroup(Constants::Group::DynamicGroup group) {
@@ -89,9 +92,9 @@ protected:
 	virtual bool doForceAffectsSystem(const ForceGenerator& forceGen) const;
 
 	// // Determines if a particle must be deleted according to the generator lifetime policies
-	// virtual bool mustKillParticle(const Particle& p, const ParticleGenerator& generator) const;
+	virtual bool mustKillRigidBody(const RigidBody& p, const RigidBodyGenerator& generator) const;
 
-	// virtual bool mustSpawnParticle(double deltaTime, const ParticleGenerator& generator) const;
+	virtual bool mustSpawnRigidBody(double deltaTime, const RigidBodyGenerator& generator) const;
 
 	// Clear all forces from the particles and apply forces from ForceManager
 	virtual void applyForces() = 0;
