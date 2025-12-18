@@ -64,22 +64,23 @@ void SceneBuoyance::init()
 	// =========================================================================================
 	// RigidBody Box
 	// =========================================================================================
-	std::unique_ptr<RigidBody> barrelBody = std::make_unique<BarrelBody>(
+	std::unique_ptr<RigidBody> boatBody = std::make_unique<BoxBody>(
 		physx::PxVec3(0.0f, 2.0f, 0.0f),
 		// ROOT_DIR + "\\resources\\fbx\\crate-box-free\\source\\Crate.fbx",	
-		// ROOT_DIR + "\\resources\\blender\\wooden_boat.glb",
-		// 0.025f
-		ROOT_DIR + "\\resources\\glb\\free_stalker_barrel_pack_-_low-poly_props.glb",
-		500.0f,
-		1.0f
+		ROOT_DIR + "\\resources\\blender\\wooden_boat.glb",
+		800.0f,
+		0.025f
+		// ROOT_DIR + "\\resources\\glb\\free_stalker_barrel_pack_-_low-poly_props.glb",
+		// 500.0f,
+		// 1.0f
 		// ROOT_DIR + "\\resources\\blender\\sphere.obj"
 		// ROOT_DIR + "\\resources\\glb\\klk-17_pistol.obj"
 		// ROOT_DIR + "\\resources\\glb\\surfboard__tabla_de_surf.glb", 0.05f
 		// ROOT_DIR + "\\resources\\glb\\silver_surfer.glb", 1.0f, 1.0f
 	);
-	barrelBody->init();
-    // barrelBody->setDensity(800.0f);
-	_rigidBodies.push_back(std::move(barrelBody));
+	boatBody->init();
+    // boatBody->setDensity(800.0f);
+	_rigidBodies.push_back(std::move(boatBody));
 	PhysicsEngine::getInstance().pushRigidBody(_rigidBodies.back().get());
 }
 

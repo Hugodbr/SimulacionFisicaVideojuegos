@@ -122,10 +122,10 @@ void GameApp::initSceneManager()
 {
     _sceneManager.init();
     // _sceneManager.pushScene(new Scene01());
-    // _sceneManager.pushScene(new SceneBuoyance());
+    _sceneManager.pushScene(new SceneBuoyance());
     // _sceneManager.pushScene(new SceneSurfer());
     // _sceneManager.pushScene(new SpringTestScene());
-    _sceneManager.pushScene(new CylinderTestScene());
+    // _sceneManager.pushScene(new CylinderTestScene());
     // _sceneManager.pushScene(new RopeTestScene());
     // _sceneManager.pushScene(new WakeboardScene());
 }
