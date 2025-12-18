@@ -36,7 +36,7 @@ public:
     virtual void onTriggerEnter(physx::PxActor* other) {};
     virtual void onTriggerExit(physx::PxActor* other) {};
 
-    // TODO OVERRIDE IN RIDIG BODY TO GET FROM POSE PHYSX
+    virtual void setMassSpaceInertiaTensor(const physx::PxVec3& tensor);
 
     // Getters
     physx::PxRigidActor* getBody() const { return _body; }

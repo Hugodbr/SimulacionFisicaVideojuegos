@@ -23,9 +23,11 @@ public:
 
 protected:
     virtual bool isParticleInsideRegion(const ParticleWithMass& particle);
+    virtual bool isRigidBodyInsideRegion(const RigidBody& rigidBody);
 
     // Return zero vector if outside region
     virtual physx::PxVec3 computeForceOnParticle(ParticleWithMass& particle) override;
+    virtual physx::PxVec3 computeForceOnRigidBody(RigidBody& rigidBody) override;
 
     virtual void updateField(double deltaTime) override;
 

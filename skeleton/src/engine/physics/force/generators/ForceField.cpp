@@ -27,3 +27,8 @@ physx::PxVec3 ForceField::computeForceOnParticle(ParticleWithMass &particle)
 {
     return _force;
 }
+
+physx::PxVec3 ForceField::computeForceOnRigidBody(RigidBody &rigidBody)
+{
+    return _force;
+}

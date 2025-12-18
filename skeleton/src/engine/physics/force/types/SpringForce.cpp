@@ -4,6 +4,8 @@
 
 #include "PhysicalObject.h"
 #include "RigidBody.h"
+#include "ParticleWithMass.h"
+
 
 SpringForce::SpringForce(PhysicalObject* mainObject, PhysicalObject* otherObject, float k, float restingLength, float maxLength)
     : ForcePair(mainObject, otherObject)
@@ -77,6 +79,11 @@ physx::PxVec3 SpringForce::getForceOnRigidBody(RigidBody &rigidBody)
     return computeForceOnRigidBody(rigidBody);
 }
 
+physx::PxVec3 SpringForce::getForceOnParticle(ParticleWithMass &particle)
+{
+    return computeForceOnParticle(particle);
+}
+
 physx::PxVec3 SpringForce::computeForceOnRigidBody(RigidBody &rigidBody)
 {
     physx::PxVec3 force = physx::PxVec3(0);
@@ -97,5 +104,19 @@ physx::PxVec3 SpringForce::computeForceOnRigidBody(RigidBody &rigidBody)
     }
 
     // std::cout << "SpringForce::computeForceOnRigidBody: Applying force " << force.x << ", " << force.y << ", " << force.z << std::endl;
+    return force;
+}
+
+physx::PxVec3 SpringForce::computeForceOnParticle(ParticleWithMass &particle)
+{
+    physx::PxVec3 force = physx::PxVec3(0);
+
+    if (_mainObject.second && &particle == static_cast<ParticleWithMass*>(_mainObject.first)) {
+        force = -_force;
+    } 
+    else if (_otherObject.second && &particle == static_cast<ParticleWithMass*>(_otherObject.first)) {
+        force = _force;
+    }
+
     return force;
 }

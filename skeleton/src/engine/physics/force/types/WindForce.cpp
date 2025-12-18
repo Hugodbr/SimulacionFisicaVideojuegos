@@ -2,6 +2,7 @@
 
 #include "Constants.h"
 #include "ParticleWithMass.h"
+#include "RigidBody.h"
 
 
 WindForce::WindForce(const physx::PxVec3 &velocity)
@@ -67,6 +68,22 @@ physx::PxVec3 WindForce::computeForceOnParticle(ParticleWithMass& particle)
 
     // Calculate relative velocity between wind and particle
     physx::PxVec3 relativeVelocity = _windVelocity - particleVelocity;
+
+    // Compute drag force using linear and quadratic components
+    _force = _k1 * relativeVelocity +
+             _k2 * relativeVelocity.magnitude() * relativeVelocity;
+
+    return _force;
+}
+
+physx::PxVec3 WindForce::computeForceOnRigidBody(RigidBody &rigidBody)
+{
+    physx::PxVec3 bodyVelocity = rigidBody.getVelocity();
+    // Reset force. Its different for each rigid body.
+    _force = physx::PxVec3(0.0f, 0.0f, 0.0f);
+
+    // Calculate relative velocity between wind and rigid body
+    physx::PxVec3 relativeVelocity = _windVelocity - bodyVelocity;
 
     // Compute drag force using linear and quadratic components
     _force = _k1 * relativeVelocity +

@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "ParticleWithMass.h"
+#include "RigidBody.h"
 
 
 ExplosionForce::ExplosionForce(const physx::PxVec3 &center, float maxRadius, float magnitude, float expansionVelocity)
@@ -88,4 +89,9 @@ physx::PxVec3 ExplosionForce::computeForceAtPosition(const physx::PxVec3 &positi
 physx::PxVec3 ExplosionForce::computeForceOnParticle(ParticleWithMass &particle)
 {
     return computeForceAtPosition(particle.getPosition());
+}
+
+physx::PxVec3 ExplosionForce::computeForceOnRigidBody(RigidBody &rigidBody)
+{
+    return computeForceAtPosition(rigidBody.getPosition());
 }

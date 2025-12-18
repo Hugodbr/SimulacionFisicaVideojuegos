@@ -30,6 +30,7 @@ protected:
 
     virtual physx::PxVec3 computeForceAtPosition(const physx::PxVec3& position);
     virtual physx::PxVec3 computeForceOnParticle(ParticleWithMass& particle) override;
+    virtual physx::PxVec3 computeForceOnRigidBody(RigidBody& rigidBody) override;
 
     virtual void updateField(double deltaTime) override;
 

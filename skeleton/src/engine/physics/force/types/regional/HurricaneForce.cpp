@@ -2,6 +2,8 @@
 
 #include "ParticleWithMass.h"
 #include "ParticleSystem.h"
+#include "RigidBody.h"
+
 
 HurricaneForce::HurricaneForce(const Region& region, const physx::PxVec3 &eye, const physx::PxVec3 &velocity)
     : WindRegionForce(region, velocity)
@@ -32,6 +34,14 @@ physx::PxVec3 HurricaneForce::computeForceOnParticle(ParticleWithMass &particle)
     _windVelocity = getVelocityAtPosition(particle.getPosition());
 
     return WindRegionForce::computeForceOnParticle(particle);
+}
+
+physx::PxVec3 HurricaneForce::computeForceOnRigidBody(RigidBody &rigidBody)
+{
+    // Update wind velocity at rigid body position so WindForce can compute correctly!
+    _windVelocity = getVelocityAtPosition(rigidBody.getPosition());
+
+    return WindRegionForce::computeForceOnRigidBody(rigidBody);
 }
 
 physx::PxVec3 HurricaneForce::getVelocityAtPosition(const physx::PxVec3 &position)

@@ -87,6 +87,7 @@ void BoxBody::initiallize(const physx::PxVec3 &center)
     // Apply initial rotation to the box
     // ! Must be done before adding to scene !!!
     // rotate(physx::PxQuat(physx::PxPiDivTwo, physx::PxVec3(-1,0,0)));
+    // rotate(physx::PxQuat(physx::PxPiDivFour, physx::PxVec3(-1,0,0)));
 
     _body->userData = this; // for collision callbacks
     _scene->addActor(*_body);

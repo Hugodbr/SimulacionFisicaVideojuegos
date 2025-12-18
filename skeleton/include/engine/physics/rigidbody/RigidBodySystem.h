@@ -28,27 +28,16 @@ protected:
 
 protected:
     std::shared_ptr<Abs_Entity> _renderableEntity;
+
 	std::vector<std::unique_ptr<RigidBody>> _rigidbodies;
-	// physx::PxVec3 _emitterOrigin;
 
 	ForceManager& _forceManager;
 
 	std::vector<fGenId> _registeredForceGenIds; // IDs of force generators registered at ForceManager that originate from this system
 
-	// std::vector<std::unique_ptr<ForceGenerator>> _forceGensInsideSystem;
-	// int _forceGenActiveCount;
-	// uint16_t _maxInsideForceGenerators;
-
-	// std::vector<std::unique_ptr<ParticleSystem>> _subSystems;
-	// int _subSystemActiveCount;
-	// uint16_t _maxSubSystems;
-
 	bool _isRenderable;
 	bool _isActive;
 	bool _isDead;
-
-	// // Region that defines the world limits for this particle system
-	// Region _worldRegion;
 
     bool _initialized = false;
 

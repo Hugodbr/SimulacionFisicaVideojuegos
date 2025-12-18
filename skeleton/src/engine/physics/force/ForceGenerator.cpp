@@ -102,8 +102,7 @@ physx::PxVec3 ForceGenerator::getForceOnParticle(ParticleWithMass &particle)
 
 physx::PxVec3 ForceGenerator::getForceOnRigidBody(RigidBody &rigidBody)
 {
-    std::cerr << "ForceGenerator::getForceOnRigidBody not implemented yet." << std::endl;
-    return physx::PxVec3();
+    return computeForceOnRigidBody(rigidBody);
 }
 
 physx::PxVec3 ForceGenerator::computeForceOnParticle(ParticleWithMass &particle)
@@ -113,6 +112,5 @@ physx::PxVec3 ForceGenerator::computeForceOnParticle(ParticleWithMass &particle)
 
 physx::PxVec3 ForceGenerator::computeForceOnRigidBody(RigidBody &rigidBody)
 {
-    std::cerr << "ForceGenerator::computeForceOnRigidBody not implemented yet." << std::endl;
-    return physx::PxVec3();
+    return _force;
 }

@@ -95,9 +95,9 @@ void Mesh::calculateDimensions()
 		vertex -= mPivotOffset;
 	}
 
-	// std::cout << "min: " << minVertex.x << "," << minVertex.y << "," << minVertex.z << std::endl;
-	// std::cout << "max: " << maxVertex.x << "," << maxVertex.y << "," << maxVertex.z << std::endl;
-	// std::cout << "center: " << mPivotOffset.x << "," << mPivotOffset.y << "," << mPivotOffset.z << std::endl;
+	std::cout << "min: " << minVertex.x << "," << minVertex.y << "," << minVertex.z << std::endl;
+	std::cout << "max: " << maxVertex.x << "," << maxVertex.y << "," << maxVertex.z << std::endl;
+	std::cout << "center: " << mPivotOffset.x << "," << mPivotOffset.y << "," << mPivotOffset.z << std::endl;
 }
 
 glm::vec3 Mesh::getDimensions() const

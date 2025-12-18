@@ -22,7 +22,6 @@ SplashSystem::SplashSystem(const physx::PxVec3& origin, const Region& region)
 void SplashSystem::init()
 {
 	initParticleGeneratorAndPool();
-	createForceGenerator();
 }
 
 void SplashSystem::initParticleGeneratorAndPool()
@@ -62,11 +61,6 @@ void SplashSystem::initParticleGeneratorAndPool()
     ParticleLifetimePolicy lifePolicy = ParticleLifetimePolicy(ScalarStats(0.7f, 0.15f));
 
 	generator->setLifetimePolicy(lifePolicy);
-}
-
-void SplashSystem::createForceGenerator()
-{
-
 }
 
 void SplashSystem::applyForces()

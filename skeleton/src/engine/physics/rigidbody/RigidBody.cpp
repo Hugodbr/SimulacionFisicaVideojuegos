@@ -89,10 +89,23 @@ void RigidBody::applyForce(ForceGenerator &forceGenerator)
 void RigidBody::setDensity(float density)
 {
     _density = physx::PxReal(density);
-    physx::PxRigidDynamic* dyn = _body->is<physx::PxRigidDynamic>();
-    PX_ASSERT(dyn);
-    PX_ASSERT(dyn->getNbShapes() > 0);
-    physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidDynamic&>(*_body), _density);
+
+    if (_body->is<physx::PxRigidDynamic>()) {
+        physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidDynamic&>(*_body), _density);
+    }
+    else {
+        std::cerr << "RigidBody::setDensity() - Body is not dynamic, cannot set density!" << std::endl;
+    }
+}
+
+void RigidBody::setMassSpaceInertiaTensor(const physx::PxVec3 &tensor)
+{
+    if (_body->is<physx::PxRigidDynamic>()) {
+        static_cast<physx::PxRigidDynamic*>(_body)->setMassSpaceInertiaTensor(tensor);
+    }
+    else {
+        std::cerr << "RigidBody::setMassSpaceInertiaTensor() - Body is not dynamic, cannot set inertia!" << std::endl;
+    }
 }
 
 physx::PxVec3 RigidBody::getTopCenter() const

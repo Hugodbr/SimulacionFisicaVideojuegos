@@ -14,6 +14,7 @@ public:
 
 protected:
     virtual physx::PxVec3 computeForceOnParticle(ParticleWithMass& particle);
+    virtual physx::PxVec3 computeForceOnRigidBody(RigidBody& rigidBody) override;
 
     virtual void updateField(double deltaTime);
 

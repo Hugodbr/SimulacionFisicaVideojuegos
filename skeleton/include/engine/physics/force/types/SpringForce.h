@@ -25,11 +25,11 @@ public:
     // virtual void setMaxLength(double maxLength) { _maxLength = maxLength; };
 
     virtual physx::PxVec3 getForceOnRigidBody(RigidBody& rigidBody);
-    // virtual physx::PxVec3 getForceOnParticle(ParticleWithMass& particle); // TODO
+    virtual physx::PxVec3 getForceOnParticle(ParticleWithMass& particle);
 
 protected:
     virtual physx::PxVec3 computeForceOnRigidBody(RigidBody& rigidBody);
-    // virtual physx::PxVec3 computeForceOnParticle(ParticleWithMass& particle); // TODO
+    virtual physx::PxVec3 computeForceOnParticle(ParticleWithMass& particle);
 
 protected:
     float _k;

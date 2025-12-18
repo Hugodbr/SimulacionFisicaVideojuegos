@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "ParticleWithMass.h"
+#include "RigidBody.h"
 #include "Region.h"
 
 
@@ -68,9 +69,28 @@ physx::PxVec3 RegionalForce::computeForceOnParticle(ParticleWithMass &particle)
     return physx::PxVec3(0.0f, 0.0f, 0.0f);
 }
 
+physx::PxVec3 RegionalForce::computeForceOnRigidBody(RigidBody &rigidBody)
+{
+    if (isRigidBodyInsideRegion(rigidBody)) {
+        return _force;
+    }
+
+    return physx::PxVec3(0.0f, 0.0f, 0.0f);
+}
+
 bool RegionalForce::isParticleInsideRegion(const ParticleWithMass &particle)
 {
     const physx::PxVec3 &pos = particle.getPosition();
+
+    if (_region.containsPoint(pos)) {
+        return true;
+    }
+    return false;
+}
+
+bool RegionalForce::isRigidBodyInsideRegion(const RigidBody &rigidBody)
+{
+    const physx::PxVec3 &pos = rigidBody.getPosition();
 
     if (_region.containsPoint(pos)) {
         return true;

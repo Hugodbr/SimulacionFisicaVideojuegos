@@ -14,12 +14,14 @@ public:
 
     virtual void updateForce(double deltaTime) override;
     virtual physx::PxVec3 getForceOnParticle(ParticleWithMass& particle) override;
+    virtual physx::PxVec3 getForceOnRigidBody(RigidBody& rigidBody) override;
 
 protected:
     virtual void init(const Region& region, const physx::PxVec3& velocity);
     
     // Return zero vector if outside region
     virtual physx::PxVec3 computeForceOnParticle(ParticleWithMass& particle) override;
+    virtual physx::PxVec3 computeForceOnRigidBody(RigidBody& rigidBody) override;
 
     virtual void updateField(double deltaTime) override;
 

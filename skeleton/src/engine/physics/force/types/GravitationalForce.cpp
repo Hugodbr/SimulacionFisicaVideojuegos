@@ -1,6 +1,7 @@
 #include "GravitationalForce.h"
 
 #include "ParticleWithMass.h"
+#include "RigidBody.h"
 
 
 GravitationalForce::GravitationalForce()
@@ -27,4 +28,9 @@ void GravitationalForce::updateForce(double deltaTime)
 physx::PxVec3 GravitationalForce::computeForceOnParticle(ParticleWithMass &particle)
 {
     return  _forceByMass * particle.getMass();
+}
+
+physx::PxVec3 GravitationalForce::computeForceOnRigidBody(RigidBody &rigidBody)
+{
+    return  _forceByMass * rigidBody.getMass();
 }

@@ -10,6 +10,7 @@
 #include "app/gameplay/SpringTestScene.h"
 #include "app/gameplay/RopeTestScene.h"
 #include "app/gameplay/WakeboardScene.h"
+#include "app/gameplay/CylinderTestScene.h"
 
 
 GameApp::GameApp()
@@ -125,8 +126,9 @@ void GameApp::initSceneManager()
     // _sceneManager.pushScene(new SceneSpring());
     // _sceneManager.pushScene(new SceneSurfer());
     // _sceneManager.pushScene(new SpringTestScene());
+    _sceneManager.pushScene(new CylinderTestScene());
     // _sceneManager.pushScene(new RopeTestScene());
-    _sceneManager.pushScene(new WakeboardScene());
+    // _sceneManager.pushScene(new WakeboardScene());
 }
 
 void GameApp::createViewportsAndCameras()
@@ -137,7 +139,7 @@ void GameApp::createViewportsAndCameras()
 	mViewPorts.push_back(mainViewPort);
 
 	// CAMARAS ------------------------------------------------------
-	Camera* mainCamera = new Camera(mainViewPort, physx::PxVec3(3.0f, 3.0f, 3.0f), physx::PxVec3(.0f, .0f, .0f));
+	Camera* mainCamera = new Camera(mainViewPort, physx::PxVec3(0.0f, 3.0f, 7.0f), physx::PxVec3(.0f, .0f, .0f));
 	mCamera = mainCamera;
 	mCameras.push_back(mainCamera);
     _windowSystem->addInputEventListener(mCamera);

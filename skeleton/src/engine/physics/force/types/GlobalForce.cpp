@@ -34,3 +34,8 @@ physx::PxVec3 GlobalForce::computeForceOnParticle(ParticleWithMass &particle)
 {
     return _force;
 }
+
+physx::PxVec3 GlobalForce::computeForceOnRigidBody(RigidBody &rigidBody)
+{
+    return _force;
+}

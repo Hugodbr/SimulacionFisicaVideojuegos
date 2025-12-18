@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "ParticleWithMass.h"
+#include "RigidBody.h"
 
 
 WindRegionForce::WindRegionForce(const Region& region, const physx::PxVec3& velocity)
@@ -53,10 +54,23 @@ physx::PxVec3 WindRegionForce::getForceOnParticle(ParticleWithMass &particle)
     return computeForceOnParticle(particle);
 }
 
+physx::PxVec3 WindRegionForce::getForceOnRigidBody(RigidBody &rigidBody)
+{
+    return computeForceOnRigidBody(rigidBody);
+}
+
 physx::PxVec3 WindRegionForce::computeForceOnParticle(ParticleWithMass &particle)
 {
     if (isParticleInsideRegion(particle)) {
         return WindForce::computeForceOnParticle(particle);
+    }
+    return physx::PxVec3(0.0f, 0.0f, 0.0f);
+}
+
+physx::PxVec3 WindRegionForce::computeForceOnRigidBody(RigidBody &rigidBody)
+{
+    if (isRigidBodyInsideRegion(rigidBody)) {
+        return WindForce::computeForceOnRigidBody(rigidBody);
     }
     return physx::PxVec3(0.0f, 0.0f, 0.0f);
 }
