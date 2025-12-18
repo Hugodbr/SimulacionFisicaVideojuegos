@@ -5,6 +5,7 @@
 class SurferBody;
 class SurfBoardBody;
 class SplashSystem;
+class RainSystem;
 class BoxBody;
 
 class WakeboardScene : public Scene
@@ -24,6 +25,7 @@ protected:
     void updateTraversal();
     void updateSurfer();
     void updateSplash();
+    void updateRain();
 
 private:
 	SurferBody* _surferBody = nullptr;
@@ -31,6 +33,7 @@ private:
 	BoxBody* _boat = nullptr;
 	SplashSystem* _splashSystem = nullptr;
 	SplashSystem* _splashSystemBoat = nullptr;
+	RainSystem* _rainSystem = nullptr;
 
     // physx::PxVec3 _traversalForcePerMass = physx::PxVec3(0.0f, 0.0f, 100.0f);
     float _surferBoardMass;

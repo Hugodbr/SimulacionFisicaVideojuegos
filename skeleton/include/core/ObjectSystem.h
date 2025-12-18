@@ -89,6 +89,8 @@ public:
 		_groups = groups;
 	}
 
+	virtual physx::PxVec3 getEmitterOrigin() const { return _emitterOrigin; }
+	
 	// Check if the system is renderable
 	bool isRenderable() const { return _isRenderable; }
 	// Set if the system is renderable

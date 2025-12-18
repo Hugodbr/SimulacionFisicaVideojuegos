@@ -154,6 +154,23 @@ void WakeboardScene::init()
 	_splashSystemBoat = static_cast<SplashSystem*>(_particleSystems.back().get());
 	PhysicsEngine::getInstance().pushParticleSystem(_particleSystems.back().get());
 
+    // =========================================================================================
+	// Rain System
+	// =========================================================================================
+    // float halfRegionSizeRain = 40.0f;
+	// Region rainRegion(physx::PxBounds3(physx::PxVec3(-halfRegionSizeRain, -halfRegionSizeRain, -halfRegionSizeRain), physx::PxVec3(halfRegionSizeRain, halfRegionSizeRain, halfRegionSizeRain)));
+	// physx::PxVec3 rainOrigin = physx::PxVec3(0.0f, rainRegion.shape.box.maximum.y, 0.0f);
+	
+	// std::unique_ptr<RainSystem> rs = std::make_unique<RainSystem>(rainOrigin, rainRegion);
+	// rs->init();
+    // rs->setRenderableEntity(std::make_unique<ModelSingleMeshPBR>("C:\\Users\\hugod\\Github\\SimulacionFisicaVideojuegos\\resources\\glb\\low_poly_water_drop.glb", 0.1f));
+	// rs->setGroups({ Constants::Group::DynamicGroup::ENVIRONMENT });
+    // rs->setEmissionRate(10);
+
+	// _particleSystems.push_back(std::move(rs));
+    // _rainSystem = static_cast<RainSystem*>(_particleSystems.back().get());
+	// PhysicsEngine::getInstance().pushParticleSystem(_particleSystems.back().get());
+
 	// =========================================================================================
     // Rigid Body Systems
     // =========================================================================================
@@ -251,9 +268,9 @@ void WakeboardScene::update()
     updateTraversal();
     updateSurfer();
     updateSplash();
+    updateRain();
 	
 	// ! physx is updating rigid bodies and particle systems at simulation step
-	// TODO maybe remove from physx and update here
 }
 
 void WakeboardScene::updateTraversal()
@@ -380,6 +397,14 @@ void WakeboardScene::updateSplash()
     }
 
     _lastTraversalVelocity = _traversalVelocity;
+}
+
+void WakeboardScene::updateRain()
+{
+//     physx::PxVec3 boatPos = static_cast<physx::PxRigidBody*>(_boat->getBody())->getGlobalPose().p;
+//     _rainSystem->setEmitterOrigin(
+//         physx::PxVec3(boatPos.x, _rainSystem->getEmitterOrigin().y, boatPos.z + 10.0f)
+//     );
 }
 
 void WakeboardScene::setCamera()
